@@ -1,4 +1,5 @@
 import bb.cascades 1.2
+import TaskUtilities 1.0
 
 NavigationPane {
     id: mainNavPane
@@ -21,8 +22,6 @@ NavigationPane {
     }
 
     Page {
-        signal fetchTasks()
-        
         titleBar: TitleBar {
             title: "ToodleDo10"
         }
@@ -30,7 +29,21 @@ NavigationPane {
         Container {
             ListView {
                 id: taskListView
-                layout: StackListLayout {}
+                layout: StackListLayout {
+                    headerMode: ListHeaderMode.Sticky
+                }
+                horizontalAlignment: HorizontalAlignment.Fill
+                dataModel: app.dataModel
+                
+                listItemComponents: [
+                    ListItemComponent {
+                        Container {
+                            CheckBox {
+                                text: ListItemData.title
+                            }
+                        }
+                    }
+                ]
             }
         }
 
@@ -41,7 +54,7 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    fetchTasks();
+                    //Actual work is done in C++
                     console.log("Refreshed");
                 }
             },

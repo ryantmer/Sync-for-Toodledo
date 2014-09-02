@@ -34,6 +34,10 @@ Page {
                 propertyManager.advancedMode = advancedModeCheckbox.checked
             }
         }
+        Button {
+            id: removeLocalTasksButton
+            text: "Clear Local Task Storage"
+        }
     }
     
     attachedObjects: [

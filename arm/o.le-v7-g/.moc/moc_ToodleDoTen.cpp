@@ -33,24 +33,24 @@ static const uint qt_meta_data_ToodleDoTen[] = {
       13,   12,   12,   12, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      30,   12,   12,   12, 0x08,
-      56,   46,   12,   12, 0x08,
-      85,   12,   12,   12, 0x08,
+      46,   30,   12,   12, 0x08,
+      87,   77,   12,   12, 0x08,
+     116,   12,   12,   12, 0x08,
 
  // methods: signature, parameters, type, tag, flags
-     100,   12,   12,   12, 0x02,
+     137,   12,   12,   12, 0x02,
 
  // properties: name, type, flags
-     133,  118, 0x00095409,
+     170,  155, 0x00095409,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_ToodleDoTen[] = {
     "ToodleDoTen\0\0networkChanged()\0"
-    "onTaskUpdated()\0connected\0"
-    "onNetworkStatusChanged(bool)\0"
-    "onFetchTasks()\0updateDataModel()\0"
+    "taskId,taskData\0onTaskUpdated(int,QVariantMap)\0"
+    "connected\0onNetworkStatusChanged(bool)\0"
+    "onRefreshTriggered()\0updateDataModel()\0"
     "TaskDataModel*\0dataModel\0"
 };
 
@@ -61,9 +61,9 @@ void ToodleDoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         ToodleDoTen *_t = static_cast<ToodleDoTen *>(_o);
         switch (_id) {
         case 0: _t->networkChanged(); break;
-        case 1: _t->onTaskUpdated(); break;
+        case 1: _t->onTaskUpdated((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QVariantMap(*)>(_a[2]))); break;
         case 2: _t->onNetworkStatusChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 3: _t->onFetchTasks(); break;
+        case 3: _t->onRefreshTriggered(); break;
         case 4: _t->updateDataModel(); break;
         default: ;
         }

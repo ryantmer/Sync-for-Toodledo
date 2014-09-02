@@ -26,9 +26,9 @@ signals:
     void networkChanged();
 
 private slots:
-    void onTaskUpdated();
+    void onTaskUpdated(int taskId, QVariantMap taskData);
     void onNetworkStatusChanged(bool connected);
-    void onFetchTasks();
+    void onRefreshTriggered();
 
 private:
     TaskDataModel *_dataModel;

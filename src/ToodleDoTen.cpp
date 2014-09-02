@@ -6,18 +6,19 @@
 
 #include "ToodleDoTen.hpp"
 #include "TaskDataModel.hpp"
+#include "TaskRetriever.hpp"
 #include "PropertiesManager.hpp"
 #include "NetworkManager.hpp"
 
 using namespace bb::cascades;
 
 ToodleDoTen::ToodleDoTen() : QObject() {
+    qmlRegisterType<TaskDataModel>("TaskUtilities", 1, 0, "TaskDataModel");
+
     PropertiesManager *propertyManager = PropertiesManager::getInstance();
     NetworkManager *networkManager = NetworkManager::getInstance();
-
-    qDebug() << "Connecting to signals...";
-    bool isOk = connect(networkManager, SIGNAL(networkStatusChanged(bool)), this, SLOT(onNetworkStatusChanged(bool)));
-    Q_ASSERT(isOk);
+    this->_taskRetriever = new TaskRetriever(this);
+    this->_dataModel = new TaskDataModel(this);
 
     qDebug() << "Creating QML...";
     QmlDocument *qml = QmlDocument::create("asset:///main.qml").parent(this);
@@ -26,11 +27,26 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     AbstractPane *root = qml->createRootObject<AbstractPane>();
     Application::instance()->setScene(root);
 
-    qDebug() << "Connecting to fetchTasks...";
     _refreshButton = root->findChild<ActionItem*>("refreshButton");
-    isOk = connect(_refreshButton, SIGNAL(triggered()), this, SLOT(onFetchTasks()));
+
+    qDebug() << "Connecting signals...";
+    bool isOk = connect(networkManager,
+            SIGNAL(networkStatusChanged(bool)),
+            this,
+            SLOT(onNetworkStatusChanged(bool)));
+    Q_ASSERT(isOk);
+    isOk = connect(_refreshButton,
+            SIGNAL(triggered()),
+            this,
+            SLOT(onRefreshTriggered()));
+    Q_ASSERT(isOk);
+    isOk = connect(_taskRetriever,
+            SIGNAL(taskUpdated(int, QVariantMap)),
+            this,
+            SLOT(onTaskUpdated(int, QVariantMap)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
+    qDebug() << "Finished.";
 }
 ToodleDoTen::~ToodleDoTen() {};
 
@@ -39,11 +55,23 @@ TaskDataModel *ToodleDoTen::dataModel() {
 }
 
 void ToodleDoTen::updateDataModel() {
-
+//    QVariantList tasks = this->_dataModel->tasks();
+//
+//    if (tasks.count() == 0) {
+//        return;
+//    }
+//
+//    for (int i = 0; i < tasks.count(); ++i) {
+//        if (i > 0) {
+//            int taskId = tasks.at(i).toInt(NULL);
+//            this->_taskRetriever->fetchTask(taskId);
+//        }
+//    }
+    _taskRetriever->fetchAllTasks();
 }
 
-void ToodleDoTen::onTaskUpdated() {
-    this->updateDataModel();
+void ToodleDoTen::onTaskUpdated(int taskId, QVariantMap taskData) {
+
 }
 
 void ToodleDoTen::onNetworkStatusChanged(bool connected) {
@@ -53,12 +81,8 @@ void ToodleDoTen::onNetworkStatusChanged(bool connected) {
     }
 }
 
-void ToodleDoTen::onFetchTasks() {
-    QVariantMap urlParameters;
-    urlParameters["access_token"] = QString("4675589614eff6243dd86c837a6e45db8c6ba666");
-    urlParameters["after"] = QString::number(0);
-    urlParameters["fields"] = QString("folder,duedate");
-    NetworkManager::getInstance()->get("http://api.toodledo.com/3/tasks/get.php", urlParameters);
+void ToodleDoTen::onRefreshTriggered() {
+    _taskRetriever->fetchAllTasks();
 }
 
 #endif /* TOODLEDOTEN_CPP_ */

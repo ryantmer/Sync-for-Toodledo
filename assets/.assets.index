@@ -3,7 +3,7 @@
 About.qml
 AddTask.qml
 data/demoTasks.json
-data/tasks.json
+data/serverTasks.json
 EditTask.qml
 images/ic_add.png
 images/ic_reload.png

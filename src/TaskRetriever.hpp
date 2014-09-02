@@ -10,6 +10,7 @@ class TaskRetriever : public QObject {
 
 public:
     TaskRetriever(QObject *parent = 0);
+    void fetchAllTasks();
     void fetchTask(int taskId);
 
 signals:

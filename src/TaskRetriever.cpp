@@ -14,23 +14,33 @@ static QVariant dateStringToUnixTime(QVariant dateString) {
 
 TaskRetriever::TaskRetriever(QObject *parent) : QObject(parent) {
     bool isOk = connect(NetworkManager::getInstance(),
-            SIGNAL(networkResponse(QUrl,QString)),
+            SIGNAL(networkResponse(QUrl, QString)),
             this,
-            SLOT(onNetworkResponse(QUrl, int)));
+            SLOT(onNetworkResponse(QUrl, QString)));
     Q_ASSERT(isOk);
     isOk = connect(NetworkManager::getInstance(),
-            SIGNAL(networkResponseFailed(QUrl,int)),
+            SIGNAL(networkResponseFailed(QUrl, int)),
             this,
             SLOT(onNetworkResponseFailed(QUrl, int)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
 }
 
+void TaskRetriever::fetchAllTasks() {
+    QVariantMap urlParameters;
+    urlParameters["access_token"] = QString("7253598f96296ebc709cae6f81a4dd849e0b29ce");
+    urlParameters["after"] = QString::number(0);
+    //id, title, modified and completed do not need to be specified, they come anyway
+    urlParameters["fields"] = QString("folder,duedate");
+    NetworkManager::getInstance()->get("http://api.toodledo.com/3/tasks/get.php", urlParameters);
+}
+
 void TaskRetriever::fetchTask(int taskId) {
     QVariantMap urlParameters;
-    urlParameters["access_token"] = QString("8485de9e90a5e993c83777ca00eb8cd240bebcec");
+    urlParameters["access_token"] = QString("7253598f96296ebc709cae6f81a4dd849e0b29ce");
     urlParameters["id"] = QString::number(taskId);
-    urlParameters["fields"] = QString("id,title,folder,duedate,completed");
+    //id, title, modified and completed do not need to be specified, they come anyway
+    urlParameters["fields"] = QString("folder,duedate");
     NetworkManager::getInstance()->get("http://api.toodledo.com/3/tasks/get.php", urlParameters);
 }
 

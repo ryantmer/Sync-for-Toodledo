@@ -22,14 +22,15 @@ public:
     Q_INVOKABLE virtual void removeItems(const QVariantList &indexPaths);
 
     void addTask(QVariantMap data);
+    QVariantList tasks();
 
 private:
     QVariantList internalDB;
     void initDatabase(const QString &filename);
-    void updateDatabase(bool silentUpdate = true);
+    void updateDatabase();
 
 public slots:
-    void onTaskUpdated(int id, QVariantMap data);
+//    void onTaskUpdated(int id, QVariantMap data);
 };
 
 #endif /* TASKDATAMODEL_HPP_ */
