@@ -5,6 +5,7 @@
 using namespace bb::cascades;
 using namespace bb::data;
 
+//Location where DB is stored by app on exit
 const QString TaskDataModel::databasePath = QString("app/native/assets/data/tasks.json");
 
 TaskDataModel::TaskDataModel(QObject *parent) : DataModel(parent) {
@@ -31,7 +32,7 @@ void TaskDataModel::initDatabase(const QString &filename) {
     }
 
     if (!loaded) {
-        qDebug() << "Error loading database, loading default database.";
+        qDebug() << "Error loading stored database, loading default database.";
         this->internalDB = jda.load("app/native/assets/data/demoTasks.json").value<QVariantList>();
         if (jda.hasError()) {
             bb::data::DataAccessError e = jda.error();
@@ -47,22 +48,33 @@ void TaskDataModel::initDatabase(const QString &filename) {
     qDebug() << "Database: " << this->internalDB;
 }
 
-void TaskDataModel::updateDatabase() {
-    for (int i = 1; i < this->internalDB.count(); ++i) {
+void TaskDataModel::onTaskAdded(QVariant data) {
+    //Slot for adding new task to internal DB
+    this->internalDB.append(data.toMap());
+    emit itemAdded(QVariantList() << this->internalDB.count()-1);
+}
+
+void TaskDataModel::onTaskEdited(QVariant taskData) {
+    //Slot for updating task in internal DB when user edits it
+    QVariantMap data = taskData.toMap();
+    int taskId = data["id"].toInt(NULL);
+    for (int i = 0; i < this->internalDB.count(); ++i) {
         QVariantMap taskInfo = this->internalDB.value(i).toMap();
-        this->internalDB.replace(i, taskInfo);
-        //emit DataModel signal that an item has been updated (with item index)
-        emit itemUpdated(QVariantList() << i);
+        if (taskInfo["id"].toInt(NULL) == taskId) {
+            this->internalDB.replace(i, data);
+            emit itemUpdated(QVariantList() << i);
+        }
     }
 }
 
-QVariantList TaskDataModel::tasks() {
-    //Returns a QVariantList of all Task IDs currently stored.
-    QVariantList l;
+QList<int> TaskDataModel::tasks() {
+    //Returns a QList of ints of all Task IDs currently stored.
+    QList<int> l;
     for (int i = 0; i < this->internalDB.count(); ++i) {
         QVariantMap taskInfo = this->internalDB.value(i).toMap();
-        l << taskInfo["id"];
+        l << taskInfo["id"].toInt(NULL);
     }
+    return l;
 }
 
 int TaskDataModel::childCount(const QVariantList &indexPath) {
@@ -123,22 +135,3 @@ void TaskDataModel::removeItems(const QVariantList &indexPaths) {
     }
 }
 
-void TaskDataModel::addTask(QVariantMap data) {
-    this->internalDB.append(data);
-    emit itemAdded(QVariantList() << this->internalDB.count() - 1);
-}
-
-//void TaskDataModel::onTaskUpdated(int id, QVariantMap data) {
-//    for (int i = 0; i < this->internalDB.count(); ++i) {
-//        QVariantMap taskInfo = this->internalDB.value(i).toMap();
-//        if (taskInfo["id"].toInt(NULL) == id) {
-//            QList<QString> keys = data.keys();
-//            foreach(QString key, keys) {
-//                taskInfo.insert(key, data.value(key));
-//            }
-//            this->internalDB.replace(i, data);
-//            emit itemUpdated(QVariantList() << i);
-//            break;
-//        }
-//    }
-//}

@@ -71,3 +71,18 @@ void PropertiesManager::setNetworkIssues(bool issues) {
         emit networkIssuesChanged(issues);
     }
 }
+
+uint PropertiesManager::lastUpdateTime() {
+    QSettings settings("ryantmer", "ToddleDo10");
+    QVariant v = settings.value("lastUpdateTime", 0);
+    return v.toUInt(NULL);
+}
+void PropertiesManager::setLastUpdateTime(uint time) {
+    QSettings settings("ryantmer", "ToodleDo10");
+    QVariant v = settings.value("lastUpdateTime", 0);
+    uint u = v.toUInt(NULL);
+    if (u != time) {
+        settings.setValue("lastUpdateTime", time);
+        emit lastUpdateTimeChanged(time);
+    }
+}

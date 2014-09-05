@@ -26,7 +26,7 @@ signals:
     void networkChanged();
 
 private slots:
-    void onTaskUpdated(int taskId, QVariantMap taskData);
+    void onTaskUpdated(QVariantMap taskData);
     void onNetworkStatusChanged(bool connected);
     void onRefreshTriggered();
 
@@ -34,6 +34,8 @@ private:
     TaskDataModel *_dataModel;
     TaskRetriever *_taskRetriever;
     bb::cascades::ActionItem *_refreshButton;
+    bb::cascades::ActionItem *_addTaskButton;
+    bb::cascades::ActionItem *_editTaskButton;
 };
 
 #endif /* TOODLEDOTEN_HPP_ */

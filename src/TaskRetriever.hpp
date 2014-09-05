@@ -14,7 +14,7 @@ public:
     void fetchTask(int taskId);
 
 signals:
-    void taskUpdated(int taskId, QVariantMap taskData);
+    void taskUpdated(QVariantMap data);
     void taskUpdateFailed(int taskId);
 
 private slots:
@@ -22,7 +22,8 @@ private slots:
     void onNetworkResponseFailed(QUrl url, int error);
 
 private:
-    void parseTaskUpdateResponse(int taskId, QString response);
+    static QDateTime unixTimeToDateTime(uint unixTime);
+    static uint dateTimeToUnixTime(QDateTime dateTime);
 };
 
 #endif /* TASKRETRIEVER_HPP_ */

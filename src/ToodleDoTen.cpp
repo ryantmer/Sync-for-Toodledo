@@ -28,22 +28,25 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     Application::instance()->setScene(root);
 
     _refreshButton = root->findChild<ActionItem*>("refreshButton");
+    _addTaskButton = root->findChild<ActionItem*>("addTaskButton");
+    _editTaskButton = root->findChild<ActionItem*>("editTaskButton");
 
     qDebug() << "Connecting signals...";
-    bool isOk = connect(networkManager,
-            SIGNAL(networkStatusChanged(bool)),
-            this,
-            SLOT(onNetworkStatusChanged(bool)));
+    bool isOk;
+    isOk = connect(networkManager, SIGNAL(networkStatusChanged(bool)),
+            this, SLOT(onNetworkStatusChanged(bool)));
     Q_ASSERT(isOk);
-    isOk = connect(_refreshButton,
-            SIGNAL(triggered()),
-            this,
-            SLOT(onRefreshTriggered()));
+    isOk = connect(_refreshButton, SIGNAL(triggered()),
+            this, SLOT(onRefreshTriggered()));
     Q_ASSERT(isOk);
-    isOk = connect(_taskRetriever,
-            SIGNAL(taskUpdated(int, QVariantMap)),
-            this,
-            SLOT(onTaskUpdated(int, QVariantMap)));
+    isOk = connect(_taskRetriever, SIGNAL(taskUpdated(QVariantMap)),
+            this, SLOT(onTaskUpdated(QVariantMap)));
+    Q_ASSERT(isOk);
+    isOk = connect(_addTaskButton, SIGNAL(triggered(QVariant)),
+            this->_dataModel, SLOT(onTaskAdded(QVariant)));
+    Q_ASSERT(isOk);
+    isOk = connect(_editTaskButton, SIGNAL(triggered(QVariant)),
+            this->_dataModel, SLOT(onTaskEdited(QVariant)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
     qDebug() << "Finished.";
@@ -55,23 +58,12 @@ TaskDataModel *ToodleDoTen::dataModel() {
 }
 
 void ToodleDoTen::updateDataModel() {
-//    QVariantList tasks = this->_dataModel->tasks();
-//
-//    if (tasks.count() == 0) {
-//        return;
-//    }
-//
-//    for (int i = 0; i < tasks.count(); ++i) {
-//        if (i > 0) {
-//            int taskId = tasks.at(i).toInt(NULL);
-//            this->_taskRetriever->fetchTask(taskId);
-//        }
-//    }
     _taskRetriever->fetchAllTasks();
 }
 
-void ToodleDoTen::onTaskUpdated(int taskId, QVariantMap taskData) {
-
+void ToodleDoTen::onTaskUpdated(QVariantMap taskData) {
+    qDebug() << "Task updated!";
+    qDebug() << taskData;
 }
 
 void ToodleDoTen::onNetworkStatusChanged(bool connected) {

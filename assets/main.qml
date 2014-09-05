@@ -63,20 +63,20 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_add.png"
                 onTriggered: {
-                    addTaskDefinition.createObject().open();
+                    addTaskSheet.open();
                 }
             }
         ]
     }
 
     attachedObjects: [
-        ComponentDefinition {
-            id: addTaskDefinition
-            source: "asset:///AddTask.qml"
+        Sheet {
+            id: addTaskSheet
+            content: AddTask {}
         },
-        ComponentDefinition {
-            id: editTaskDefinition
-            source: "asset:///EditTask.qml"
+        Sheet {
+            id: editTaskSheet
+            content: EditTask {}
         },
         Sheet {
             id: settingsSheet

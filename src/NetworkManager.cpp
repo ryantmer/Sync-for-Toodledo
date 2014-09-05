@@ -20,15 +20,10 @@ NetworkManager::NetworkManager() {
             _networkConfigurationManager->configurationFromIdentifier("bps:ti0"), this);
     _networkAccessManager = new QNetworkAccessManager(this);
 
-    bool isOk = connect(_networkSession,
-            SIGNAL(stateChanged(QNetworkSession::State)),
-            this,
-            SLOT(onNetworkStateChanged(QNetworkSession::State)));
+    bool isOk;
+    isOk = connect(_networkSession, SIGNAL(stateChanged(QNetworkSession::State)), this, SLOT(onNetworkStateChanged(QNetworkSession::State)));
     Q_ASSERT(isOk);
-    isOk = connect(_networkAccessManager,
-            SIGNAL(finished(QNetworkReply*)),
-            this,
-            SLOT(onNetworkRequestFinished(QNetworkReply*)));
+    isOk = connect(_networkAccessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onNetworkRequestFinished(QNetworkReply*)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
 }
