@@ -43,6 +43,7 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/data/demoTasks.json) \
         $$quote($$BASEDIR/assets/data/serverTasks.json) \
         $$quote($$BASEDIR/assets/images/ic_add.png) \
+        $$quote($$BASEDIR/assets/images/ic_info.png) \
         $$quote($$BASEDIR/assets/images/ic_reload.png) \
         $$quote($$BASEDIR/assets/main.qml)
 }

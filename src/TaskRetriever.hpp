@@ -22,8 +22,6 @@ private slots:
     void onNetworkResponseFailed(QUrl url, int error);
 
 private:
-    static QDateTime unixTimeToDateTime(uint unixTime);
-    static uint dateTimeToUnixTime(QDateTime dateTime);
 };
 
 #endif /* TASKRETRIEVER_HPP_ */

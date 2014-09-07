@@ -1,5 +1,4 @@
 import bb.cascades 1.2
-import TaskUtilities 1.0
 
 NavigationPane {
     id: mainNavPane
@@ -7,15 +6,16 @@ NavigationPane {
     Menu.definition: MenuDefinition {
         settingsAction: SettingsActionItem {
             onTriggered: {
-                settingsSheet.open();
+                settingsSheetDefinition.createObject().open();
             }
         }
         
         actions: [
             ActionItem {
                 title: "About"
+                imageSource: "asset:///images/ic_info.png"
                 onTriggered: {
-                    aboutSheet.open();
+                    aboutSheetDefinition.createObject().open();
                 }
             }
         ]
@@ -38,23 +38,31 @@ NavigationPane {
                 listItemComponents: [
                     ListItemComponent {
                         Container {
-                            CheckBox {
+                            Label {
                                 text: ListItemData.title
                             }
                         }
                     }
                 ]
+                
+                onTriggered: {
+                    var p = editTaskSheetDefinition.createObject();
+                    var selectedTask = dataModel.data(indexPath);
+                    p.completed = selectedTask.completed;
+                    p.duedate = app.unixTimeToDateTime(selectedTask.duedate);
+                    p.title = selectedTask.title;
+                    p.open();
+                }
             }
         }
 
         actions: [
             ActionItem {
                 title: "Refresh"
-                objectName: "refreshButton"
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    //Actual work is done in C++
+                    app.updateDataModel();
                     console.log("Refreshed");
                 }
             },
@@ -63,27 +71,28 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_add.png"
                 onTriggered: {
-                    addTaskSheet.open();
+                    var p = addTaskSheetDefinition.createObject();
+                    p.open();
                 }
             }
         ]
     }
 
     attachedObjects: [
-        Sheet {
-            id: addTaskSheet
+        ComponentDefinition {
+            id: addTaskSheetDefinition
             content: AddTask {}
         },
-        Sheet {
-            id: editTaskSheet
+        ComponentDefinition {
+            id: editTaskSheetDefinition
             content: EditTask {}
         },
-        Sheet {
-            id: settingsSheet
+        ComponentDefinition {
+            id: settingsSheetDefinition
             content: Settings {}
         },
-        Sheet {
-            id: aboutSheet
+        ComponentDefinition {
+            id: aboutSheetDefinition
             content: About {}
         }
     ]

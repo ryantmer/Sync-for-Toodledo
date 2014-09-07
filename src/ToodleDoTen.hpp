@@ -4,7 +4,6 @@
 #include <QObject>
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
-#include <bb/cascades/ActionItem>
 #include <bb/cascades/Page>
 
 class TaskDataModel;
@@ -20,7 +19,13 @@ public:
 
     TaskDataModel *dataModel();
 
-    Q_INVOKABLE void updateDataModel();
+    Q_INVOKABLE QDateTime unixTimeToDateTime(uint unixTime);
+    Q_INVOKABLE uint dateTimeToUnixTime(QDateTime dateTime);
+    //These are called by various UI buttons
+    Q_INVOKABLE void refresh();
+    Q_INVOKABLE void addTask(QVariant taskData);
+    Q_INVOKABLE void editTask(QVariant taskData);
+    Q_INVOKABLE void clearLocalTasks();
 
 signals:
     void networkChanged();
@@ -33,9 +38,6 @@ private slots:
 private:
     TaskDataModel *_dataModel;
     TaskRetriever *_taskRetriever;
-    bb::cascades::ActionItem *_refreshButton;
-    bb::cascades::ActionItem *_addTaskButton;
-    bb::cascades::ActionItem *_editTaskButton;
 };
 
 #endif /* TOODLEDOTEN_HPP_ */

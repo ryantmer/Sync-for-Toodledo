@@ -8,6 +8,7 @@
 class TaskDataModel : public bb::cascades::DataModel {
     Q_OBJECT
     static const QString databasePath;
+    static const QString demoDatabasePath;
 
 public:
     TaskDataModel(QObject *parent = 0);
@@ -28,8 +29,9 @@ private:
     void initDatabase(const QString &filename);
 
 public slots:
-    void onTaskAdded(QVariant data);
-    void onTaskEdited(QVariant data);
+    void onTaskAdded(QVariantList data);
+    void onTaskEdited(QVariantList data);
+    void onLocalTasksRemoved();
 };
 
 #endif /* TASKDATAMODEL_HPP_ */

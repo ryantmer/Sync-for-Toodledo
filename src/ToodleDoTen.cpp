@@ -20,56 +20,65 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     this->_taskRetriever = new TaskRetriever(this);
     this->_dataModel = new TaskDataModel(this);
 
-    qDebug() << "Creating QML...";
+    qDebug() << "--> Creating QML...";
     QmlDocument *qml = QmlDocument::create("asset:///main.qml").parent(this);
     qml->setContextProperty("app", this);
     qml->setContextProperty("propertyManager", propertyManager);
+    qml->setContextProperty("dataModel", this->_dataModel);
     AbstractPane *root = qml->createRootObject<AbstractPane>();
     Application::instance()->setScene(root);
+    qDebug() << "--> Finished.";
 
-    _refreshButton = root->findChild<ActionItem*>("refreshButton");
-    _addTaskButton = root->findChild<ActionItem*>("addTaskButton");
-    _editTaskButton = root->findChild<ActionItem*>("editTaskButton");
-
-    qDebug() << "Connecting signals...";
+    qDebug() << "--> Connecting signals...";
     bool isOk;
     isOk = connect(networkManager, SIGNAL(networkStatusChanged(bool)),
             this, SLOT(onNetworkStatusChanged(bool)));
     Q_ASSERT(isOk);
-    isOk = connect(_refreshButton, SIGNAL(triggered()),
-            this, SLOT(onRefreshTriggered()));
-    Q_ASSERT(isOk);
     isOk = connect(_taskRetriever, SIGNAL(taskUpdated(QVariantMap)),
             this, SLOT(onTaskUpdated(QVariantMap)));
     Q_ASSERT(isOk);
-    isOk = connect(_addTaskButton, SIGNAL(triggered(QVariant)),
-            this->_dataModel, SLOT(onTaskAdded(QVariant)));
-    Q_ASSERT(isOk);
-    isOk = connect(_editTaskButton, SIGNAL(triggered(QVariant)),
-            this->_dataModel, SLOT(onTaskEdited(QVariant)));
-    Q_ASSERT(isOk);
     Q_UNUSED(isOk);
-    qDebug() << "Finished.";
+    qDebug() << "--> Finished.";
 }
 ToodleDoTen::~ToodleDoTen() {};
+
+QDateTime ToodleDoTen::unixTimeToDateTime(uint unixTime) {
+    return QDateTime::fromTime_t(unixTime);
+}
+uint ToodleDoTen::dateTimeToUnixTime(QDateTime dateTime) {
+    return dateTime.toTime_t();
+}
 
 TaskDataModel *ToodleDoTen::dataModel() {
     return this->_dataModel;
 }
 
-void ToodleDoTen::updateDataModel() {
+void ToodleDoTen::refresh() {
+    //Placeholder. This should actually upload changes, then fetch new changes.
     _taskRetriever->fetchAllTasks();
 }
 
+void ToodleDoTen::addTask(QVariantList data) {
+    this->_dataModel->onTaskAdded(data);
+}
+
+void ToodleDoTen::editTask(QVariantList data) {
+    this->_dataModel->onTaskEdited(data);
+}
+
+void ToodleDoTen::clearLocalTasks() {
+    this->_dataModel->onLocalTasksRemoved();
+}
+
 void ToodleDoTen::onTaskUpdated(QVariantMap taskData) {
-    qDebug() << "Task updated!";
+    qDebug() << "--> Task updated!";
     qDebug() << taskData;
 }
 
 void ToodleDoTen::onNetworkStatusChanged(bool connected) {
     PropertiesManager::getInstance()->setNetworkIssues(!connected);
     if (connected) {
-        this->updateDataModel();
+        this->refresh();
     }
 }
 

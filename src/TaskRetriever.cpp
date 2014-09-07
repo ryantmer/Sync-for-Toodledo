@@ -7,14 +7,6 @@
 
 using namespace bb::data;
 
-//Tasks are received with a UNIX timestamp for all fields, need to convert them
-static QDateTime unixTimeToDateTime(uint unixTime) {
-    return QDateTime::fromTime_t(unixTime);
-}
-static uint dateTimeToUnixTime(QDateTime dateTime) {
-    return dateTime.toTime_t();
-}
-
 TaskRetriever::TaskRetriever(QObject *parent) : QObject(parent) {
     bool isOk;
     isOk = connect(NetworkManager::getInstance(), SIGNAL(networkResponse(QUrl, QString)),

@@ -7,6 +7,7 @@ using namespace bb::data;
 
 //Location where DB is stored by app on exit
 const QString TaskDataModel::databasePath = QString("app/native/assets/data/tasks.json");
+const QString TaskDataModel::demoDatabasePath = QString("app/native/assets/data/demoTasks.json");
 
 TaskDataModel::TaskDataModel(QObject *parent) : DataModel(parent) {
     this->initDatabase(TaskDataModel::databasePath);
@@ -21,19 +22,19 @@ void TaskDataModel::initDatabase(const QString &filename) {
     bool loaded = false;
 
     if (QFile::exists(filename)) {
-        qDebug() << "Found local database, loading.";
+        qDebug() << "--> Found local database, loading.";
         this->internalDB = jda.load(filename).value<QVariantList>();
         if (jda.hasError()) {
             bb::data::DataAccessError e = jda.error();
-            qDebug() << filename << " JSON loading error: " << e.errorType() << ": " << e.errorMessage();
+            qDebug() << "--> JSON loading error: " << filename << e.errorType() << ": " << e.errorMessage();
         } else {
             loaded = true;
         }
     }
 
     if (!loaded) {
-        qDebug() << "Error loading stored database, loading default database.";
-        this->internalDB = jda.load("app/native/assets/data/demoTasks.json").value<QVariantList>();
+        qDebug() << "--> Error loading stored database, loading demo database from" << TaskDataModel::demoDatabasePath;
+        this->internalDB = jda.load(TaskDataModel::demoDatabasePath).value<QVariantList>();
         if (jda.hasError()) {
             bb::data::DataAccessError e = jda.error();
             qDebug() << filename << " JSON loading error: " << e.errorType() << ": " << e.errorMessage();
@@ -43,27 +44,40 @@ void TaskDataModel::initDatabase(const QString &filename) {
     }
 
     if (!loaded) {
-        qDebug() << "FAILED TO LOAD DATABASE";
+        qDebug() << "--> FAILED TO LOAD DATABASE";
     }
-    qDebug() << "Database: " << this->internalDB;
+    qDebug() << "--> Database: " << this->internalDB;
 }
 
-void TaskDataModel::onTaskAdded(QVariant data) {
-    //Slot for adding new task to internal DB
-    this->internalDB.append(data.toMap());
+void TaskDataModel::onTaskAdded(QVariantList taskData) {
+    qDebug() << "--> Adding task to TaskDataModel...";
+    qDebug() << taskData;
+//    this->internalDB.append(taskData.toMap());
     emit itemAdded(QVariantList() << this->internalDB.count()-1);
+    qDebug() << "--> Task added:" << this->internalDB.at(this->internalDB.count()-1);
 }
 
-void TaskDataModel::onTaskEdited(QVariant taskData) {
-    //Slot for updating task in internal DB when user edits it
-    QVariantMap data = taskData.toMap();
+void TaskDataModel::onTaskEdited(QVariantList taskData) {
+    qDebug() << "--> Editing task in TaskDataModel...";
     int taskId = data["id"].toInt(NULL);
+    qDebug() << "---> Editing task with ID" << taskId;
     for (int i = 0; i < this->internalDB.count(); ++i) {
         QVariantMap taskInfo = this->internalDB.value(i).toMap();
+        qDebug() << "---> Checking task" << taskInfo["title"] << "with ID" << taskInfo["id"] << "...";
         if (taskInfo["id"].toInt(NULL) == taskId) {
             this->internalDB.replace(i, data);
             emit itemUpdated(QVariantList() << i);
+            qDebug() << "--> Task edited:" << this->internalDB.at(i);
         }
+    }
+}
+
+void TaskDataModel::onLocalTasksRemoved() {
+    bool isOk = QFile::remove(TaskDataModel::databasePath);
+    if (!isOk) {
+        qDebug() << "--> Couldn't remove local tasks!";
+    } else {
+        TaskDataModel::initDatabase(TaskDataModel::databasePath);
     }
 }
 
