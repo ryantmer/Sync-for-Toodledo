@@ -48,6 +48,7 @@ NavigationPane {
                 onTriggered: {
                     var p = editTaskSheetDefinition.createObject();
                     var selectedTask = dataModel.data(indexPath);
+                    p.taskId = selectedTask.id;
                     p.completed = selectedTask.completed;
                     p.duedate = app.unixTimeToDateTime(selectedTask.duedate);
                     p.title = selectedTask.title;

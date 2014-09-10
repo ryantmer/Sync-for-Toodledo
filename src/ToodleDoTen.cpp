@@ -58,11 +58,11 @@ void ToodleDoTen::refresh() {
     _taskRetriever->fetchAllTasks();
 }
 
-void ToodleDoTen::addTask(QVariantList data) {
+void ToodleDoTen::addTask(QVariantMap data) {
     this->_dataModel->onTaskAdded(data);
 }
 
-void ToodleDoTen::editTask(QVariantList data) {
+void ToodleDoTen::editTask(QVariantMap data) {
     this->_dataModel->onTaskEdited(data);
 }
 

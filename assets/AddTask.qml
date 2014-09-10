@@ -16,13 +16,14 @@ Sheet {
         
             acceptAction: ActionItem {
                 title: "Add"
-                property var taskData
+                property variant taskData
                 
                 onTriggered: {
-                    taskData = [{"completed": taskCompleted.checked},
-                                {"title": taskName.text},
-                                {"duedate": app.dateTimeToUnixTime(taskDueDate.value)},
-                                {"notes": taskNotes.text}]
+                    taskData = {"id": taskId.text,
+                                "completed": taskCompleted.checked,
+                                "title": taskName.text,
+                                "duedate": app.dateTimeToUnixTime(taskDueDate.value),
+                                "notes": taskNotes.text}
                     app.addTask(taskData);
                     addTaskSheet.close();
                 }
@@ -39,6 +40,11 @@ Sheet {
             CheckBox {
                 id: taskCompleted
                 text: "Completed"
+            }
+            TextField {
+                //TODO: Remove this, get taskId from server
+                id: taskId
+                hintText: "Task ID number"
             }
             TextField {
                 id: taskName

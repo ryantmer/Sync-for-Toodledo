@@ -3,7 +3,7 @@ import bb.cascades 1.2
 Sheet {
     id: editTaskSheet
     
-    property int taskId
+    property alias taskId: taskId.text
     property alias completed: taskCompleted.checked
     property alias title: taskName.text
     property alias duedate: taskDueDate.value
@@ -22,13 +22,14 @@ Sheet {
                 
             acceptAction: ActionItem {
                 title: "Save"
-                property var taskData
+                property variant taskData
                 
                 onTriggered: {
-                    taskData = [{"completed": taskCompleted.checked},
-                                {"title": taskName.text},
-                                {"duedate": app.dateTimeToUnixTime(taskDueDate.value)},
-                                {"notes": taskNotes.text}]
+                    taskData = {"id": taskId.text,
+                                "completed": taskCompleted.checked,
+                                "title": taskName.text,
+                                "duedate": app.dateTimeToUnixTime(taskDueDate.value),
+                                "notes": taskNotes.text}
                     app.editTask(taskData);
                     editTaskSheet.close();
                 }
@@ -45,6 +46,11 @@ Sheet {
             CheckBox {
                 id: taskCompleted
                 text: "Completed"
+            }
+            TextField {
+                //TODO: Remove this, get taskId from server
+                id: taskId
+                hintText: "Task ID number"
             }
             TextField {
                 id: taskName

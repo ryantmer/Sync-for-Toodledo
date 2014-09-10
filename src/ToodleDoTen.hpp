@@ -23,8 +23,8 @@ public:
     Q_INVOKABLE uint dateTimeToUnixTime(QDateTime dateTime);
     //These are called by various UI buttons
     Q_INVOKABLE void refresh();
-    Q_INVOKABLE void addTask(QVariant taskData);
-    Q_INVOKABLE void editTask(QVariant taskData);
+    Q_INVOKABLE void addTask(QVariantMap taskData);
+    Q_INVOKABLE void editTask(QVariantMap taskData);
     Q_INVOKABLE void clearLocalTasks();
 
 signals:

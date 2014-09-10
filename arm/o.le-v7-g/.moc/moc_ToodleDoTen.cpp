@@ -42,11 +42,11 @@ static const uint qt_meta_data_ToodleDoTen[] = {
      184,  175,  170,   12, 0x02,
      214,   12,   12,   12, 0x02,
      224,   30,   12,   12, 0x02,
-     242,   30,   12,   12, 0x02,
-     261,   12,   12,   12, 0x02,
+     245,   30,   12,   12, 0x02,
+     267,   12,   12,   12, 0x02,
 
  // properties: name, type, flags
-     294,  279, 0x00095409,
+     300,  285, 0x00095409,
 
        0        // eod
 };
@@ -58,7 +58,7 @@ static const char qt_meta_stringdata_ToodleDoTen[] = {
     "onRefreshTriggered()\0QDateTime\0unixTime\0"
     "unixTimeToDateTime(uint)\0uint\0dateTime\0"
     "dateTimeToUnixTime(QDateTime)\0refresh()\0"
-    "addTask(QVariant)\0editTask(QVariant)\0"
+    "addTask(QVariantMap)\0editTask(QVariantMap)\0"
     "clearLocalTasks()\0TaskDataModel*\0"
     "dataModel\0"
 };
@@ -78,8 +78,8 @@ void ToodleDoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 5: { uint _r = _t->dateTimeToUnixTime((*reinterpret_cast< QDateTime(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
         case 6: _t->refresh(); break;
-        case 7: _t->addTask((*reinterpret_cast< QVariant(*)>(_a[1]))); break;
-        case 8: _t->editTask((*reinterpret_cast< QVariant(*)>(_a[1]))); break;
+        case 7: _t->addTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 8: _t->editTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
         case 9: _t->clearLocalTasks(); break;
         default: ;
         }
