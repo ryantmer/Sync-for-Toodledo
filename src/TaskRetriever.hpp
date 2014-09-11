@@ -14,7 +14,7 @@ public:
     void fetchTask(int taskId);
 
 signals:
-    void taskUpdated(QVariantMap data);
+    void tasksUpdated(QVariantList data);
     void taskUpdateFailed(int taskId);
 
 private slots:

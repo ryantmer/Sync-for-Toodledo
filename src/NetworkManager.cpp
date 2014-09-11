@@ -57,7 +57,6 @@ void NetworkManager::onNetworkRequestFinished(QNetworkReply* reply) {
         emit networkResponseFailed(url, error);
     } else {
         QString response = QString(reply->readAll());
-        qDebug() << response;
         emit networkResponse(url, response);
     }
     reply->deleteLater();

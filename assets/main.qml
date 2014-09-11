@@ -63,7 +63,7 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    app.updateDataModel();
+                    app.refresh();
                     console.log("Refreshed");
                 }
             },

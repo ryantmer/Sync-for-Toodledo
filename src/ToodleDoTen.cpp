@@ -20,25 +20,25 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     this->_taskRetriever = new TaskRetriever(this);
     this->_dataModel = new TaskDataModel(this);
 
-    qDebug() << "--> Creating QML...";
+    qDebug() << "Creating QML...";
     QmlDocument *qml = QmlDocument::create("asset:///main.qml").parent(this);
     qml->setContextProperty("app", this);
     qml->setContextProperty("propertyManager", propertyManager);
     qml->setContextProperty("dataModel", this->_dataModel);
     AbstractPane *root = qml->createRootObject<AbstractPane>();
     Application::instance()->setScene(root);
-    qDebug() << "--> Finished.";
+    qDebug() << "Finished.";
 
-    qDebug() << "--> Connecting signals...";
+    qDebug() << "Connecting signals...";
     bool isOk;
     isOk = connect(networkManager, SIGNAL(networkStatusChanged(bool)),
             this, SLOT(onNetworkStatusChanged(bool)));
     Q_ASSERT(isOk);
-    isOk = connect(_taskRetriever, SIGNAL(taskUpdated(QVariantMap)),
-            this, SLOT(onTaskUpdated(QVariantMap)));
+    isOk = connect(_taskRetriever, SIGNAL(tasksUpdated(QVariantList)),
+            this, SLOT(onTasksUpdated(QVariantList)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
-    qDebug() << "--> Finished.";
+    qDebug() << "Finished.";
 }
 ToodleDoTen::~ToodleDoTen() {};
 
@@ -70,8 +70,8 @@ void ToodleDoTen::clearLocalTasks() {
     this->_dataModel->onLocalTasksRemoved();
 }
 
-void ToodleDoTen::onTaskUpdated(QVariantMap taskData) {
-    qDebug() << "--> Task updated!";
+void ToodleDoTen::onTasksUpdated(QVariantList taskData) {
+    qDebug() << "Task updated!";
     qDebug() << taskData;
 }
 
@@ -80,10 +80,6 @@ void ToodleDoTen::onNetworkStatusChanged(bool connected) {
     if (connected) {
         this->refresh();
     }
-}
-
-void ToodleDoTen::onRefreshTriggered() {
-    _taskRetriever->fetchAllTasks();
 }
 
 #endif /* TOODLEDOTEN_CPP_ */

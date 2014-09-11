@@ -20,10 +20,12 @@ TaskRetriever::TaskRetriever(QObject *parent) : QObject(parent) {
 
 void TaskRetriever::fetchAllTasks() {
     QVariantMap urlParameters;
-    urlParameters["access_token"] = QString("a7b40a478c7825b35cf7ca6501702479127cd82e");
+    urlParameters["access_token"] = QString("e378eb86d3437d2d256508b88e5f411da925d148");
     //Get the lastUpdateTime, then set it to be now for future updates
     urlParameters["after"] = QString::number(PropertiesManager::getInstance()->lastUpdateTime());
-    PropertiesManager::getInstance()->setLastUpdateTime(QDateTime::currentDateTimeUtc().toTime_t());
+    PropertiesManager::getInstance()->setLastUpdateTime(QDateTime::currentMSecsSinceEpoch() / 1000);
+    //TODO: THIS DOESN'T WORK.
+    qDebug() << PropertiesManager::getInstance()->lastUpdateTime();
     //id, title, modified, completed do not need to be specified, they come anyway
     urlParameters["fields"] = QString("duedate");
 
@@ -33,7 +35,7 @@ void TaskRetriever::fetchAllTasks() {
 
 void TaskRetriever::fetchTask(int taskId) {
     QVariantMap urlParameters;
-    urlParameters["access_token"] = QString("a7b40a478c7825b35cf7ca6501702479127cd82e");
+    urlParameters["access_token"] = QString("e378eb86d3437d2d256508b88e5f411da925d148");
     urlParameters["id"] = QString::number(taskId);
     //id, title, modified, completed do not need to be specified, they come anyway
     urlParameters["fields"] = QString("duedate");
@@ -43,10 +45,12 @@ void TaskRetriever::fetchTask(int taskId) {
 }
 
 void TaskRetriever::onNetworkResponse(QUrl url, QString response) {
-    qDebug() << url << "came back with" << response;
-    QVariantMap data;
-    //TODO: Convert response into QVariantMap
-    emit taskUpdated(data);
+    JsonDataAccess jda;
+    QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
+    if (jda.hasError()) {
+        qDebug() << "Error:" << jda.error();
+    }
+    emit tasksUpdated(data);
 }
 
 void TaskRetriever::onNetworkResponseFailed(QUrl url, int error) {

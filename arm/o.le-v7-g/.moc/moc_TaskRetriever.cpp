@@ -31,17 +31,17 @@ static const uint qt_meta_data_TaskRetriever[] = {
 
  // signals: signature, parameters, type, tag, flags
       20,   15,   14,   14, 0x05,
-      52,   45,   14,   14, 0x05,
+      54,   47,   14,   14, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      87,   74,   14,   14, 0x08,
-     129,  119,   14,   14, 0x08,
+      89,   76,   14,   14, 0x08,
+     131,  121,   14,   14, 0x08,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_TaskRetriever[] = {
-    "TaskRetriever\0\0data\0taskUpdated(QVariantMap)\0"
+    "TaskRetriever\0\0data\0tasksUpdated(QVariantList)\0"
     "taskId\0taskUpdateFailed(int)\0url,response\0"
     "onNetworkResponse(QUrl,QString)\0"
     "url,error\0onNetworkResponseFailed(QUrl,int)\0"
@@ -53,7 +53,7 @@ void TaskRetriever::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         Q_ASSERT(staticMetaObject.cast(_o));
         TaskRetriever *_t = static_cast<TaskRetriever *>(_o);
         switch (_id) {
-        case 0: _t->taskUpdated((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 0: _t->tasksUpdated((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
         case 1: _t->taskUpdateFailed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 2: _t->onNetworkResponse((*reinterpret_cast< QUrl(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
         case 3: _t->onNetworkResponseFailed((*reinterpret_cast< QUrl(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
@@ -102,7 +102,7 @@ int TaskRetriever::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void TaskRetriever::taskUpdated(QVariantMap _t1)
+void TaskRetriever::tasksUpdated(QVariantList _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
