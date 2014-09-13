@@ -3,6 +3,10 @@ import bb.cascades 1.2
 Sheet {
     id: aboutSheet
     
+    onClosed: {
+        destroy();
+    }
+    
     Page {
         titleBar: TitleBar {
             dismissAction: ActionItem {

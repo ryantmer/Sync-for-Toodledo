@@ -22,8 +22,6 @@ public:
 
     Q_INVOKABLE virtual void removeItems(const QVariantList &indexPaths);
 
-    QList<qlonglong> tasks();
-
 private:
     QVariantList internalDB;
     void initDatabase(const QString &filename);
@@ -31,6 +29,7 @@ private:
 public slots:
     void onTaskAdded(QVariantMap data);
     void onTaskEdited(QVariantMap data);
+    void onTasksUpdated(QVariantList tasks);
     void onLocalTasksRemoved();
 };
 

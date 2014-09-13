@@ -1,4 +1,5 @@
 import bb.cascades 1.2
+import bb.data 1.0
 
 NavigationPane {
     id: mainNavPane
@@ -33,14 +34,14 @@ NavigationPane {
                     headerMode: ListHeaderMode.Sticky
                 }
                 horizontalAlignment: HorizontalAlignment.Fill
+                
                 dataModel: app.dataModel
                 
                 listItemComponents: [
                     ListItemComponent {
-                        Container {
-                            Label {
-                                text: ListItemData.title
-                            }
+                        type: "task"
+                        StandardListItem {
+                            title: ListItemData.title + " - Due " + app.unixTimeToDateTime(ListItemData.duedate).toDateString();
                         }
                     }
                 ]
@@ -64,7 +65,6 @@ NavigationPane {
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
                     app.refresh();
-                    console.log("Refreshed");
                 }
             },
             ActionItem {

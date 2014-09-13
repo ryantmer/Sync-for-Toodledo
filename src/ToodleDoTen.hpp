@@ -28,11 +28,8 @@ public:
     Q_INVOKABLE void clearLocalTasks();
 
 signals:
-    void networkChanged();
 
 private slots:
-    void onTasksUpdated(QVariantList taskData);
-    void onNetworkStatusChanged(bool connected);
 
 private:
     TaskDataModel *_dataModel;

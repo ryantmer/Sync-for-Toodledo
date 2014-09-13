@@ -8,24 +8,14 @@
 using namespace bb::data;
 
 TaskRetriever::TaskRetriever(QObject *parent) : QObject(parent) {
-    bool isOk;
-    isOk = connect(NetworkManager::getInstance(), SIGNAL(networkResponse(QUrl, QString)),
-            this, SLOT(onNetworkResponse(QUrl, QString)));
-    Q_ASSERT(isOk);
-    isOk = connect(NetworkManager::getInstance(), SIGNAL(networkResponseFailed(QUrl, int)),
-            this, SLOT(onNetworkResponseFailed(QUrl, int)));
-    Q_ASSERT(isOk);
-    Q_UNUSED(isOk);
 }
 
 void TaskRetriever::fetchAllTasks() {
     QVariantMap urlParameters;
-    urlParameters["access_token"] = QString("e378eb86d3437d2d256508b88e5f411da925d148");
-    //Get the lastUpdateTime, then set it to be now for future updates
-    urlParameters["after"] = QString::number(PropertiesManager::getInstance()->lastUpdateTime());
-    PropertiesManager::getInstance()->setLastUpdateTime(QDateTime::currentMSecsSinceEpoch() / 1000);
-    //TODO: THIS DOESN'T WORK.
-    qDebug() << PropertiesManager::getInstance()->lastUpdateTime();
+
+    urlParameters["access_token"] = QString("c8396ab584eb31d5a1ff4e3e11bfb53a0fc4fa89");
+    //Only get tasks that haven't been completed
+    urlParameters["comp"] = QString::number(0);
     //id, title, modified, completed do not need to be specified, they come anyway
     urlParameters["fields"] = QString("duedate");
 
@@ -35,7 +25,8 @@ void TaskRetriever::fetchAllTasks() {
 
 void TaskRetriever::fetchTask(int taskId) {
     QVariantMap urlParameters;
-    urlParameters["access_token"] = QString("e378eb86d3437d2d256508b88e5f411da925d148");
+
+    urlParameters["access_token"] = QString("c8396ab584eb31d5a1ff4e3e11bfb53a0fc4fa89");
     urlParameters["id"] = QString::number(taskId);
     //id, title, modified, completed do not need to be specified, they come anyway
     urlParameters["fields"] = QString("duedate");
@@ -47,6 +38,11 @@ void TaskRetriever::fetchTask(int taskId) {
 void TaskRetriever::onNetworkResponse(QUrl url, QString response) {
     JsonDataAccess jda;
     QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
+    qDebug() << "Received" << data.first().toMap().value("num").value<qlonglong>() << "tasks from" << url;
+    foreach (QVariant v, data) {
+        qDebug() << v;
+    }
+    data.pop_front();
     if (jda.hasError()) {
         qDebug() << "Error:" << jda.error();
     }

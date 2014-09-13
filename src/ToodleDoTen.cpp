@@ -20,25 +20,32 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     this->_taskRetriever = new TaskRetriever(this);
     this->_dataModel = new TaskDataModel(this);
 
-    qDebug() << "Creating QML...";
     QmlDocument *qml = QmlDocument::create("asset:///main.qml").parent(this);
     qml->setContextProperty("app", this);
     qml->setContextProperty("propertyManager", propertyManager);
     qml->setContextProperty("dataModel", this->_dataModel);
     AbstractPane *root = qml->createRootObject<AbstractPane>();
     Application::instance()->setScene(root);
-    qDebug() << "Finished.";
 
-    qDebug() << "Connecting signals...";
+    QDeclarativeEngine *engine = QmlDocument::defaultDeclarativeEngine();
+    QDeclarativeContext *rootContext = engine->rootContext();
+    rootContext->setContextProperty("app", this);
+
     bool isOk;
-    isOk = connect(networkManager, SIGNAL(networkStatusChanged(bool)),
-            this, SLOT(onNetworkStatusChanged(bool)));
-    Q_ASSERT(isOk);
+    //NetworkManager does its own connections
+    //PropertyManager has no connections
+    //TaskDataModel connections
     isOk = connect(_taskRetriever, SIGNAL(tasksUpdated(QVariantList)),
-            this, SLOT(onTasksUpdated(QVariantList)));
+            this->_dataModel, SLOT(onTasksUpdated(QVariantList)));
+    Q_ASSERT(isOk);
+    //TaskRetriever connections
+    isOk = connect(networkManager, SIGNAL(networkResponse(QUrl, QString)),
+            this->_taskRetriever, SLOT(onNetworkResponse(QUrl, QString)));
+    Q_ASSERT(isOk);
+    isOk = connect(networkManager, SIGNAL(networkResponseFailed(QUrl, int)),
+            this->_taskRetriever, SLOT(onNetworkResponseFailed(QUrl, int)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
-    qDebug() << "Finished.";
 }
 ToodleDoTen::~ToodleDoTen() {};
 
@@ -54,7 +61,8 @@ TaskDataModel *ToodleDoTen::dataModel() {
 }
 
 void ToodleDoTen::refresh() {
-    //Placeholder. This should actually upload changes, then fetch new changes.
+    //This should actually upload changes, then fetch new changes.
+    //For now, it just fetches all tasks that haven't been completed.
     _taskRetriever->fetchAllTasks();
 }
 
@@ -68,18 +76,6 @@ void ToodleDoTen::editTask(QVariantMap data) {
 
 void ToodleDoTen::clearLocalTasks() {
     this->_dataModel->onLocalTasksRemoved();
-}
-
-void ToodleDoTen::onTasksUpdated(QVariantList taskData) {
-    qDebug() << "Task updated!";
-    qDebug() << taskData;
-}
-
-void ToodleDoTen::onNetworkStatusChanged(bool connected) {
-    PropertiesManager::getInstance()->setNetworkIssues(!connected);
-    if (connected) {
-        this->refresh();
-    }
 }
 
 #endif /* TOODLEDOTEN_CPP_ */

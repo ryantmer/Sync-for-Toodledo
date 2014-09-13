@@ -10,6 +10,7 @@ const QString TaskDataModel::databasePath = QString("app/native/assets/data/task
 const QString TaskDataModel::demoDatabasePath = QString("app/native/assets/data/demoTasks.json");
 
 TaskDataModel::TaskDataModel(QObject *parent) : DataModel(parent) {
+    //TODO: Change to GroupDataModel to allow for sorting?
     this->initDatabase(TaskDataModel::databasePath);
 }
 TaskDataModel::~TaskDataModel() {
@@ -77,6 +78,13 @@ void TaskDataModel::onTaskEdited(QVariantMap taskData) {
     }
 }
 
+void TaskDataModel::onTasksUpdated(QVariantList tasks) {
+    this->internalDB = tasks;
+    bb::data::JsonDataAccess jda;
+    jda.save(this->internalDB, TaskDataModel::databasePath);
+    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+}
+
 void TaskDataModel::onLocalTasksRemoved() {
     //Clears local task storage
     bool isOk = QFile::remove(TaskDataModel::databasePath);
@@ -85,16 +93,6 @@ void TaskDataModel::onLocalTasksRemoved() {
     } else {
         TaskDataModel::initDatabase(TaskDataModel::databasePath);
     }
-}
-
-QList<qlonglong> TaskDataModel::tasks() {
-    //Returns a QList of longs of all Task IDs currently stored.
-    QList<qlonglong> l;
-    for (int i = 0; i < this->internalDB.count(); ++i) {
-        QVariantMap taskInfo = this->internalDB.value(i).toMap();
-        l << taskInfo["id"].toLongLong(NULL);
-    }
-    return l;
 }
 
 int TaskDataModel::childCount(const QVariantList &indexPath) {

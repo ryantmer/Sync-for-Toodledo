@@ -3,6 +3,10 @@ import bb.cascades 1.2
 Sheet {
     id: editTaskSheet
     
+    onClosed: {
+        destroy();
+    }
+    
     property alias taskId: taskId.text
     property alias completed: taskCompleted.checked
     property alias title: taskName.text

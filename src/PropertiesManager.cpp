@@ -1,6 +1,7 @@
 #include "PropertiesManager.hpp"
 #include <QSettings>
 #include <QMutex>
+#include <QDebug>
 
 PropertiesManager *PropertiesManager::getInstance() {
     static PropertiesManager *singleton = NULL;
@@ -16,8 +17,6 @@ PropertiesManager *PropertiesManager::getInstance() {
 }
 
 PropertiesManager::PropertiesManager(QObject *parent) : QObject (parent) {
-    this->_networkIssues = false;
-    this->_tasksUpdating = false;
 }
 
 PropertiesManager::~PropertiesManager() {}
@@ -52,28 +51,8 @@ void PropertiesManager::setAdvancedMode(bool advanced) {
     }
 }
 
-bool PropertiesManager::updatingTasks() {
-    return this->_tasksUpdating;
-}
-void PropertiesManager::setUpdatingTasks(bool updating) {
-    if (this->_tasksUpdating != updating) {
-        this->_tasksUpdating = updating;
-        emit updatingTasksChanged(updating);
-    }
-}
-
-bool PropertiesManager::networkIssues() {
-    return this->_networkIssues;
-}
-void PropertiesManager::setNetworkIssues(bool issues) {
-    if (this->_networkIssues != issues) {
-        this->_networkIssues = issues;
-        emit networkIssuesChanged(issues);
-    }
-}
-
 uint PropertiesManager::lastUpdateTime() {
-    QSettings settings("ryantmer", "ToddleDo10");
+    QSettings settings("ryantmer", "ToodleDo10");
     QVariant v = settings.value("lastUpdateTime", 0);
     return v.toUInt(NULL);
 }
