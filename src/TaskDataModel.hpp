@@ -3,12 +3,10 @@
 
 #include <QObject>
 #include <bb/cascades/DataModel>
-#include <bb/cascades/ArrayDataModel>
 
 class TaskDataModel : public bb::cascades::DataModel {
     Q_OBJECT
     static const QString databasePath;
-    static const QString demoDatabasePath;
 
 public:
     TaskDataModel(QObject *parent = 0);
@@ -20,11 +18,10 @@ public:
     Q_INVOKABLE virtual QString itemType(const QVariantList &indexPath);
     Q_INVOKABLE virtual QVariant data(const QVariantList &indexPath);
 
-    Q_INVOKABLE virtual void removeItems(const QVariantList &indexPaths);
-
 private:
     QVariantList internalDB;
     void initDatabase(const QString &filename);
+    void sortTasksByDueDate();
 
 public slots:
     void onTaskAdded(QVariantMap data);

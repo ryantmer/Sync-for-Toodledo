@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QUrl>
-#include <QVariant>
 
 class TaskRetriever : public QObject {
     Q_OBJECT

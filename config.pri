@@ -39,8 +39,8 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/About.qml) \
         $$quote($$BASEDIR/assets/AddTask.qml) \
         $$quote($$BASEDIR/assets/EditTask.qml) \
+        $$quote($$BASEDIR/assets/Login.qml) \
         $$quote($$BASEDIR/assets/Settings.qml) \
-        $$quote($$BASEDIR/assets/data/demoTasks.json) \
         $$quote($$BASEDIR/assets/data/serverTasks.json) \
         $$quote($$BASEDIR/assets/images/ic_add.png) \
         $$quote($$BASEDIR/assets/images/ic_info.png) \

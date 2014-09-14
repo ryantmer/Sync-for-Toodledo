@@ -1,5 +1,6 @@
 import bb.cascades 1.2
 import bb.data 1.0
+import bb.system 1.2
 
 NavigationPane {
     id: mainNavPane
@@ -65,6 +66,7 @@ NavigationPane {
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
                     app.refresh();
+                    refreshedToast.show();
                 }
             },
             ActionItem {
@@ -95,9 +97,24 @@ NavigationPane {
         ComponentDefinition {
             id: aboutSheetDefinition
             content: About {}
+        },
+        ComponentDefinition {
+            id: loginWebView
+            content: Login {}
+        },
+        SystemToast {
+            id: refreshedToast
+            body: "Tasks Refreshed"
         }
     ]
-
+    
+    onCreationCompleted: {
+        if (!propertyManager.loggedIn) {
+            console.log("not logged in");
+            mainNavPane.push(loginWebView.createObject())
+        }
+    }
+    
     onPopTransitionEnded: {
         page.destroy();
     }

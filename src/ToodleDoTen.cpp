@@ -1,9 +1,6 @@
 #ifndef TOODLEDOTEN_CPP_
 #define TOODLEDOTEN_CPP_
 
-#include <bb/cascades/SceneCover>
-#include <bb/cascades/Container>
-
 #include "ToodleDoTen.hpp"
 #include "TaskDataModel.hpp"
 #include "TaskRetriever.hpp"
@@ -46,6 +43,8 @@ ToodleDoTen::ToodleDoTen() : QObject() {
             this->_taskRetriever, SLOT(onNetworkResponseFailed(QUrl, int)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
+
+    refresh();
 }
 ToodleDoTen::~ToodleDoTen() {};
 

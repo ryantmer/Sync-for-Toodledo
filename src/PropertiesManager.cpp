@@ -1,7 +1,6 @@
 #include "PropertiesManager.hpp"
 #include <QSettings>
 #include <QMutex>
-#include <QDebug>
 
 PropertiesManager *PropertiesManager::getInstance() {
     static PropertiesManager *singleton = NULL;
@@ -63,5 +62,20 @@ void PropertiesManager::setLastUpdateTime(uint time) {
     if (u != time) {
         settings.setValue("lastUpdateTime", time);
         emit lastUpdateTimeChanged(time);
+    }
+}
+
+bool PropertiesManager::loggedIn() {
+    QSettings settings("ryantmer", "ToodleDo10");
+    QVariant v = settings.value("loggedIn", 0);
+    return v.toBool();
+}
+void PropertiesManager::setLoggedIn(bool loggedIn) {
+    QSettings settings("ryantmer", "ToodleDo10");
+    QVariant v = settings.value("loggedIn", 0);
+    bool b = v.toBool();
+    if (b != loggedIn) {
+        settings.setValue("loggedIn", loggedIn);
+        emit loggedInChanged(loggedIn);
     }
 }

@@ -22,6 +22,7 @@ Sheet {
                     propertyManager.showTaskTime = showTimeCheckbox.checked;
                     propertyManager.advancedMode = advancedModeCheckbox.checked;
                     propertyManager.lastUpdateTime = parseInt(lastUpdateTimeTextField.text);
+                    propertyManager.loggedIn = loggedInCheckbox.checked;
                     settingsSheet.close();
                 }
             }
@@ -54,6 +55,11 @@ Sheet {
             TextField {
                 id: lastUpdateTimeTextField
                 text: propertyManager.lastUpdateTime;
+            }
+            CheckBox {
+                id: loggedInCheckbox
+                text: "Logged in"
+                checked: propertyManager.loggedIn
             }
             
         }

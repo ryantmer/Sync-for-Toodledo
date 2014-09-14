@@ -1,16 +1,13 @@
 #include "TaskDataModel.hpp"
 #include <bb/data/JsonDataAccess>
-#include <bb/cascades/ListView>
 
 using namespace bb::cascades;
 using namespace bb::data;
 
 //Location where DB is stored by app on exit
 const QString TaskDataModel::databasePath = QString("app/native/assets/data/tasks.json");
-const QString TaskDataModel::demoDatabasePath = QString("app/native/assets/data/demoTasks.json");
 
 TaskDataModel::TaskDataModel(QObject *parent) : DataModel(parent) {
-    //TODO: Change to GroupDataModel to allow for sorting?
     this->initDatabase(TaskDataModel::databasePath);
 }
 TaskDataModel::~TaskDataModel() {
@@ -34,20 +31,27 @@ void TaskDataModel::initDatabase(const QString &filename) {
     }
 
     if (!loaded) {
-        qDebug() << "Error loading stored database, loading demo database from" << TaskDataModel::demoDatabasePath;
-        this->internalDB = jda.load(TaskDataModel::demoDatabasePath).value<QVariantList>();
-        if (jda.hasError()) {
-            bb::data::DataAccessError e = jda.error();
-            qDebug() << filename << "JSON loading error:" << e.errorType() << ":" << e.errorMessage();
-        } else {
-            loaded = true;
-        }
-    }
-
-    if (!loaded) {
         qDebug() << "FAILED TO LOAD DATABASE";
     }
-    qDebug() << "Database:" << this->internalDB;
+    sortTasksByDueDate();
+}
+
+bool compareTasksByDueDate(QVariant &a, QVariant &b) {
+    QVariantMap first = a.toMap();
+    QVariantMap second = b.toMap();
+
+    //duedate=0 means no due date; these are sent to the end/bottom
+    if (first.value("duedate").toLongLong(NULL) == 0) {
+        return false;
+    } else if (second.value("duedate").toLongLong(NULL) == 0) {
+        return true;
+    } else {
+        return first.value("duedate").toLongLong(NULL) < second.value("duedate").toLongLong(NULL);
+    }
+}
+
+void TaskDataModel::sortTasksByDueDate() {
+    qSort(this->internalDB.begin(), this->internalDB.end(), compareTasksByDueDate);
 }
 
 void TaskDataModel::onTaskAdded(QVariantMap taskData) {
@@ -58,6 +62,7 @@ void TaskDataModel::onTaskAdded(QVariantMap taskData) {
         }
     }
     this->internalDB.append(taskData);
+    sortTasksByDueDate();
     emit itemAdded(QVariantList() << this->internalDB.count()-1);
 }
 
@@ -72,6 +77,7 @@ void TaskDataModel::onTaskEdited(QVariantMap taskData) {
         QVariantMap taskInfo = this->internalDB.value(i).toMap();
         if (taskInfo["id"].toLongLong(NULL) == taskData["id"]) {
             this->internalDB.replace(i, taskData);
+            sortTasksByDueDate();
             emit itemUpdated(QVariantList() << i);
             break;
         }
@@ -80,6 +86,7 @@ void TaskDataModel::onTaskEdited(QVariantMap taskData) {
 
 void TaskDataModel::onTasksUpdated(QVariantList tasks) {
     this->internalDB = tasks;
+    sortTasksByDueDate();
     bb::data::JsonDataAccess jda;
     jda.save(this->internalDB, TaskDataModel::databasePath);
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
@@ -137,18 +144,4 @@ QVariant TaskDataModel::data(const QVariantList &indexPath) {
         return QVariant(attachments);
     }
     return QVariant();
-}
-
-void TaskDataModel::removeItems(const QVariantList &indexPaths) {
-    for (int i = indexPaths.count() - 1; i >= 0; --i) {
-        QVariant indexPath = indexPaths.value(i);
-        QVariantList indexPathList = indexPath.toList();
-        if (indexPathList.count() != 1) {
-            //Not a proper indexPath for this datatype
-            continue;
-        }
-        int index = indexPathList.value(0).toInt(NULL);
-        this->internalDB.removeAt(index);
-        emit itemRemoved(indexPathList);
-    }
 }
