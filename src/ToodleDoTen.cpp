@@ -7,7 +7,12 @@
 #include "PropertiesManager.hpp"
 #include "NetworkManager.hpp"
 
+#include <bb/system/SystemToast>
+#include <bb/system/SystemUiPosition>
+#include <bb/cascades/WebView>
+
 using namespace bb::cascades;
+using namespace bb::system;
 
 ToodleDoTen::ToodleDoTen() : QObject() {
     qmlRegisterType<TaskDataModel>("TaskUtilities", 1, 0, "TaskDataModel");
@@ -30,7 +35,7 @@ ToodleDoTen::ToodleDoTen() : QObject() {
 
     bool isOk;
     //NetworkManager does its own connections
-    //PropertyManager has no connections
+    //PropertiesManager has no connections
     //TaskDataModel connections
     isOk = connect(_taskRetriever, SIGNAL(tasksUpdated(QVariantList)),
             this->_dataModel, SLOT(onTasksUpdated(QVariantList)));
@@ -43,6 +48,18 @@ ToodleDoTen::ToodleDoTen() : QObject() {
             this->_taskRetriever, SLOT(onNetworkResponseFailed(QUrl, int)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
+
+    if (!propertyManager->loggedIn()) {
+        showToast("Not logged in!");
+
+        WebView *loginPageWebview = root->findChild<WebView*>("loginPageWebview");
+        QUrl url("https://api.toodledo.com/3/account/authorize.php");
+        url.addQueryItem("response_type", "code");
+        url.addQueryItem("client_id", "ToodleDo10");
+        url.addQueryItem("state", "random_string_lolololol");
+        url.addEncodedQueryItem("scope", "basic tasks notes");
+        loginPageWebview->setUrl(url);
+    }
 
     refresh();
 }
@@ -75,6 +92,13 @@ void ToodleDoTen::editTask(QVariantMap data) {
 
 void ToodleDoTen::clearLocalTasks() {
     this->_dataModel->onLocalTasksRemoved();
+}
+
+void ToodleDoTen::showToast(QString message) {
+    SystemToast *toast = new SystemToast(this);
+    toast->setBody(message);
+    toast->setPosition(SystemUiPosition::MiddleCenter);
+    toast->show();
 }
 
 #endif /* TOODLEDOTEN_CPP_ */

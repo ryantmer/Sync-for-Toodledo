@@ -4,6 +4,7 @@ import bb.system 1.2
 
 NavigationPane {
     id: mainNavPane
+    objectName: "mainNavPane"
     
     Menu.definition: MenuDefinition {
         settingsAction: SettingsActionItem {
@@ -31,6 +32,7 @@ NavigationPane {
         Container {
             ListView {
                 id: taskListView
+                accessibility.name: "Task List"
                 layout: StackListLayout {
                     headerMode: ListHeaderMode.Sticky
                 }
@@ -99,21 +101,11 @@ NavigationPane {
             content: About {}
         },
         ComponentDefinition {
-            id: loginWebView
+            id: loginPageDefinition
+            objectName: "loginPageDefinition"
             content: Login {}
-        },
-        SystemToast {
-            id: refreshedToast
-            body: "Tasks Refreshed"
         }
     ]
-    
-    onCreationCompleted: {
-        if (!propertyManager.loggedIn) {
-            console.log("not logged in");
-            mainNavPane.push(loginWebView.createObject())
-        }
-    }
     
     onPopTransitionEnded: {
         page.destroy();

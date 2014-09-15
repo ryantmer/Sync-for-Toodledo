@@ -34,6 +34,7 @@ private slots:
 private:
     TaskDataModel *_dataModel;
     TaskRetriever *_taskRetriever;
+    void showToast(QString message);
 };
 
 #endif /* TOODLEDOTEN_HPP_ */

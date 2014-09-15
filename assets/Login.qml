@@ -6,11 +6,13 @@ Page {
     ScrollView {
         scrollViewProperties.pinchToZoomEnabled: false
         scrollViewProperties.scrollMode: ScrollMode.Vertical
+        accessibility.name: "Login Page ScrollView"
         
         WebView {
             id: loginWebView
             objectName: "loginWebView"
-            url: "https://api.toodledo.com/3/account/authorize.php?response_type=code&client_id=ToodleDo10&state=random_string_lololol&scope=basic%20tasks%20notes"
+            accessibility.name: "Login Page WebView"
+//            url: "https://api.toodledo.com/3/account/authorize.php?response_type=code&client_id=ToodleDo10&state=random_string_lololol&scope=basic%20tasks%20notes"
             //TODO: Update to include all permissions, including write
             
             onUrlChanged: {
