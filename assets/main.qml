@@ -68,7 +68,6 @@ NavigationPane {
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
                     app.refresh();
-                    refreshedToast.show();
                 }
             },
             ActionItem {
@@ -99,11 +98,6 @@ NavigationPane {
         ComponentDefinition {
             id: aboutSheetDefinition
             content: About {}
-        },
-        ComponentDefinition {
-            id: loginPageDefinition
-            objectName: "loginPageDefinition"
-            content: Login {}
         }
     ]
     

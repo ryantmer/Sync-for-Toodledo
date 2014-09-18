@@ -2,66 +2,59 @@
 #define TOODLEDOTEN_CPP_
 
 #include "ToodleDoTen.hpp"
-#include "TaskDataModel.hpp"
-#include "TaskRetriever.hpp"
-#include "PropertiesManager.hpp"
-#include "NetworkManager.hpp"
 
 #include <bb/system/SystemToast>
 #include <bb/system/SystemUiPosition>
-#include <bb/cascades/WebView>
+#include <bb/data/JsonDataAccess>
 
 using namespace bb::cascades;
 using namespace bb::system;
+using namespace bb::data;
 
 ToodleDoTen::ToodleDoTen() : QObject() {
     qmlRegisterType<TaskDataModel>("TaskUtilities", 1, 0, "TaskDataModel");
 
-    PropertiesManager *propertyManager = PropertiesManager::getInstance();
-    NetworkManager *networkManager = NetworkManager::getInstance();
-    this->_taskRetriever = new TaskRetriever(this);
-    this->_dataModel = new TaskDataModel(this);
+    _propertiesManager = PropertiesManager::getInstance();
+    _loginManager = LoginManager::getInstance();
+    _taskRetriever = new TaskRetriever(this);
+    _dataModel = new TaskDataModel(this);
 
     QmlDocument *qml = QmlDocument::create("asset:///main.qml").parent(this);
     qml->setContextProperty("app", this);
-    qml->setContextProperty("propertyManager", propertyManager);
+    qml->setContextProperty("propertyManager", _propertiesManager);
     qml->setContextProperty("dataModel", this->_dataModel);
-    AbstractPane *root = qml->createRootObject<AbstractPane>();
+    root = qml->createRootObject<NavigationPane>();
     Application::instance()->setScene(root);
 
+    //Expose "app" to the main listview
     QDeclarativeEngine *engine = QmlDocument::defaultDeclarativeEngine();
     QDeclarativeContext *rootContext = engine->rootContext();
     rootContext->setContextProperty("app", this);
 
+    //Login page, shown if required
+    QmlDocument *loginQml = QmlDocument::create("asset:///Login.qml").parent(qml);
+    loginPage = loginQml->createRootObject<Page>();
+    loginWebView = loginPage->findChild<WebView*>("loginWebView");
+
     bool isOk;
-    //NetworkManager does its own connections
-    //PropertiesManager has no connections
-    //TaskDataModel connections
+    isOk = connect(loginWebView, SIGNAL(urlChanged(QUrl)),
+            this, SLOT(onWebViewUrlChanged(QUrl)));
+    Q_ASSERT(isOk);
+    isOk = connect(_loginManager, SIGNAL(accessTokenReceived(QString)),
+            this, SLOT(onAccessTokenReceived(QString)));
+    Q_ASSERT(isOk);
     isOk = connect(_taskRetriever, SIGNAL(tasksUpdated(QVariantList)),
-            this->_dataModel, SLOT(onTasksUpdated(QVariantList)));
-    Q_ASSERT(isOk);
-    //TaskRetriever connections
-    isOk = connect(networkManager, SIGNAL(networkResponse(QUrl, QString)),
-            this->_taskRetriever, SLOT(onNetworkResponse(QUrl, QString)));
-    Q_ASSERT(isOk);
-    isOk = connect(networkManager, SIGNAL(networkResponseFailed(QUrl, int)),
-            this->_taskRetriever, SLOT(onNetworkResponseFailed(QUrl, int)));
+            _dataModel, SLOT(onTasksUpdated(QVariantList)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
 
-    if (!propertyManager->loggedIn()) {
+    if (!_loginManager->loggedIn()) {
         showToast("Not logged in!");
-
-        WebView *loginPageWebview = root->findChild<WebView*>("loginPageWebview");
-        QUrl url("https://api.toodledo.com/3/account/authorize.php");
-        url.addQueryItem("response_type", "code");
-        url.addQueryItem("client_id", "ToodleDo10");
-        url.addQueryItem("state", "random_string_lolololol");
-        url.addEncodedQueryItem("scope", "basic tasks notes");
-        loginPageWebview->setUrl(url);
+        loginWebView->setUrl(_loginManager->getAuthorizeUrl());
+        root->push(loginPage);
+    } else {
+        refresh();
     }
-
-    refresh();
 }
 ToodleDoTen::~ToodleDoTen() {};
 
@@ -90,15 +83,31 @@ void ToodleDoTen::editTask(QVariantMap data) {
     this->_dataModel->onTaskEdited(data);
 }
 
-void ToodleDoTen::clearLocalTasks() {
-    this->_dataModel->onLocalTasksRemoved();
-}
-
 void ToodleDoTen::showToast(QString message) {
     SystemToast *toast = new SystemToast(this);
     toast->setBody(message);
     toast->setPosition(SystemUiPosition::MiddleCenter);
     toast->show();
+}
+
+void ToodleDoTen::onWebViewUrlChanged(QUrl url) {
+    if (url.hasQueryItem("code") && url.hasQueryItem("state")) {
+        if (url.queryItemValue("state") == _loginManager->getAppState()) {
+            //Get authCode from webview's URL
+            QString authCode = url.queryItemValue("code");
+            //Start access token request
+            _loginManager->getAccessToken(authCode);
+            //Remove webview from nav pane
+            root->pop();
+        } else {
+            qDebug() << "State didn't match";
+        }
+    }
+}
+
+void ToodleDoTen::onAccessTokenReceived(QString) {
+    //When a new access token is received, refresh using TaskRetriever
+    refresh();
 }
 
 #endif /* TOODLEDOTEN_CPP_ */

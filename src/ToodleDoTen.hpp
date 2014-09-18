@@ -4,10 +4,18 @@
 #include <QObject>
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
+#include <bb/cascades/NavigationPane>
 #include <bb/cascades/Page>
+#include <bb/cascades/WebView>
+#include <bb/cascades/ScrollView>
 
-class TaskDataModel;
-class TaskRetriever;
+#include "PropertiesManager.hpp"
+#include "TaskDataModel.hpp"
+#include "TaskRetriever.hpp"
+#include "LoginManager.hpp"
+
+using namespace bb::cascades;
+
 class ToodleDoTen : public QObject {
     Q_OBJECT
 
@@ -16,25 +24,33 @@ public:
 
     ToodleDoTen();
     virtual ~ToodleDoTen();
-
     TaskDataModel *dataModel();
 
     Q_INVOKABLE QDateTime unixTimeToDateTime(uint unixTime);
     Q_INVOKABLE uint dateTimeToUnixTime(QDateTime dateTime);
-    //These are called by various UI buttons
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void addTask(QVariantMap taskData);
     Q_INVOKABLE void editTask(QVariantMap taskData);
-    Q_INVOKABLE void clearLocalTasks();
+
+    void showToast(QString message);
 
 signals:
 
-private slots:
+public slots:
+    void onWebViewUrlChanged(QUrl url);
+    void onAccessTokenReceived(QString accessToken);
 
 private:
     TaskDataModel *_dataModel;
     TaskRetriever *_taskRetriever;
-    void showToast(QString message);
+    PropertiesManager *_propertiesManager;
+    LoginManager *_loginManager;
+
+    NavigationPane *root;
+
+    Page *loginPage;
+    ScrollView *loginScrollView;
+    WebView *loginWebView;
 };
 
 #endif /* TOODLEDOTEN_HPP_ */
