@@ -19,6 +19,7 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     _taskRetriever = new TaskRetriever(this);
     _dataModel = new TaskDataModel(this);
 
+    //Create root QML document from main.qml and expose certain variables to QML
     QmlDocument *qml = QmlDocument::create("asset:///main.qml").parent(this);
     qml->setContextProperty("app", this);
     qml->setContextProperty("propertyManager", _propertiesManager);
@@ -26,7 +27,7 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     root = qml->createRootObject<NavigationPane>();
     Application::instance()->setScene(root);
 
-    //Expose "app" to the main listview
+    //Expose app to the main listview
     QDeclarativeEngine *engine = QmlDocument::defaultDeclarativeEngine();
     QDeclarativeContext *rootContext = engine->rootContext();
     rootContext->setContextProperty("app", this);
@@ -48,12 +49,12 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
 
-    if (!_loginManager->loggedIn()) {
-        showToast("Not logged in!");
+    //If user isn't logged in, show webview with login page
+    if (_loginManager->loggedIn()) {
+        refresh();
+    } else {
         loginWebView->setUrl(_loginManager->getAuthorizeUrl());
         root->push(loginPage);
-    } else {
-        refresh();
     }
 }
 ToodleDoTen::~ToodleDoTen() {};
@@ -70,9 +71,12 @@ TaskDataModel *ToodleDoTen::dataModel() {
 }
 
 void ToodleDoTen::refresh() {
-    //This should actually upload changes, then fetch new changes.
-    //For now, it just fetches all tasks that haven't been completed.
-    _taskRetriever->fetchAllTasks();
+    if (this->_loginManager->loggedIn()) {
+        showToast("Refreshing tasks...");
+        _taskRetriever->fetchAllTasks();
+    } else {
+
+    }
 }
 
 void ToodleDoTen::addTask(QVariantMap data) {
@@ -105,8 +109,13 @@ void ToodleDoTen::onWebViewUrlChanged(QUrl url) {
     }
 }
 
+//void ToodleDoTen::onAccessTokenExpired() {
+//    //When LoginManager tells us the access token expired, user needs to login again
+//
+//}
+
 void ToodleDoTen::onAccessTokenReceived(QString) {
-    //When a new access token is received, refresh using TaskRetriever
+    //When a new access token is received, refresh
     refresh();
 }
 

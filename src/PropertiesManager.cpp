@@ -1,6 +1,8 @@
 #include "PropertiesManager.hpp"
 #include <QSettings>
 #include <QMutex>
+#include <QDateTime>
+#include <QDebug>
 
 PropertiesManager *PropertiesManager::getInstance() {
     static PropertiesManager *singleton = NULL;
@@ -17,8 +19,16 @@ PropertiesManager *PropertiesManager::getInstance() {
 
 PropertiesManager::PropertiesManager(QObject *parent) : QObject (parent) {
 }
-
 PropertiesManager::~PropertiesManager() {}
+
+void PropertiesManager::updateAccessToken(QString accessToken, qlonglong expiresIn,
+        QString refreshToken, QString tokenScope, QString tokenType) {
+    this->accessToken = accessToken;
+    this->accessTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + expiresIn;
+    this->refreshToken = refreshToken;
+    this->tokenScope = tokenScope;
+    this->tokenType = tokenType;
+}
 
 bool PropertiesManager::showTaskTime() {
     QSettings settings("ryantmer", "ToodleDo10");
@@ -31,6 +41,7 @@ void PropertiesManager::setShowTaskTime(bool show) {
     bool b = v.toBool();
     if (b != show) {
         settings.setValue("showTaskTime", show);
+        qDebug() << "PropertiesManager::showTaskTime changed to" << show;
         emit showTaskTimeChanged(show);
     }
 }
@@ -46,6 +57,7 @@ void PropertiesManager::setAdvancedMode(bool advanced) {
     bool b = v.toBool();
     if (b != advanced) {
         settings.setValue("advancedMode", advanced);
+        qDebug() << "PropertiesManager::advancedMode changed to" << advanced;
         emit advancedModeChanged(advanced);
     }
 }
@@ -61,21 +73,7 @@ void PropertiesManager::setLastUpdateTime(uint time) {
     uint u = v.toUInt(NULL);
     if (u != time) {
         settings.setValue("lastUpdateTime", time);
+        qDebug() << "PropertiesManager::lastUpdateTime changed to" << time;
         emit lastUpdateTimeChanged(time);
-    }
-}
-
-bool PropertiesManager::loggedIn() {
-    QSettings settings("ryantmer", "ToodleDo10");
-    QVariant v = settings.value("loggedIn", 0);
-    return v.toBool();
-}
-void PropertiesManager::setLoggedIn(bool loggedIn) {
-    QSettings settings("ryantmer", "ToodleDo10");
-    QVariant v = settings.value("loggedIn", 0);
-    bool b = v.toBool();
-    if (b != loggedIn) {
-        settings.setValue("loggedIn", loggedIn);
-        emit loggedInChanged(loggedIn);
     }
 }

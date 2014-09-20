@@ -1,53 +1,57 @@
-#include "TaskRetriever.hpp"
-#include "NetworkManager.hpp"
 #include <bb/data/JsonDataAccess>
 
-using namespace bb::data;
+#include "TaskRetriever.hpp"
+#include "PropertiesManager.hpp"
+#include "LoginManager.hpp"
+
+const QString TaskRetriever::getUrl = QString("http://api.toodledo.com/3/tasks/get.php");
 
 TaskRetriever::TaskRetriever(QObject *parent) : QObject(parent) {
+    _networkAccessManager = new QNetworkAccessManager(this);
+
+    bool isOk;
+    isOk = connect(_networkAccessManager, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(onTasksReceived(QNetworkReply*)));
+    Q_ASSERT(isOk);
+    Q_UNUSED(isOk);
 }
 
 void TaskRetriever::fetchAllTasks() {
-    QVariantMap urlParameters;
+    QUrl url(getUrl);
+    url.addQueryItem("access_token", PropertiesManager::getInstance()->accessToken);
+    url.addQueryItem("comp", QString::number(0));
+    url.addEncodedQueryItem("fields", "duedate"); //id, title, modified, completed come automatically
 
-    urlParameters["access_token"] = QString("fa1036d7c3b18d18adc49dadb62740b127a635df");
-    //Only get tasks that haven't been completed
-    urlParameters["comp"] = QString::number(0);
-    //id, title, modified, completed do not need to be specified, they come anyway
-    urlParameters["fields"] = QString("duedate");
-
-    //Send network request
-    NetworkManager::getInstance()->get("http://api.toodledo.com/3/tasks/get.php", urlParameters);
+    QNetworkRequest req(url);
+    _networkAccessManager->get(req);
 }
 
 void TaskRetriever::fetchTask(int taskId) {
-    QVariantMap urlParameters;
+    QUrl url(getUrl);
+    url.addQueryItem("access_token", PropertiesManager::getInstance()->accessToken);
+    url.addQueryItem("id", QString::number(taskId));
+    url.addEncodedQueryItem("fields", "duedate"); //id, title, modified, completed come automatically
 
-    urlParameters["access_token"] = QString("fa1036d7c3b18d18adc49dadb62740b127a635df");
-    urlParameters["id"] = QString::number(taskId);
-    //id, title, modified, completed do not need to be specified, they come anyway
-    urlParameters["fields"] = QString("duedate");
-
-    //Send network request
-    NetworkManager::getInstance()->get("http://api.toodledo.com/3/tasks/get.php", urlParameters);
+    QNetworkRequest req(url);
+    _networkAccessManager->get(req);
 }
 
-void TaskRetriever::onNetworkResponse(QUrl url, QString response) {
-    JsonDataAccess jda;
-    QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
-    qDebug() << "Received" << data.first().toMap().value("num").value<qlonglong>() << "tasks from" << url;
-//    foreach (QVariant v, data) {
-//        qDebug() << v;
-//    }
-    data.pop_front();
-    if (jda.hasError()) {
-        qDebug() << "Error:" << jda.error();
+void TaskRetriever::onTasksReceived(QNetworkReply *reply) {
+    QString response = reply->readAll();
+    qDebug() << "Received TaskRetriever::onPostFinished reply";
+
+    if (reply->error() == QNetworkReply::NoError) {
+        bb::data::JsonDataAccess jda;
+        QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
+
+        if (jda.hasError()) {
+            qDebug() << "TaskRetriever::onTasksReceived Error:";
+            qDebug() << jda.error();
+        } else {
+            //Remove the summary item (gives number of tasks)
+            data.pop_front();
+            emit tasksUpdated(data);
+        }
     }
-    emit tasksUpdated(data);
-}
-
-void TaskRetriever::onNetworkResponseFailed(QUrl url, int error) {
-    int taskId = url.queryItemValue("id").toInt(NULL);
-    qDebug() << "Fetching task " << taskId << " failed with error " << error;
-    emit taskUpdateFailed(taskId);
+    reply->deleteLater();
 }

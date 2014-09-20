@@ -1,8 +1,7 @@
 #ifndef TASKRETRIEVER_HPP_
 #define TASKRETRIEVER_HPP_
 
-#include <QObject>
-#include <QUrl>
+#include <QtNetwork>
 
 class TaskRetriever : public QObject {
     Q_OBJECT
@@ -12,15 +11,16 @@ public:
     void fetchAllTasks();
     void fetchTask(int taskId);
 
+    static const QString getUrl;
+
 signals:
     void tasksUpdated(QVariantList data);
-    void taskUpdateFailed(int taskId);
 
 private slots:
-    void onNetworkResponse(QUrl url, QString response);
-    void onNetworkResponseFailed(QUrl url, int error);
+    void onTasksReceived(QNetworkReply *reply);
 
 private:
+    QNetworkAccessManager *_networkAccessManager;
 };
 
 #endif /* TASKRETRIEVER_HPP_ */

@@ -22,21 +22,19 @@ static const uint qt_meta_data_NetworkManager[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       3,       // signalCount
+       2,       // signalCount
 
  // signals: signature, parameters, type, tag, flags
       29,   16,   15,   15, 0x05,
       69,   59,   15,   15, 0x05,
-     118,  101,   15,   15, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-     151,  145,   15,   15, 0x0a,
-     203,  197,   15,   15, 0x0a,
+     107,  101,   15,   15, 0x0a,
 
        0        // eod
 };
@@ -44,10 +42,8 @@ static const uint qt_meta_data_NetworkManager[] = {
 static const char qt_meta_stringdata_NetworkManager[] = {
     "NetworkManager\0\0url,response\0"
     "networkResponse(QUrl,QString)\0url,error\0"
-    "networkResponseFailed(QUrl,int)\0"
-    "connectionActive\0networkStatusChanged(bool)\0"
-    "state\0onNetworkStateChanged(QNetworkSession::State)\0"
-    "reply\0onNetworkRequestFinished(QNetworkReply*)\0"
+    "networkResponseFailed(QUrl,int)\0reply\0"
+    "onNetworkRequestFinished(QNetworkReply*)\0"
 };
 
 void NetworkManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -58,9 +54,7 @@ void NetworkManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         switch (_id) {
         case 0: _t->networkResponse((*reinterpret_cast< QUrl(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
         case 1: _t->networkResponseFailed((*reinterpret_cast< QUrl(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 2: _t->networkStatusChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 3: _t->onNetworkStateChanged((*reinterpret_cast< QNetworkSession::State(*)>(_a[1]))); break;
-        case 4: _t->onNetworkRequestFinished((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
+        case 2: _t->onNetworkRequestFinished((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -98,9 +92,9 @@ int NetworkManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 3;
     }
     return _id;
 }
@@ -117,12 +111,5 @@ void NetworkManager::networkResponseFailed(QUrl _t1, int _t2)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
-}
-
-// SIGNAL 2
-void NetworkManager::networkStatusChanged(bool _t1)
-{
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
-    QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 QT_END_MOC_NAMESPACE

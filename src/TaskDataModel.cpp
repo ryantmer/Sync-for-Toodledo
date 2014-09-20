@@ -87,19 +87,7 @@ void TaskDataModel::onTaskEdited(QVariantMap taskData) {
 void TaskDataModel::onTasksUpdated(QVariantList tasks) {
     this->internalDB = tasks;
     sortTasksByDueDate();
-    bb::data::JsonDataAccess jda;
-    jda.save(this->internalDB, TaskDataModel::databasePath);
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-}
-
-void TaskDataModel::onLocalTasksRemoved() {
-    //Clears local task storage
-    bool isOk = QFile::remove(TaskDataModel::databasePath);
-    if (!isOk) {
-        qDebug() << "Couldn't remove local tasks!";
-    } else {
-        TaskDataModel::initDatabase(TaskDataModel::databasePath);
-    }
 }
 
 int TaskDataModel::childCount(const QVariantList &indexPath) {

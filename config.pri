@@ -50,6 +50,7 @@ config_pri_assets {
 
 config_pri_source_group1 {
     SOURCES += \
+        $$quote($$BASEDIR/src/LoginManager.cpp) \
         $$quote($$BASEDIR/src/NetworkManager.cpp) \
         $$quote($$BASEDIR/src/PropertiesManager.cpp) \
         $$quote($$BASEDIR/src/TaskDataModel.cpp) \
@@ -58,6 +59,7 @@ config_pri_source_group1 {
         $$quote($$BASEDIR/src/main.cpp)
 
     HEADERS += \
+        $$quote($$BASEDIR/src/LoginManager.hpp) \
         $$quote($$BASEDIR/src/NetworkManager.hpp) \
         $$quote($$BASEDIR/src/PropertiesManager.hpp) \
         $$quote($$BASEDIR/src/TaskDataModel.hpp) \

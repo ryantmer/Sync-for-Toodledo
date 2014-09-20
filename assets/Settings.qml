@@ -22,7 +22,6 @@ Sheet {
                     propertyManager.showTaskTime = showTimeCheckbox.checked;
                     propertyManager.advancedMode = advancedModeCheckbox.checked;
                     propertyManager.lastUpdateTime = parseInt(lastUpdateTimeTextField.text);
-                    propertyManager.loggedIn = loggedInCheckbox.checked;
                     settingsSheet.close();
                 }
             }
@@ -44,31 +43,10 @@ Sheet {
                 text: "Advanced Mode (shows all task fields)"
                 checked: propertyManager.advancedMode
             }
-            Button {
-                id: removeLocalTasksButton
-                objectName: "removeLocalTasksButton"
-                text: "Clear Local Task Storage"
-                onClicked: {
-                    cacheClearedToast.show();
-                }
-            }
             TextField {
                 id: lastUpdateTimeTextField
                 text: propertyManager.lastUpdateTime;
             }
-            CheckBox {
-                id: loggedInCheckbox
-                text: "Logged in"
-                checked: propertyManager.loggedIn
-            }
-            
         }
-        
-        attachedObjects: [
-            SystemToast {
-                id: cacheClearedToast
-                body: "Cache Cleared!"
-            }
-        ]
     }
 }

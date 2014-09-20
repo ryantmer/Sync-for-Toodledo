@@ -27,7 +27,6 @@ public slots:
     void onTaskAdded(QVariantMap data);
     void onTaskEdited(QVariantMap data);
     void onTasksUpdated(QVariantList tasks);
-    void onLocalTasksRemoved();
 };
 
 #endif /* TASKDATAMODEL_HPP_ */
