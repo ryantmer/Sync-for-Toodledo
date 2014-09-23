@@ -7,10 +7,10 @@
 const QString TaskRetriever::getUrl = QString("http://api.toodledo.com/3/tasks/get.php");
 
 TaskRetriever::TaskRetriever(QObject *parent) : QObject(parent) {
-    _networkAccessManager = new QNetworkAccessManager(this);
+    _retriever = new QNetworkAccessManager(this);
 
     bool isOk;
-    isOk = connect(_networkAccessManager, SIGNAL(finished(QNetworkReply*)),
+    isOk = connect(_retriever, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(onTasksReceived(QNetworkReply*)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
@@ -23,7 +23,7 @@ void TaskRetriever::fetchAllTasks() {
     url.addEncodedQueryItem("fields", "duedate"); //id, title, modified, completed come automatically
 
     QNetworkRequest req(url);
-    _networkAccessManager->get(req);
+    _retriever->get(req);
 }
 
 void TaskRetriever::fetchTask(int taskId) {
@@ -33,25 +33,27 @@ void TaskRetriever::fetchTask(int taskId) {
     url.addEncodedQueryItem("fields", "duedate"); //id, title, modified, completed come automatically
 
     QNetworkRequest req(url);
-    _networkAccessManager->get(req);
+    _retriever->get(req);
 }
 
 void TaskRetriever::onTasksReceived(QNetworkReply *reply) {
     QString response = reply->readAll();
-    qDebug() << "Received TaskRetriever::onPostFinished reply";
+    qDebug() << Q_FUNC_INFO << "Received tasks";
 
     if (reply->error() == QNetworkReply::NoError) {
         bb::data::JsonDataAccess jda;
         QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
 
         if (jda.hasError()) {
-            qDebug() << "TaskRetriever::onTasksReceived Error:";
-            qDebug() << jda.error();
+            qDebug() << Q_FUNC_INFO << "TaskRetriever::onTasksReceived Error:";
+            qDebug() << Q_FUNC_INFO << jda.error();
         } else {
             //Remove the summary item (gives number of tasks)
             data.pop_front();
             emit tasksUpdated(data);
         }
+    } else {
+        qDebug() << Q_FUNC_INFO << "Error in network reply";
     }
     reply->deleteLater();
 }

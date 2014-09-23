@@ -20,7 +20,7 @@ private slots:
     void onTasksReceived(QNetworkReply *reply);
 
 private:
-    QNetworkAccessManager *_networkAccessManager;
+    QNetworkAccessManager *_retriever;
 };
 
 #endif /* TASKRETRIEVER_HPP_ */

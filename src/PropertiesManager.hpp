@@ -6,7 +6,6 @@ class PropertiesManager : public QObject {
 public:
     Q_PROPERTY(bool showTaskTime READ showTaskTime WRITE setShowTaskTime NOTIFY showTaskTimeChanged);
     Q_PROPERTY(bool advancedMode READ advancedMode WRITE setAdvancedMode NOTIFY advancedModeChanged);
-    Q_PROPERTY(uint lastUpdateTime READ lastUpdateTime WRITE setLastUpdateTime NOTIFY lastUpdateTimeChanged);
 
     static PropertiesManager *getInstance();
     PropertiesManager(QObject *parent = NULL);
@@ -16,8 +15,6 @@ public:
     void setShowTaskTime(bool show);
     bool advancedMode();
     void setAdvancedMode(bool advanced);
-    uint lastUpdateTime();
-    void setLastUpdateTime(uint time);
 
     void updateAccessToken(QString accessToken, qlonglong expiresIn, QString refreshToken, QString tokenScope, QString tokenType);
 
@@ -31,7 +28,6 @@ public:
 signals:
     void showTaskTimeChanged(bool show);
     void advancedModeChanged(bool advanced);
-    void lastUpdateTimeChanged(uint time);
 
 private:
 };

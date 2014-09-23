@@ -18,14 +18,15 @@ public:
     Q_INVOKABLE virtual QString itemType(const QVariantList &indexPath);
     Q_INVOKABLE virtual QVariant data(const QVariantList &indexPath);
 
+    void addTask(QVariantMap data);
+    void editTask(QVariantMap data);
+
 private:
     QVariantList internalDB;
     void initDatabase(const QString &filename);
     void sortTasksByDueDate();
 
 public slots:
-    void onTaskAdded(QVariantMap data);
-    void onTaskEdited(QVariantMap data);
     void onTasksUpdated(QVariantList tasks);
 };
 

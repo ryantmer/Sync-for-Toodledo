@@ -22,7 +22,7 @@ static const uint qt_meta_data_TaskDataModel[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -30,24 +30,20 @@ static const uint qt_meta_data_TaskDataModel[] = {
        0,       // signalCount
 
  // slots: signature, parameters, type, tag, flags
-      20,   15,   14,   14, 0x0a,
-      45,   15,   14,   14, 0x0a,
-      77,   71,   14,   14, 0x0a,
+      21,   15,   14,   14, 0x0a,
 
  // methods: signature, parameters, type, tag, flags
-     120,  110,  106,   14, 0x02,
-     150,  110,  145,   14, 0x02,
-     184,  110,  176,   14, 0x02,
-     216,  110,  207,   14, 0x02,
+      64,   54,   50,   14, 0x02,
+      94,   54,   89,   14, 0x02,
+     128,   54,  120,   14, 0x02,
+     160,   54,  151,   14, 0x02,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_TaskDataModel[] = {
-    "TaskDataModel\0\0data\0onTaskAdded(QVariantMap)\0"
-    "onTaskEdited(QVariantMap)\0tasks\0"
-    "onTasksUpdated(QVariantList)\0int\0"
-    "indexPath\0childCount(QVariantList)\0"
+    "TaskDataModel\0\0tasks\0onTasksUpdated(QVariantList)\0"
+    "int\0indexPath\0childCount(QVariantList)\0"
     "bool\0hasChildren(QVariantList)\0QString\0"
     "itemType(QVariantList)\0QVariant\0"
     "data(QVariantList)\0"
@@ -59,16 +55,14 @@ void TaskDataModel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         Q_ASSERT(staticMetaObject.cast(_o));
         TaskDataModel *_t = static_cast<TaskDataModel *>(_o);
         switch (_id) {
-        case 0: _t->onTaskAdded((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 1: _t->onTaskEdited((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 2: _t->onTasksUpdated((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
-        case 3: { int _r = _t->childCount((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 0: _t->onTasksUpdated((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 1: { int _r = _t->childCount((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 4: { bool _r = _t->hasChildren((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 2: { bool _r = _t->hasChildren((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 5: { QString _r = _t->itemType((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 3: { QString _r = _t->itemType((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
-        case 6: { QVariant _r = _t->data((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 4: { QVariant _r = _t->data((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QVariant*>(_a[0]) = _r; }  break;
         default: ;
         }
@@ -109,9 +103,9 @@ int TaskDataModel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 5;
     }
     return _id;
 }

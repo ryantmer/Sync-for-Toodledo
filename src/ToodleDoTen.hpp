@@ -11,6 +11,7 @@
 
 #include "PropertiesManager.hpp"
 #include "TaskDataModel.hpp"
+#include "NetworkManager.hpp"
 #include "TaskRetriever.hpp"
 #include "LoginManager.hpp"
 
@@ -31,6 +32,7 @@ public:
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void addTask(QVariantMap taskData);
     Q_INVOKABLE void editTask(QVariantMap taskData);
+    Q_INVOKABLE void logout();
 
     void showToast(QString message);
 
@@ -38,11 +40,13 @@ signals:
 
 public slots:
     void onWebViewUrlChanged(QUrl url);
-    void onAccessTokenReceived(QString accessToken);
+    void onAccessTokenRefreshed();
+    void onRefreshTokenExpired();
 
 private:
     TaskDataModel *_dataModel;
     TaskRetriever *_taskRetriever;
+    NetworkManager *_networkManager;
     PropertiesManager *_propertiesManager;
     LoginManager *_loginManager;
 

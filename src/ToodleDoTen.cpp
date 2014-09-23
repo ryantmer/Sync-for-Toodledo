@@ -16,6 +16,7 @@ ToodleDoTen::ToodleDoTen() : QObject() {
 
     _propertiesManager = PropertiesManager::getInstance();
     _loginManager = LoginManager::getInstance();
+    _networkManager = NetworkManager::getInstance();
     _taskRetriever = new TaskRetriever(this);
     _dataModel = new TaskDataModel(this);
 
@@ -41,24 +42,28 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     isOk = connect(loginWebView, SIGNAL(urlChanged(QUrl)),
             this, SLOT(onWebViewUrlChanged(QUrl)));
     Q_ASSERT(isOk);
-    isOk = connect(_loginManager, SIGNAL(accessTokenReceived(QString)),
-            this, SLOT(onAccessTokenReceived(QString)));
+    isOk = connect(_loginManager, SIGNAL(accessTokenRefreshed()),
+            this, SLOT(onAccessTokenRefreshed()));
+    Q_ASSERT(isOk);
+    isOk = connect(_loginManager, SIGNAL(refreshTokenExpired()),
+            this, SLOT(onRefreshTokenExpired()));
     Q_ASSERT(isOk);
     isOk = connect(_taskRetriever, SIGNAL(tasksUpdated(QVariantList)),
             _dataModel, SLOT(onTasksUpdated(QVariantList)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
 
-    //If user isn't logged in, show webview with login page
-    if (_loginManager->loggedIn()) {
-        refresh();
-    } else {
-        loginWebView->setUrl(_loginManager->getAuthorizeUrl());
-        root->push(loginPage);
-    }
+    refresh();
 }
 ToodleDoTen::~ToodleDoTen() {};
 
+TaskDataModel *ToodleDoTen::dataModel() {
+    return this->_dataModel;
+}
+
+/*
+ * Q_INVOKABLE functions begin
+ */
 QDateTime ToodleDoTen::unixTimeToDateTime(uint unixTime) {
     return QDateTime::fromTime_t(unixTime);
 }
@@ -66,26 +71,34 @@ uint ToodleDoTen::dateTimeToUnixTime(QDateTime dateTime) {
     return dateTime.toTime_t();
 }
 
-TaskDataModel *ToodleDoTen::dataModel() {
-    return this->_dataModel;
-}
-
 void ToodleDoTen::refresh() {
-    if (this->_loginManager->loggedIn()) {
-        showToast("Refreshing tasks...");
-        _taskRetriever->fetchAllTasks();
+    if (this->_networkManager->isConnected()) {
+        if (this->_loginManager->isLoggedIn()) {
+            this->_taskRetriever->fetchAllTasks();
+        } else {
+            qDebug() << Q_FUNC_INFO << "LoginManager indicated not logged in";
+            showToast("Not logged in!");
+        }
     } else {
-
+        qDebug() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
+        showToast("No network connection!");
     }
 }
 
 void ToodleDoTen::addTask(QVariantMap data) {
-    this->_dataModel->onTaskAdded(data);
+    this->_dataModel->addTask(data);
 }
 
 void ToodleDoTen::editTask(QVariantMap data) {
-    this->_dataModel->onTaskEdited(data);
+    this->_dataModel->editTask(data);
 }
+
+void ToodleDoTen::logout() {
+    this->_loginManager->logout();
+}
+/*
+ * Q_INVOKABLE functions end
+ */
 
 void ToodleDoTen::showToast(QString message) {
     SystemToast *toast = new SystemToast(this);
@@ -94,13 +107,16 @@ void ToodleDoTen::showToast(QString message) {
     toast->show();
 }
 
+/*
+ * Slots begin
+ */
 void ToodleDoTen::onWebViewUrlChanged(QUrl url) {
     if (url.hasQueryItem("code") && url.hasQueryItem("state")) {
-        if (url.queryItemValue("state") == _loginManager->getAppState()) {
+        if (url.queryItemValue("state") == _loginManager->getState()) {
             //Get authCode from webview's URL
             QString authCode = url.queryItemValue("code");
             //Start access token request
-            _loginManager->getAccessToken(authCode);
+            _loginManager->refreshRefreshToken(authCode);
             //Remove webview from nav pane
             root->pop();
         } else {
@@ -109,14 +125,18 @@ void ToodleDoTen::onWebViewUrlChanged(QUrl url) {
     }
 }
 
-//void ToodleDoTen::onAccessTokenExpired() {
-//    //When LoginManager tells us the access token expired, user needs to login again
-//
-//}
-
-void ToodleDoTen::onAccessTokenReceived(QString) {
+void ToodleDoTen::onAccessTokenRefreshed() {
     //When a new access token is received, refresh
     refresh();
 }
+
+void ToodleDoTen::onRefreshTokenExpired() {
+    //emitted by LoginManager when refresh token is no longer valid (30-day expiry)
+    root->push(loginPage);
+    loginWebView->setUrl(_loginManager->getAuthorizeUrl().toString());
+}
+/*
+ * Slots end
+ */
 
 #endif /* TOODLEDOTEN_CPP_ */

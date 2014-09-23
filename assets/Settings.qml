@@ -21,7 +21,6 @@ Sheet {
                 onTriggered: {
                     propertyManager.showTaskTime = showTimeCheckbox.checked;
                     propertyManager.advancedMode = advancedModeCheckbox.checked;
-                    propertyManager.lastUpdateTime = parseInt(lastUpdateTimeTextField.text);
                     settingsSheet.close();
                 }
             }
@@ -43,9 +42,12 @@ Sheet {
                 text: "Advanced Mode (shows all task fields)"
                 checked: propertyManager.advancedMode
             }
-            TextField {
-                id: lastUpdateTimeTextField
-                text: propertyManager.lastUpdateTime;
+            Button {
+                id: logoutButton
+                text: "Log Out"
+                onClicked: {
+                    app.logout();
+                }
             }
         }
     }

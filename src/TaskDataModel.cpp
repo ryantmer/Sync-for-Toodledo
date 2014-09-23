@@ -54,7 +54,7 @@ void TaskDataModel::sortTasksByDueDate() {
     qSort(this->internalDB.begin(), this->internalDB.end(), compareTasksByDueDate);
 }
 
-void TaskDataModel::onTaskAdded(QVariantMap taskData) {
+void TaskDataModel::addTask(QVariantMap taskData) {
     //A bunch of values come in as non-qlonglong values, convert them where applicable
     foreach (QString k, taskData.keys()) {
         if (taskData[k].canConvert(QVariant::LongLong) && taskData[k].type() != QVariant::String) {
@@ -66,7 +66,7 @@ void TaskDataModel::onTaskAdded(QVariantMap taskData) {
     emit itemAdded(QVariantList() << this->internalDB.count()-1);
 }
 
-void TaskDataModel::onTaskEdited(QVariantMap taskData) {
+void TaskDataModel::editTask(QVariantMap taskData) {
     //A bunch of values come in as non-qlonglong values, convert them where applicable
     foreach (QString k, taskData.keys()) {
         if (taskData[k].canConvert(QVariant::LongLong) && taskData[k].type() != QVariant::String) {

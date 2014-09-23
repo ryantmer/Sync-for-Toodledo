@@ -61,19 +61,3 @@ void PropertiesManager::setAdvancedMode(bool advanced) {
         emit advancedModeChanged(advanced);
     }
 }
-
-uint PropertiesManager::lastUpdateTime() {
-    QSettings settings("ryantmer", "ToodleDo10");
-    QVariant v = settings.value("lastUpdateTime", 0);
-    return v.toUInt(NULL);
-}
-void PropertiesManager::setLastUpdateTime(uint time) {
-    QSettings settings("ryantmer", "ToodleDo10");
-    QVariant v = settings.value("lastUpdateTime", 0);
-    uint u = v.toUInt(NULL);
-    if (u != time) {
-        settings.setValue("lastUpdateTime", time);
-        qDebug() << "PropertiesManager::lastUpdateTime changed to" << time;
-        emit lastUpdateTimeChanged(time);
-    }
-}
