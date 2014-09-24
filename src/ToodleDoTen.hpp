@@ -12,7 +12,7 @@
 #include "PropertiesManager.hpp"
 #include "TaskDataModel.hpp"
 #include "NetworkManager.hpp"
-#include "TaskRetriever.hpp"
+#include "TaskSenderReceiver.hpp"
 #include "LoginManager.hpp"
 
 using namespace bb::cascades;
@@ -42,10 +42,11 @@ public slots:
     void onWebViewUrlChanged(QUrl url);
     void onAccessTokenRefreshed();
     void onRefreshTokenExpired();
+    void onTasksUpdated(QVariantList tasks);
 
 private:
     TaskDataModel *_dataModel;
-    TaskRetriever *_taskRetriever;
+    TaskSenderReceiver *_taskSenderReceiver;
     NetworkManager *_networkManager;
     PropertiesManager *_propertiesManager;
     LoginManager *_loginManager;

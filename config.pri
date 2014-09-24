@@ -54,7 +54,7 @@ config_pri_source_group1 {
         $$quote($$BASEDIR/src/NetworkManager.cpp) \
         $$quote($$BASEDIR/src/PropertiesManager.cpp) \
         $$quote($$BASEDIR/src/TaskDataModel.cpp) \
-        $$quote($$BASEDIR/src/TaskRetriever.cpp) \
+        $$quote($$BASEDIR/src/TaskSenderReceiver.cpp) \
         $$quote($$BASEDIR/src/ToodleDoTen.cpp) \
         $$quote($$BASEDIR/src/main.cpp)
 
@@ -63,7 +63,7 @@ config_pri_source_group1 {
         $$quote($$BASEDIR/src/NetworkManager.hpp) \
         $$quote($$BASEDIR/src/PropertiesManager.hpp) \
         $$quote($$BASEDIR/src/TaskDataModel.hpp) \
-        $$quote($$BASEDIR/src/TaskRetriever.hpp) \
+        $$quote($$BASEDIR/src/TaskSenderReceiver.hpp) \
         $$quote($$BASEDIR/src/ToodleDoTen.hpp)
 }
 

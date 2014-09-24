@@ -18,6 +18,13 @@ PropertiesManager *PropertiesManager::getInstance() {
 }
 
 PropertiesManager::PropertiesManager(QObject *parent) : QObject (parent) {
+    QSettings settings("ryantmer", "ToodleDo10");
+
+    this->accessToken = settings.value("accessToken", "").toString();
+    this->accessTokenExpiry = settings.value("accessTokenExpiry", 0).toUInt(NULL);
+    this->refreshToken = settings.value("refreshToken", "").toString();
+    this->tokenScope = settings.value("tokenScope", "").toString();
+    this->tokenType = settings.value("tokenType", "").toString();
 }
 PropertiesManager::~PropertiesManager() {}
 
@@ -28,6 +35,13 @@ void PropertiesManager::updateAccessToken(QString accessToken, qlonglong expires
     this->refreshToken = refreshToken;
     this->tokenScope = tokenScope;
     this->tokenType = tokenType;
+
+    QSettings settings("ryantmer", "ToodleDo10");
+    settings.setValue("accessToken", this->accessToken);
+    settings.setValue("accessTokenExpiry", this->accessTokenExpiry);
+    settings.setValue("refreshToken", this->refreshToken);
+    settings.setValue("tokenScope", this->tokenScope);
+    settings.setValue("tokenType", this->tokenType);
 }
 
 bool PropertiesManager::showTaskTime() {

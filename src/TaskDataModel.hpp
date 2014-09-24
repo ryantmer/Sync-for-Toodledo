@@ -26,8 +26,13 @@ private:
     void initDatabase(const QString &filename);
     void sortTasksByDueDate();
 
+signals:
+    void taskEdited(QVariantList task);
+    void taskAdded(QVariantList task);
+
 public slots:
     void onTasksUpdated(QVariantList tasks);
+    void onTasksAdded(QVariantList task);
 };
 
 #endif /* TASKDATAMODEL_HPP_ */

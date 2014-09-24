@@ -27,12 +27,13 @@ NetworkManager::NetworkManager() {
     _netConfigManager = new QNetworkConfigurationManager(this);
     _netSession = new QNetworkSession(_netConfigManager->configurationFromIdentifier("bps:ti0"), this);
 
-    if (_netSession->state() == QNetworkSession::Connected) {
-        this->connected = true;
-    } else {
-        this->connected = false;
-    }
-    qDebug() << Q_FUNC_INFO << _netSession->state() << this->connected;
+    //TODO: Make this work properly
+//    if (_netSession->state() == QNetworkSession::Connected) {
+//        this->connected = true;
+//    } else {
+//        this->connected = false;
+//    }
+//    qDebug() << Q_FUNC_INFO << _netSession->state() << this->connected;
     this->connected = true;
 
     bool isOk;

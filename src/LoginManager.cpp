@@ -33,12 +33,21 @@ LoginManager *LoginManager::getInstance() {
 }
 
 LoginManager::LoginManager() {
+    loggedIn = false;
     _networkAccessManager = new QNetworkAccessManager(this);
     _propMan = PropertiesManager::getInstance();
+
+    //Timer that fires when access token expires (2 hours)
     accessTokenTimer = new QTimer(this);
     accessTokenTimer->setSingleShot(true);
 
-    loggedIn = false;
+    if (QDateTime::currentDateTimeUtc().toTime_t() < _propMan->accessTokenExpiry) {
+        loggedIn = true;
+        accessTokenTimer->start(
+                (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
+    }
+    //No timer for refresh token, which expires every 30 days.
+    //Who the hell keeps an app open for 30 days straight?
 
     bool isOk;
     isOk = connect(_networkAccessManager, SIGNAL(finished(QNetworkReply*)),
@@ -54,9 +63,6 @@ LoginManager::LoginManager() {
             this, SLOT(onAccessTokenExpired()));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
-
-    accessTokenTimer->start(
-            (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
 }
 
 LoginManager::~LoginManager() {}
@@ -77,7 +83,7 @@ QUrl LoginManager::getAuthorizeUrl() {
     url.addQueryItem("response_type", "code");
     url.addQueryItem("client_id", "ToodleDo10");
     url.addQueryItem("state", getState());
-    url.addEncodedQueryItem("scope", "basic tasks notes");
+    url.addEncodedQueryItem("scope", "basic tasks notes write");
 
     return url;
 }
@@ -101,6 +107,7 @@ void LoginManager::refreshRefreshToken(QString authCode) {
     QString auth = QString("Basic " + credentials.toAscii().toBase64());
 
     req.setRawHeader(QByteArray("Authorization"), auth.toAscii());
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
     _networkAccessManager->post(req, data.encodedQuery());
 }
@@ -117,6 +124,7 @@ void LoginManager::refreshAccessToken() {
 
     QString auth = QString("Basic " + credentials.toAscii().toBase64());
     req.setRawHeader("Authorization", auth.toAscii());
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
     _networkAccessManager->post(req, data.encodedQuery());
 }
@@ -159,6 +167,7 @@ void LoginManager::onTokenRequestFinished(QNetworkReply *reply) {
             emit accessTokenRefreshed();
             emit refreshTokenRefreshed();
 
+            //Restart timeout on access token
             accessTokenTimer->start(
                     (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
         }

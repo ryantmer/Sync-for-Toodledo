@@ -22,8 +22,8 @@ static const uint qt_meta_data_ToodleDoTen[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       9,   14, // methods
-       1,   59, // properties
+      10,   14, // methods
+       1,   64, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
@@ -33,17 +33,18 @@ static const uint qt_meta_data_ToodleDoTen[] = {
       17,   13,   12,   12, 0x0a,
       43,   12,   12,   12, 0x0a,
       68,   12,   12,   12, 0x0a,
+      98,   92,   12,   12, 0x0a,
 
  // methods: signature, parameters, type, tag, flags
-     111,  102,   92,   12, 0x02,
-     150,  141,  136,   12, 0x02,
-     180,   12,   12,   12, 0x02,
-     199,  190,   12,   12, 0x02,
-     220,  190,   12,   12, 0x02,
-     242,   12,   12,   12, 0x02,
+     146,  137,  127,   12, 0x02,
+     185,  176,  171,   12, 0x02,
+     215,   12,   12,   12, 0x02,
+     234,  225,   12,   12, 0x02,
+     255,  225,   12,   12, 0x02,
+     277,   12,   12,   12, 0x02,
 
  // properties: name, type, flags
-     266,  251, 0x00095409,
+     301,  286, 0x00095409,
 
        0        // eod
 };
@@ -51,7 +52,8 @@ static const uint qt_meta_data_ToodleDoTen[] = {
 static const char qt_meta_stringdata_ToodleDoTen[] = {
     "ToodleDoTen\0\0url\0onWebViewUrlChanged(QUrl)\0"
     "onAccessTokenRefreshed()\0"
-    "onRefreshTokenExpired()\0QDateTime\0"
+    "onRefreshTokenExpired()\0tasks\0"
+    "onTasksUpdated(QVariantList)\0QDateTime\0"
     "unixTime\0unixTimeToDateTime(uint)\0"
     "uint\0dateTime\0dateTimeToUnixTime(QDateTime)\0"
     "refresh()\0taskData\0addTask(QVariantMap)\0"
@@ -68,14 +70,15 @@ void ToodleDoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 0: _t->onWebViewUrlChanged((*reinterpret_cast< QUrl(*)>(_a[1]))); break;
         case 1: _t->onAccessTokenRefreshed(); break;
         case 2: _t->onRefreshTokenExpired(); break;
-        case 3: { QDateTime _r = _t->unixTimeToDateTime((*reinterpret_cast< uint(*)>(_a[1])));
+        case 3: _t->onTasksUpdated((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 4: { QDateTime _r = _t->unixTimeToDateTime((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QDateTime*>(_a[0]) = _r; }  break;
-        case 4: { uint _r = _t->dateTimeToUnixTime((*reinterpret_cast< QDateTime(*)>(_a[1])));
+        case 5: { uint _r = _t->dateTimeToUnixTime((*reinterpret_cast< QDateTime(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
-        case 5: _t->refresh(); break;
-        case 6: _t->addTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 7: _t->editTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 8: _t->logout(); break;
+        case 6: _t->refresh(); break;
+        case 7: _t->addTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 8: _t->editTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 9: _t->logout(); break;
         default: ;
         }
     }
@@ -113,9 +116,9 @@ int ToodleDoTen::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 9)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 10;
     }
 #ifndef QT_NO_PROPERTIES
       else if (_c == QMetaObject::ReadProperty) {

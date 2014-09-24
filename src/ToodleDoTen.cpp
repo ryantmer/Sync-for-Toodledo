@@ -17,7 +17,7 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     _propertiesManager = PropertiesManager::getInstance();
     _loginManager = LoginManager::getInstance();
     _networkManager = NetworkManager::getInstance();
-    _taskRetriever = new TaskRetriever(this);
+    _taskSenderReceiver = new TaskSenderReceiver(this);
     _dataModel = new TaskDataModel(this);
 
     //Create root QML document from main.qml and expose certain variables to QML
@@ -39,17 +39,37 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     loginWebView = loginPage->findChild<WebView*>("loginWebView");
 
     bool isOk;
+    //ToodleDo10 listens for WebView changing URL
     isOk = connect(loginWebView, SIGNAL(urlChanged(QUrl)),
             this, SLOT(onWebViewUrlChanged(QUrl)));
     Q_ASSERT(isOk);
+    //ToodleDo10 listens to LoginManager when access token refreshes
     isOk = connect(_loginManager, SIGNAL(accessTokenRefreshed()),
             this, SLOT(onAccessTokenRefreshed()));
     Q_ASSERT(isOk);
+    //ToodleDo10 listens to LoginManager when refresh token expires
     isOk = connect(_loginManager, SIGNAL(refreshTokenExpired()),
             this, SLOT(onRefreshTokenExpired()));
     Q_ASSERT(isOk);
-    isOk = connect(_taskRetriever, SIGNAL(tasksUpdated(QVariantList)),
+    //ToodleDo10 listens for updated items in datamodel
+    isOk = connect(_taskSenderReceiver, SIGNAL(tasksUpdated(QVariantList)),
+            this, SLOT(onTasksUpdated(QVariantList)));
+    Q_ASSERT(isOk);
+    //DataModel listens for added signal from sender-receiver
+    isOk = connect(_taskSenderReceiver, SIGNAL(tasksAdded(QVariantList)),
+            _dataModel, SLOT(onTasksAdded(QVariantList)));
+    Q_ASSERT(isOk);
+    //DataModel listens for updated signal from sender-receiver
+    isOk = connect(_taskSenderReceiver, SIGNAL(tasksUpdated(QVariantList)),
             _dataModel, SLOT(onTasksUpdated(QVariantList)));
+    Q_ASSERT(isOk);
+    //Sender-receiver listens for added items in datamodel
+    isOk = connect(_dataModel, SIGNAL(taskAdded(QVariantList)),
+            _taskSenderReceiver, SLOT(onTaskAdded(QVariantList)));
+    Q_ASSERT(isOk);
+    //Sender-receiver listens for edited items in datamodel
+    isOk = connect(_dataModel, SIGNAL(taskEdited(QVariantList)),
+            _taskSenderReceiver, SLOT(onTaskEdited(QVariantList)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
 
@@ -74,7 +94,7 @@ uint ToodleDoTen::dateTimeToUnixTime(QDateTime dateTime) {
 void ToodleDoTen::refresh() {
     if (this->_networkManager->isConnected()) {
         if (this->_loginManager->isLoggedIn()) {
-            this->_taskRetriever->fetchAllTasks();
+            this->_taskSenderReceiver->fetchAllTasks();
         } else {
             qDebug() << Q_FUNC_INFO << "LoginManager indicated not logged in";
             showToast("Not logged in!");
@@ -126,14 +146,21 @@ void ToodleDoTen::onWebViewUrlChanged(QUrl url) {
 }
 
 void ToodleDoTen::onAccessTokenRefreshed() {
+    //access token is automatically refreshed when it expires using refresh token
     //When a new access token is received, refresh
     refresh();
 }
 
 void ToodleDoTen::onRefreshTokenExpired() {
     //emitted by LoginManager when refresh token is no longer valid (30-day expiry)
+    //when this occurs, user has to log in again
     root->push(loginPage);
     loginWebView->setUrl(_loginManager->getAuthorizeUrl().toString());
+}
+
+void ToodleDoTen::onTasksUpdated(QVariantList tasks) {
+    showToast("Tasks Refreshed!");
+    Q_UNUSED(tasks);
 }
 /*
  * Slots end
