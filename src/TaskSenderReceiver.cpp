@@ -57,10 +57,16 @@ void TaskSenderReceiver::onTaskAdded(QVariantList task) {
     QUrl url(addUrl);
     QNetworkRequest req(url);
 
+    QString taskData;
+    bb::data::JsonDataAccess jda;
+    jda.saveToBuffer(QVariant(taskMap), &taskData);
+
+    qDebug() << taskData;
+
     QUrl data;
     data.addQueryItem("access_token", _propMan->accessToken);
-    data.addEncodedQueryItem("tasks", "[{\"title\"%3A\"Task Task Task\"}]");
-    data.addQueryItem("fields", "completed,duedate,notes");
+    data.addEncodedQueryItem("tasks", taskData.toAscii());
+    data.addQueryItem("fields", "");
 
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 

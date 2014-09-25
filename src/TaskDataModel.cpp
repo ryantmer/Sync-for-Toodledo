@@ -8,7 +8,7 @@ using namespace bb::data;
 const QString TaskDataModel::databasePath = QString("app/native/assets/data/tasks.json");
 
 TaskDataModel::TaskDataModel(QObject *parent) : DataModel(parent) {
-    this->initDatabase(TaskDataModel::databasePath);
+//    this->initDatabase(TaskDataModel::databasePath);
 }
 TaskDataModel::~TaskDataModel() {
     bb::data::JsonDataAccess jda;
@@ -65,22 +65,26 @@ void TaskDataModel::addTask(QVariantMap taskData) {
     }
     this->internalDB.append(taskData);
     sortTasksByDueDate();
-    emit itemAdded(QVariantList() << this->internalDB.count()-1); //Causes ListView to update
+    emit itemAdded(QVariantList() << this->internalDB.indexOf(taskData)); //Causes ListView to update
     emit taskAdded(QVariantList() << taskData); //Causes TaskSenderReceiver to push changes
 }
 
 void TaskDataModel::editTask(QVariantMap taskData) {
     //Task edited in UI, need to update datamodel
 
+    qDebug() << "Taskdata id - " << taskData.value("id");
     //A bunch of values come in as non-qlonglong values, convert them where applicable
     foreach (QString k, taskData.keys()) {
         if (taskData[k].canConvert(QVariant::LongLong) && taskData[k].type() != QVariant::String) {
             taskData[k] = QVariant(taskData[k].toLongLong(NULL));
         }
     }
+
+    qDebug() << "TaskData id:" << taskData.value("id");
     for (int i = 0; i < this->internalDB.count(); ++i) {
-        QVariantMap taskInfo = this->internalDB.value(i).toMap();
-        if (taskInfo["id"].toLongLong(NULL) == taskData["id"]) {
+        QVariantMap internalTask = this->internalDB.value(i).toMap();
+        qDebug() << "internaltask id:" << internalTask["id"].toLongLong(NULL);
+        if (internalTask["id"].toLongLong(NULL) == taskData["id"]) {
             this->internalDB.replace(i, taskData);
             emit itemUpdated(QVariantList() << i); //Causes ListView to update
             emit taskEdited(QVariantList() << taskData); //Causes TaskSenderReceiver to push changes

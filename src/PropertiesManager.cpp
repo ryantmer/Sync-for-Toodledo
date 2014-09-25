@@ -22,7 +22,8 @@ PropertiesManager::PropertiesManager(QObject *parent) : QObject (parent) {
 
     this->accessToken = settings.value("accessToken", "").toString();
     this->accessTokenExpiry = settings.value("accessTokenExpiry", 0).toUInt(NULL);
-    this->refreshToken = settings.value("refreshToken", "").toString();
+    this->refreshToken = settings.value("refreshToken", "6d026d6819de22418dc34dfbaf429d9b855d5030").toString();
+    this->refreshTokenExpiry = settings.value("refreshTokenExpiry", 0).toUInt(NULL);
     this->tokenScope = settings.value("tokenScope", "").toString();
     this->tokenType = settings.value("tokenType", "").toString();
 }
@@ -33,6 +34,7 @@ void PropertiesManager::updateAccessToken(QString accessToken, qlonglong expires
     this->accessToken = accessToken;
     this->accessTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + expiresIn;
     this->refreshToken = refreshToken;
+    this->refreshTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + 2592000; //30 days from now
     this->tokenScope = tokenScope;
     this->tokenType = tokenType;
 
@@ -40,6 +42,7 @@ void PropertiesManager::updateAccessToken(QString accessToken, qlonglong expires
     settings.setValue("accessToken", this->accessToken);
     settings.setValue("accessTokenExpiry", this->accessTokenExpiry);
     settings.setValue("refreshToken", this->refreshToken);
+    settings.setValue("refreshTokenExpiry", this->refreshTokenExpiry);
     settings.setValue("tokenScope", this->tokenScope);
     settings.setValue("tokenType", this->tokenType);
 }

@@ -23,12 +23,12 @@ NavigationPane {
             }
         ]
     }
-
+    
     Page {
         titleBar: TitleBar {
             title: "ToodleDo10"
         }
-
+        
         Container {
             ListView {
                 id: taskListView
@@ -44,7 +44,10 @@ NavigationPane {
                     ListItemComponent {
                         type: "task"
                         StandardListItem {
-                            title: ListItemData.title + " - Due " + app.unixTimeToDateTime(ListItemData.duedate).toDateString();
+                            id: taskItem
+                            title: ListItemData.title
+                            status: taskItem.ListItem.view.dueDateString(ListItemData.duedate);
+                            description: ListItemData.notes;
                         }
                     }
                 ]
@@ -54,13 +57,21 @@ NavigationPane {
                     var selectedTask = dataModel.data(indexPath);
                     p.taskId = selectedTask.id;
                     p.completed = selectedTask.completed;
-                    p.duedate = app.unixTimeToDateTime(selectedTask.duedate);
                     p.title = selectedTask.title;
+                    p.duedate = app.unixTimeToDateTime(selectedTask.duedate);
                     p.open();
+                }
+                
+                function dueDateString(dueDate) {
+                    if (dueDate == 0) {
+                        return "No due date";
+                    } else {
+                        return "Due " + app.unixTimeToDateTime(dueDate).toDateString();
+                    }
                 }
             }
         }
-
+        
         actions: [
             ActionItem {
                 title: "Refresh"
@@ -81,7 +92,7 @@ NavigationPane {
             }
         ]
     }
-
+    
     attachedObjects: [
         ComponentDefinition {
             id: addTaskSheetDefinition

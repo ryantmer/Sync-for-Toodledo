@@ -23,8 +23,7 @@ Sheet {
                 property variant taskData
                 
                 onTriggered: {
-                    taskData = {"id": taskId.text,
-                                "completed": taskCompleted.checked,
+                    taskData = {"completed": taskCompleted.checked,
                                 "title": taskName.text,
                                 "duedate": app.dateTimeToUnixTime(taskDueDate.value),
                                 "notes": taskNotes.text}
@@ -46,11 +45,6 @@ Sheet {
                 text: "Completed"
             }
             TextField {
-                //TODO: Remove this, get taskId from server
-                id: taskId
-                hintText: "Task ID number"
-            }
-            TextField {
                 id: taskName
                 hintText: "Task Name"
                 horizontalAlignment: HorizontalAlignment.Fill
@@ -63,7 +57,7 @@ Sheet {
                 id: taskDueDate
                 horizontalAlignment: HorizontalAlignment.Fill
                 mode: DateTimePickerMode.Date
-                expanded: true
+                expanded: false
                 title: "Due Date"
                 topMargin: 20
                 leftMargin: 20

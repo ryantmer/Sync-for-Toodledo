@@ -147,16 +147,13 @@ void LoginManager::onAccessTokenExpired() {
 
 void LoginManager::onTokenRequestFinished(QNetworkReply *reply) {
     QString response = reply->readAll();
-    qDebug() << Q_FUNC_INFO << "Reply received";
-    qDebug() << response;
 
     if (reply->error() == QNetworkReply::NoError) {
         bb::data::JsonDataAccess jda;
         QVariantMap data = jda.loadFromBuffer(response).value<QVariantMap>();
 
         if (jda.hasError()) {
-            qDebug() << Q_FUNC_INFO << "Error reading reply:";
-            qDebug() << Q_FUNC_INFO << jda.error();
+            qDebug() << Q_FUNC_INFO << "Error reading reply:" << jda.error();
         } else {
             this->_propMan->updateAccessToken(data.value("access_token").toString(),
                     data.value("expires_in").toLongLong(NULL),
@@ -167,9 +164,19 @@ void LoginManager::onTokenRequestFinished(QNetworkReply *reply) {
             emit accessTokenRefreshed();
             emit refreshTokenRefreshed();
 
+            qDebug() << Q_FUNC_INFO << "New refresh token:" << this->_propMan->refreshToken;
             //Restart timeout on access token
             accessTokenTimer->start(
                     (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
+        }
+    } else {
+        qDebug() << Q_FUNC_INFO << "Error getting token!";
+        qDebug() << Q_FUNC_INFO << response;
+        bb::data::JsonDataAccess jda;
+        QVariantMap error = jda.loadFromBuffer(response).value<QVariantMap>();
+
+        if (error["errorCode"] == 103) {
+            qDebug() << Q_FUNC_INFO << "Too many token requests - please try again in an hour.";
         }
     }
     reply->deleteLater();
