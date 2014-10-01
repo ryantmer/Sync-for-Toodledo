@@ -63,6 +63,10 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     isOk = connect(_taskSenderReceiver, SIGNAL(tasksUpdated(QVariantList)),
             _dataModel, SLOT(onTasksUpdated(QVariantList)));
     Q_ASSERT(isOk);
+    //DataModel listens for removed signal from sender-receiver
+    isOk = connect(_taskSenderReceiver, SIGNAL(tasksRemoved(QVariantList)),
+            _dataModel, SLOT(onTasksRemoved(QVariantList)));
+    Q_ASSERT(isOk);
     //Sender-receiver listens for added items in datamodel
     isOk = connect(_dataModel, SIGNAL(taskAdded(QVariantList)),
             _taskSenderReceiver, SLOT(onTaskAdded(QVariantList)));
@@ -70,6 +74,10 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     //Sender-receiver listens for edited items in datamodel
     isOk = connect(_dataModel, SIGNAL(taskEdited(QVariantList)),
             _taskSenderReceiver, SLOT(onTaskEdited(QVariantList)));
+    Q_ASSERT(isOk);
+    //Sender-receiver listens for removed items in datamodel
+    isOk = connect(_dataModel, SIGNAL(taskRemoved(QVariantList)),
+            _taskSenderReceiver, SLOT(onTaskRemoved(QVariantList)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
 
@@ -105,7 +113,6 @@ void ToodleDoTen::refresh() {
             this->_taskSenderReceiver->fetchAllTasks();
         } else {
             qDebug() << Q_FUNC_INFO << "LoginManager indicated not logged in";
-            showToast("Please log in!");
         }
     } else {
         qDebug() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
@@ -119,6 +126,10 @@ void ToodleDoTen::addTask(QVariantMap data) {
 
 void ToodleDoTen::editTask(QVariantMap data) {
     this->_dataModel->editTask(data);
+}
+
+void ToodleDoTen::removeTask(QVariantMap data) {
+    this->_dataModel->removeTask(data);
 }
 
 void ToodleDoTen::logout() {
@@ -155,6 +166,7 @@ void ToodleDoTen::onAccessTokenRefreshed() {
 void ToodleDoTen::onRefreshTokenExpired() {
     //emitted by LoginManager when refresh token is no longer valid (30-day expiry)
     //when this occurs, user has to log in again
+    showToast("Please log in!");
     root->push(loginPage);
     loginWebView->setUrl(_loginManager->getAuthorizeUrl().toString());
 }

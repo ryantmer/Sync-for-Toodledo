@@ -17,14 +17,17 @@ public:
     static const QString getUrl;
     static const QString editUrl;
     static const QString addUrl;
+    static const QString removeUrl;
 
 signals:
     void tasksUpdated(QVariantList tasks);
     void tasksAdded(QVariantList tasks);
+    void tasksRemoved(QVariantList taskIDs);
 
 public slots:
     void onTaskAdded(QVariantList task);
     void onTaskEdited(QVariantList task);
+    void onTaskRemoved(QVariantList task);
     void onTasksReceived(QNetworkReply *reply);
 
 private:

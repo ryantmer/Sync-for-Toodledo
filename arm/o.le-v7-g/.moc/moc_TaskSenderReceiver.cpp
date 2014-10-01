@@ -22,21 +22,23 @@ static const uint qt_meta_data_TaskSenderReceiver[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
+       7,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       2,       // signalCount
+       3,       // signalCount
 
  // signals: signature, parameters, type, tag, flags
       26,   20,   19,   19, 0x05,
       53,   20,   19,   19, 0x05,
+      86,   78,   19,   19, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      83,   78,   19,   19, 0x0a,
-     109,   78,   19,   19, 0x0a,
-     142,  136,   19,   19, 0x0a,
+     118,  113,   19,   19, 0x0a,
+     144,  113,   19,   19, 0x0a,
+     171,  113,   19,   19, 0x0a,
+     205,  199,   19,   19, 0x0a,
 
        0        // eod
 };
@@ -44,9 +46,11 @@ static const uint qt_meta_data_TaskSenderReceiver[] = {
 static const char qt_meta_stringdata_TaskSenderReceiver[] = {
     "TaskSenderReceiver\0\0tasks\0"
     "tasksUpdated(QVariantList)\0"
-    "tasksAdded(QVariantList)\0task\0"
+    "tasksAdded(QVariantList)\0taskIDs\0"
+    "tasksRemoved(QVariantList)\0task\0"
     "onTaskAdded(QVariantList)\0"
-    "onTaskEdited(QVariantList)\0reply\0"
+    "onTaskEdited(QVariantList)\0"
+    "onTaskRemoved(QVariantList)\0reply\0"
     "onTasksReceived(QNetworkReply*)\0"
 };
 
@@ -58,9 +62,11 @@ void TaskSenderReceiver::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
         switch (_id) {
         case 0: _t->tasksUpdated((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
         case 1: _t->tasksAdded((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
-        case 2: _t->onTaskAdded((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
-        case 3: _t->onTaskEdited((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
-        case 4: _t->onTasksReceived((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
+        case 2: _t->tasksRemoved((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 3: _t->onTaskAdded((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 4: _t->onTaskEdited((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 5: _t->onTaskRemoved((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 6: _t->onTasksReceived((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -98,9 +104,9 @@ int TaskSenderReceiver::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 7;
     }
     return _id;
 }
@@ -117,5 +123,12 @@ void TaskSenderReceiver::tasksAdded(QVariantList _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
+}
+
+// SIGNAL 2
+void TaskSenderReceiver::tasksRemoved(QVariantList _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 QT_END_MOC_NAMESPACE

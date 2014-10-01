@@ -22,37 +22,41 @@ static const uint qt_meta_data_TaskDataModel[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+      10,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       2,       // signalCount
+       3,       // signalCount
 
  // signals: signature, parameters, type, tag, flags
       20,   15,   14,   14, 0x05,
       45,   15,   14,   14, 0x05,
+      71,   15,   14,   14, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      75,   69,   14,   14, 0x0a,
-     104,   15,   14,   14, 0x0a,
+     101,   95,   14,   14, 0x0a,
+     130,   95,   14,   14, 0x0a,
+     165,  157,   14,   14, 0x0a,
 
  // methods: signature, parameters, type, tag, flags
-     145,  135,  131,   14, 0x02,
-     175,  135,  170,   14, 0x02,
-     209,  135,  201,   14, 0x02,
-     241,  135,  232,   14, 0x02,
+     208,  198,  194,   14, 0x02,
+     238,  198,  233,   14, 0x02,
+     272,  198,  264,   14, 0x02,
+     304,  198,  295,   14, 0x02,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_TaskDataModel[] = {
     "TaskDataModel\0\0task\0taskEdited(QVariantList)\0"
+    "taskRemoved(QVariantList)\0"
     "taskAdded(QVariantList)\0tasks\0"
     "onTasksUpdated(QVariantList)\0"
-    "onTasksAdded(QVariantList)\0int\0indexPath\0"
-    "childCount(QVariantList)\0bool\0"
-    "hasChildren(QVariantList)\0QString\0"
+    "onTasksAdded(QVariantList)\0taskIDs\0"
+    "onTasksRemoved(QVariantList)\0int\0"
+    "indexPath\0childCount(QVariantList)\0"
+    "bool\0hasChildren(QVariantList)\0QString\0"
     "itemType(QVariantList)\0QVariant\0"
     "data(QVariantList)\0"
 };
@@ -64,16 +68,18 @@ void TaskDataModel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         TaskDataModel *_t = static_cast<TaskDataModel *>(_o);
         switch (_id) {
         case 0: _t->taskEdited((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
-        case 1: _t->taskAdded((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
-        case 2: _t->onTasksUpdated((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
-        case 3: _t->onTasksAdded((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
-        case 4: { int _r = _t->childCount((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 1: _t->taskRemoved((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 2: _t->taskAdded((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 3: _t->onTasksUpdated((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 4: _t->onTasksAdded((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 5: _t->onTasksRemoved((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 6: { int _r = _t->childCount((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 5: { bool _r = _t->hasChildren((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 7: { bool _r = _t->hasChildren((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 6: { QString _r = _t->itemType((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 8: { QString _r = _t->itemType((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
-        case 7: { QVariant _r = _t->data((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 9: { QVariant _r = _t->data((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QVariant*>(_a[0]) = _r; }  break;
         default: ;
         }
@@ -114,9 +120,9 @@ int TaskDataModel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 10;
     }
     return _id;
 }
@@ -129,9 +135,16 @@ void TaskDataModel::taskEdited(QVariantList _t1)
 }
 
 // SIGNAL 1
-void TaskDataModel::taskAdded(QVariantList _t1)
+void TaskDataModel::taskRemoved(QVariantList _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
+}
+
+// SIGNAL 2
+void TaskDataModel::taskAdded(QVariantList _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 QT_END_MOC_NAMESPACE

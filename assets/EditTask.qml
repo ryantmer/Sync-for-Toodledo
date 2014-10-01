@@ -11,7 +11,7 @@ Sheet {
     property alias completed: taskCompleted.checked
     property alias title: taskName.text
     property alias duedate: taskDueDate.value
-    property alias notes: taskNotes.text
+    property alias note: taskNote.text
     
     Page {
         titleBar: TitleBar {
@@ -33,7 +33,7 @@ Sheet {
                                 "completed": taskCompleted.checked,
                                 "title": taskName.text,
                                 "duedate": app.dateTimeToUnixTime(taskDueDate.value),
-                                "notes": taskNotes.text}
+                                "note": taskNotes.text}
                     app.editTask(taskData);
                     editTaskSheet.close();
                 }
@@ -72,7 +72,7 @@ Sheet {
                 bottomMargin: 10.0
             }
             TextArea {
-                id: taskNotes
+                id: taskNote
                 hintText: "Detailed notes about task"
                 horizontalAlignment: HorizontalAlignment.Fill
                 topMargin: 10.0

@@ -22,8 +22,8 @@ static const uint qt_meta_data_ToodleDoTen[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
-       1,   64, // properties
+      11,   14, // methods
+       1,   69, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
@@ -41,10 +41,11 @@ static const uint qt_meta_data_ToodleDoTen[] = {
      215,   12,   12,   12, 0x02,
      234,  225,   12,   12, 0x02,
      255,  225,   12,   12, 0x02,
-     277,   12,   12,   12, 0x02,
+     277,  225,   12,   12, 0x02,
+     301,   12,   12,   12, 0x02,
 
  // properties: name, type, flags
-     301,  286, 0x00095409,
+     325,  310, 0x00095409,
 
        0        // eod
 };
@@ -57,8 +58,8 @@ static const char qt_meta_stringdata_ToodleDoTen[] = {
     "unixTime\0unixTimeToDateTime(uint)\0"
     "uint\0dateTime\0dateTimeToUnixTime(QDateTime)\0"
     "refresh()\0taskData\0addTask(QVariantMap)\0"
-    "editTask(QVariantMap)\0logout()\0"
-    "TaskDataModel*\0dataModel\0"
+    "editTask(QVariantMap)\0removeTask(QVariantMap)\0"
+    "logout()\0TaskDataModel*\0dataModel\0"
 };
 
 void ToodleDoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -78,7 +79,8 @@ void ToodleDoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 6: _t->refresh(); break;
         case 7: _t->addTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
         case 8: _t->editTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 9: _t->logout(); break;
+        case 9: _t->removeTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 10: _t->logout(); break;
         default: ;
         }
     }
@@ -116,9 +118,9 @@ int ToodleDoTen::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 11;
     }
 #ifndef QT_NO_PROPERTIES
       else if (_c == QMetaObject::ReadProperty) {

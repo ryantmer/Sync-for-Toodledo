@@ -72,7 +72,6 @@ void TaskDataModel::addTask(QVariantMap taskData) {
 void TaskDataModel::editTask(QVariantMap taskData) {
     //Task edited in UI, need to update datamodel
 
-    qDebug() << "Taskdata id - " << taskData.value("id");
     //A bunch of values come in as non-qlonglong values, convert them where applicable
     foreach (QString k, taskData.keys()) {
         if (taskData[k].canConvert(QVariant::LongLong) && taskData[k].type() != QVariant::String) {
@@ -80,10 +79,8 @@ void TaskDataModel::editTask(QVariantMap taskData) {
         }
     }
 
-    qDebug() << "TaskData id:" << taskData.value("id");
     for (int i = 0; i < this->internalDB.count(); ++i) {
         QVariantMap internalTask = this->internalDB.value(i).toMap();
-        qDebug() << "internaltask id:" << internalTask["id"].toLongLong(NULL);
         if (internalTask["id"].toLongLong(NULL) == taskData["id"]) {
             this->internalDB.replace(i, taskData);
             emit itemUpdated(QVariantList() << i); //Causes ListView to update
@@ -94,6 +91,18 @@ void TaskDataModel::editTask(QVariantMap taskData) {
 
     sortTasksByDueDate();
     qDebug() << Q_FUNC_INFO << "Task edited in TaskDataModel";
+}
+
+void TaskDataModel::removeTask(QVariantMap taskData) {
+    for (int i = 0; i < this->internalDB.count(); ++i) {
+        QVariantMap task = this->internalDB.value(i).toMap();
+        if (task["id"].toLongLong(NULL) == taskData["id"]) {
+            this->internalDB.removeAt(i);
+            emit itemRemoved(QVariantList() << i); //Causes ListView to update
+            emit taskRemoved(QVariantList() << taskData); //Causes TaskSenderReceiver to push changes
+            break;
+        }
+    }
 }
 
 void TaskDataModel::onTasksUpdated(QVariantList tasks) {
@@ -137,6 +146,11 @@ void TaskDataModel::onTasksAdded(QVariantList tasks) {
     sortTasksByDueDate();
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
     qDebug() << Q_FUNC_INFO << "New tasks added to TaskDataModel";
+}
+
+void TaskDataModel::onTasksRemoved(QVariantList taskIDs) {
+    //Tasks removals received from TaskSenderReceiver, update datamodel with removed tasks
+    //TODO: This.
 }
 
 int TaskDataModel::childCount(const QVariantList &indexPath) {

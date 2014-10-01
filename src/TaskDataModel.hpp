@@ -20,6 +20,7 @@ public:
 
     void addTask(QVariantMap data);
     void editTask(QVariantMap data);
+    void removeTask(QVariantMap data);
 
 private:
     QVariantList internalDB;
@@ -28,11 +29,13 @@ private:
 
 signals:
     void taskEdited(QVariantList task);
+    void taskRemoved(QVariantList task);
     void taskAdded(QVariantList task);
 
 public slots:
     void onTasksUpdated(QVariantList tasks);
-    void onTasksAdded(QVariantList task);
+    void onTasksAdded(QVariantList tasks);
+    void onTasksRemoved(QVariantList taskIDs);
 };
 
 #endif /* TASKDATAMODEL_HPP_ */

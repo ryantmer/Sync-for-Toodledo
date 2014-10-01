@@ -47,7 +47,18 @@ NavigationPane {
                             id: taskItem
                             title: ListItemData.title
                             status: taskItem.ListItem.view.dueDateString(ListItemData.duedate);
-                            description: ListItemData.notes;
+                            description: ListItemData.note;
+                            
+                            contextActions: [
+                                ActionSet {
+                                    DeleteActionItem {
+                                        onTriggered: {
+                                            var taskData = {"id": ListItemData.id}
+                                            app.removeTask(taskData);
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 ]
@@ -59,6 +70,9 @@ NavigationPane {
                     p.completed = selectedTask.completed;
                     p.title = selectedTask.title;
                     p.duedate = app.unixTimeToDateTime(selectedTask.duedate);
+                    if (selectedTask.note) {
+                        p.note = selectedTask.note;
+                    }
                     p.open();
                 }
                 
