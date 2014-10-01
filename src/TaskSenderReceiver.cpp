@@ -57,18 +57,31 @@ void TaskSenderReceiver::onTaskAdded(QVariantList task) {
     QUrl url(addUrl);
     QNetworkRequest req(url);
 
-    QString taskData;
-    bb::data::JsonDataAccess jda;
-    jda.saveToBuffer(QVariant(taskMap), &taskData);
+//    QString taskData;
+//    bb::data::JsonDataAccess jda;
+//    jda.saveToBuffer(QVariant(taskMap), &taskData);
+//
+//    qDebug() << taskData;
+//    QByteArray encodedData = QUrl::toPercentEncoding(taskData.replace("\n", "\\n"), "{}\\\" ", "").replace(" ", "+");
 
-    qDebug() << taskData;
+    QString encodedData = QString("[{\"title\":\"" + taskMap["title"].toString() + "\"," +
+                            "\"duedate\":\"" + taskMap["duedate"].toString() + "\"," +
+                            "\"notes\":\"" + taskMap["notes"].toString() + "\"}]");
+    encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
+    encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
+    qDebug() << Q_FUNC_INFO << encodedData;
 
     QUrl data;
     data.addQueryItem("access_token", _propMan->accessToken);
-    data.addEncodedQueryItem("tasks", taskData.toAscii());
-    data.addQueryItem("fields", "");
+    data.addEncodedQueryItem("tasks", encodedData.toAscii());
+    data.addQueryItem("fields", "notes");
 
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+//    QByteArray encodedData = QUrl::toPercentEncoding(data.toString(), " \\", "");
+//    encodedData.replace(" ", "+");
+//    qDebug() << Q_FUNC_INFO << encodedData;
+    qDebug() << Q_FUNC_INFO << data.encodedQuery();
 
     _networkAccessManager->post(req, data.encodedQuery());
 }
@@ -82,6 +95,8 @@ void TaskSenderReceiver::onTaskEdited(QVariantList task) {
 void TaskSenderReceiver::onTasksReceived(QNetworkReply *reply) {
     QString response = reply->readAll();
 
+    qDebug() << Q_FUNC_INFO << "Reply:" << response;
+
     bb::data::JsonDataAccess jda;
     QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
     if (jda.hasError()) {
@@ -90,7 +105,8 @@ void TaskSenderReceiver::onTasksReceived(QNetworkReply *reply) {
 
     if (reply->error() == QNetworkReply::NoError) {
         //All good!
-        if (data.first().toMap().contains("num") && data.first().toMap().contains("total")) {
+        QVariantMap firstEntry = data.first().toMap();
+        if (firstEntry.contains("num") && firstEntry.contains("total")) {
             //Remove the summary item (gives number of tasks)
             data.pop_front();
             qDebug() << Q_FUNC_INFO << "Received tasks";

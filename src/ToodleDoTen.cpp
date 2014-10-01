@@ -81,12 +81,20 @@ TaskDataModel *ToodleDoTen::dataModel() {
     return this->_dataModel;
 }
 
+void ToodleDoTen::showToast(QString message) {
+    SystemToast *toast = new SystemToast(this);
+    toast->setBody(message);
+    toast->setPosition(SystemUiPosition::MiddleCenter);
+    toast->show();
+}
+
 /*
  * Q_INVOKABLE functions begin
  */
 QDateTime ToodleDoTen::unixTimeToDateTime(uint unixTime) {
     return QDateTime::fromTime_t(unixTime);
 }
+
 uint ToodleDoTen::dateTimeToUnixTime(QDateTime dateTime) {
     return dateTime.toTime_t();
 }
@@ -97,7 +105,7 @@ void ToodleDoTen::refresh() {
             this->_taskSenderReceiver->fetchAllTasks();
         } else {
             qDebug() << Q_FUNC_INFO << "LoginManager indicated not logged in";
-            showToast("Not logged in!");
+            showToast("Please log in!");
         }
     } else {
         qDebug() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
@@ -119,13 +127,6 @@ void ToodleDoTen::logout() {
 /*
  * Q_INVOKABLE functions end
  */
-
-void ToodleDoTen::showToast(QString message) {
-    SystemToast *toast = new SystemToast(this);
-    toast->setBody(message);
-    toast->setPosition(SystemUiPosition::MiddleCenter);
-    toast->show();
-}
 
 /*
  * Slots begin

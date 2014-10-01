@@ -23,8 +23,7 @@ Sheet {
                 property variant taskData
                 
                 onTriggered: {
-                    taskData = {"completed": taskCompleted.checked,
-                                "title": taskName.text,
+                    taskData = {"title": taskName.text,
                                 "duedate": app.dateTimeToUnixTime(taskDueDate.value),
                                 "notes": taskNotes.text}
                     app.addTask(taskData);
@@ -40,10 +39,6 @@ Sheet {
             rightPadding: 10
             bottomPadding: 10
             
-            CheckBox {
-                id: taskCompleted
-                text: "Completed"
-            }
             TextField {
                 id: taskName
                 hintText: "Task Name"

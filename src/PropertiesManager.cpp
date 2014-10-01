@@ -22,7 +22,7 @@ PropertiesManager::PropertiesManager(QObject *parent) : QObject (parent) {
 
     this->accessToken = settings.value("accessToken", "").toString();
     this->accessTokenExpiry = settings.value("accessTokenExpiry", 0).toUInt(NULL);
-    this->refreshToken = settings.value("refreshToken", "6d026d6819de22418dc34dfbaf429d9b855d5030").toString();
+    this->refreshToken = settings.value("refreshToken", "").toString();
     this->refreshTokenExpiry = settings.value("refreshTokenExpiry", 0).toUInt(NULL);
     this->tokenScope = settings.value("tokenScope", "").toString();
     this->tokenType = settings.value("tokenType", "").toString();
