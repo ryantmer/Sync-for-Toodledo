@@ -69,10 +69,20 @@ NavigationPane {
                     p.taskId = selectedTask.id;
                     p.completed = selectedTask.completed;
                     p.title = selectedTask.title;
-                    p.duedate = app.unixTimeToDateTime(selectedTask.duedate);
+                    
+                    if (selectedTask.duedate == 0) {
+                        p.noDueDate = true;
+                        p.dueDateEnabled = false;
+                    } else {
+                        p.duedate = app.unixTimeToDateTime(selectedTask.duedate);
+                        p.noDueDate = false;
+                        p.dueDateEnabled = true;
+                    }
+                    
                     if (selectedTask.note) {
                         p.note = selectedTask.note;
                     }
+                    
                     p.open();
                 }
                 

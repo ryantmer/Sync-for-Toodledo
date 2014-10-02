@@ -7,10 +7,12 @@ Sheet {
         destroy();
     }
     
-    property int taskId
+    property alias taskId: taskIdField.text
     property alias completed: taskCompleted.checked
     property alias title: taskName.text
     property alias duedate: taskDueDate.value
+    property alias dueDateEnabled: taskDueDate.enabled
+    property alias noDueDate: noDueDate.checked
     property alias note: taskNote.text
     
     Page {
@@ -23,17 +25,32 @@ Sheet {
                     editTaskSheet.close();
                 }
             }
-                
+            
             acceptAction: ActionItem {
                 title: "Save"
                 property variant taskData
                 
                 onTriggered: {
-                    taskData = {"id":taskId,
-                                "completed": taskCompleted.checked,
+                    var c;
+                    var d;
+                    
+                    if (taskCompleted.checked) {
+                        c = Math.floor((new Date()).getTime() / 1000);
+                    } else {
+                        c = 0;
+                    }
+                    if (noDueDate.checked) {
+                        d = 0;
+                    } else {
+                        d = app.dateTimeToUnixTime(taskDueDate.value);
+                    }
+                    
+                    taskData = {"id": parseInt(taskIdField.text),
+                                "completed": c,
                                 "title": taskName.text,
-                                "duedate": app.dateTimeToUnixTime(taskDueDate.value),
-                                "note": taskNotes.text}
+                                "duedate": d,
+                                "note": taskNote.text};
+                    
                     app.editTask(taskData);
                     editTaskSheet.close();
                 }
@@ -52,6 +69,10 @@ Sheet {
                 text: "Completed"
             }
             TextField {
+                id: taskIdField
+                visible: false
+            }
+            TextField {
                 id: taskName
                 hintText: "Task Name"
                 horizontalAlignment: HorizontalAlignment.Fill
@@ -59,6 +80,13 @@ Sheet {
                 leftMargin: 10.0
                 rightMargin: 10.0
                 bottomMargin: 10.0
+            }
+            CheckBox {
+                id: noDueDate
+                text: "No Due Date"
+                onCheckedChanged: {
+                    taskDueDate.enabled = !noDueDate.checked;
+                }
             }
             DateTimePicker {
                 id: taskDueDate

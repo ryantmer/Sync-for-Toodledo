@@ -58,7 +58,7 @@ void TaskSenderReceiver::onTaskAdded(QVariantList task) {
 
     QString encodedData = QString("[{\"title\":\"" + taskMap["title"].toString() + "\"," +
                             "\"duedate\":\"" + taskMap["duedate"].toString() + "\"," +
-                            "\"note\":\"" + taskMap["notes"].toString() + "\"," +
+                            "\"note\":\"" + taskMap["note"].toString() + "\"," +
                             "\"ref\":\"taskAdd\"}]");
     encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
     encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
@@ -77,6 +77,30 @@ void TaskSenderReceiver::onTaskEdited(QVariantList task) {
     //Task was edited by user in UI, need to upload changes
     qDebug() << Q_FUNC_INFO << "Task edited, sending to server";
     qDebug() << task;
+
+    QVariantMap taskMap = task.first().toMap();
+
+    QUrl url(editUrl);
+    QNetworkRequest req(url);
+
+    QString encodedData = QString("[{\"id\":" + taskMap["id"].toString() + "," +
+                            "\"completed\":" + taskMap["completed"].toString() + "," +
+                            "\"title\":\"" + taskMap["title"].toString() + "\"," +
+                            "\"duedate\":\"" + taskMap["duedate"].toString() + "\"," +
+                            "\"note\":\"" + taskMap["note"].toString() + "\"}]");
+    encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
+    encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
+
+    qDebug() << Q_FUNC_INFO << encodedData;
+
+    QUrl data;
+    data.addQueryItem("access_token", _propMan->accessToken);
+    data.addEncodedQueryItem("tasks", encodedData.toAscii());
+    data.addQueryItem("fields", "duedate,note");
+
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    _networkAccessManager->post(req, data.encodedQuery());
 }
 
 void TaskSenderReceiver::onTaskRemoved(QVariantList task) {

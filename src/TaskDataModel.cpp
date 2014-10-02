@@ -90,7 +90,6 @@ void TaskDataModel::editTask(QVariantMap taskData) {
     }
 
     sortTasksByDueDate();
-    qDebug() << Q_FUNC_INFO << "Task edited in TaskDataModel";
 }
 
 void TaskDataModel::removeTask(QVariantMap taskData) {
