@@ -43,22 +43,33 @@ NavigationPane {
                 listItemComponents: [
                     ListItemComponent {
                         type: "task"
-                        StandardListItem {
-                            id: taskItem
-                            title: ListItemData.title
-                            status: taskItem.ListItem.view.dueDateString(ListItemData.duedate);
-                            description: ListItemData.note;
+                        Container {
+                            layout: StackLayout {
+                                orientation: LayoutOrientation.LeftToRight
+                            }
+                            leftPadding: 10.0
                             
-                            contextActions: [
-                                ActionSet {
-                                    DeleteActionItem {
-                                        onTriggered: {
-                                            var taskData = {"id": ListItemData.id}
-                                            app.removeTask(taskData);
+                            CheckBox {
+                                checked: ListItemData.completed
+                                verticalAlignment: VerticalAlignment.Center
+                            }
+                            StandardListItem {
+                                id: taskItem
+                                title: ListItemData.title
+                                status: taskItem.ListItem.view.dueDateString(ListItemData.duedate);
+                                description: ListItemData.note;
+                                
+                                contextActions: [
+                                    ActionSet {
+                                        DeleteActionItem {
+                                            onTriggered: {
+                                                var taskData = {"id": ListItemData.id}
+                                                app.removeTask(taskData);
+                                            }
                                         }
                                     }
-                                }
-                            ]
+                                ]
+                            }
                         }
                     }
                 ]
