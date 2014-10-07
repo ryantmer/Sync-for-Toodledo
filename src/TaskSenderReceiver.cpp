@@ -56,10 +56,19 @@ void TaskSenderReceiver::onTaskAdded(QVariantList task) {
     QUrl url(addUrl);
     QNetworkRequest req(url);
 
-    QString encodedData = QString("[{\"title\":\"" + taskMap["title"].toString() + "\"," +
-                            "\"duedate\":\"" + taskMap["duedate"].toString() + "\"," +
-                            "\"note\":\"" + taskMap["note"].toString() + "\"," +
-                            "\"ref\":\"taskAdd\"}]");
+    //Build task data string from user's input
+    QString encodedData = QString("[{");
+    if (taskMap["title"].toString() != "") {
+        encodedData.append("\"title\":\"" + taskMap["title"].toString() + "\",");
+    }
+    if (taskMap["duedate"].toLongLong(NULL) > 0) {
+        encodedData.append("\"duedate\":" + taskMap["duedate"].toString() + ",");
+    }
+    if (taskMap["note"].toString() != "") {
+        encodedData.append("\"note\":\"" + taskMap["note"].toString() + "\",");
+    }
+    encodedData.append("\"ref\":\"taskAdd\"}]");
+    //Required for ToodleDo's API to replace some stuff
     encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
     encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
 
@@ -83,6 +92,7 @@ void TaskSenderReceiver::onTaskEdited(QVariantList task) {
     QUrl url(editUrl);
     QNetworkRequest req(url);
 
+    //TODO: Make more efficient by only uploading changes
     QString encodedData = QString("[{\"id\":" + taskMap["id"].toString() + "," +
                             "\"completed\":" + taskMap["completed"].toString() + "," +
                             "\"title\":\"" + taskMap["title"].toString() + "\"," +

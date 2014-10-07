@@ -34,8 +34,7 @@ public:
     Q_INVOKABLE void editTask(QVariantMap taskData);
     Q_INVOKABLE void removeTask(QVariantMap taskData);
     Q_INVOKABLE void logout();
-
-    void showToast(QString message);
+    Q_INVOKABLE void showToast(QString message);
 
 signals:
 

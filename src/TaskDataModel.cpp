@@ -63,9 +63,7 @@ void TaskDataModel::addTask(QVariantMap taskData) {
             taskData[k] = QVariant(taskData[k].toLongLong(NULL));
         }
     }
-    this->internalDB.append(taskData);
-    sortTasksByDueDate();
-    emit itemAdded(QVariantList() << this->internalDB.indexOf(taskData)); //Causes ListView to update
+
     emit taskAdded(QVariantList() << taskData); //Causes TaskSenderReceiver to push changes
 }
 
@@ -79,6 +77,7 @@ void TaskDataModel::editTask(QVariantMap taskData) {
         }
     }
 
+    //TODO: Improve efficiency here, so that only changed fields get updated
     for (int i = 0; i < this->internalDB.count(); ++i) {
         QVariantMap internalTask = this->internalDB.value(i).toMap();
         if (internalTask["id"].toLongLong(NULL) == taskData["id"]) {
@@ -89,7 +88,7 @@ void TaskDataModel::editTask(QVariantMap taskData) {
         }
     }
 
-    sortTasksByDueDate();
+//    sortTasksByDueDate();
 }
 
 void TaskDataModel::removeTask(QVariantMap taskData) {

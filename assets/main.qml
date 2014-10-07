@@ -44,6 +44,7 @@ NavigationPane {
                     ListItemComponent {
                         type: "task"
                         Container {
+                            id: taskItemContainer
                             layout: StackLayout {
                                 orientation: LayoutOrientation.LeftToRight
                             }
@@ -52,11 +53,28 @@ NavigationPane {
                             CheckBox {
                                 checked: ListItemData.completed
                                 verticalAlignment: VerticalAlignment.Center
+                                
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        var data = {"id": parseInt(ListItemData.id),
+                                                    "completed": Math.floor((new Date()).getTime() / 1000),
+                                                    "title": ListItemData.title,
+                                                    "duedate": ListItemData.duedate,
+                                                    "note": ListItemData.note};
+                                        app.editTask(data);
+                                    } else {
+                                        var data = {"id": parseInt(ListItemData.id),
+                                            "completed": 0,
+                                            "title": ListItemData.title,
+                                            "duedate": ListItemData.duedate,
+                                            "note": ListItemData.note};
+                                        app.editTask(data);
+                                    }
+                                }
                             }
                             StandardListItem {
-                                id: taskItem
                                 title: ListItemData.title
-                                status: taskItem.ListItem.view.dueDateString(ListItemData.duedate);
+                                status: taskItemContainer.ListItem.view.dueDateString(ListItemData.duedate);
                                 description: ListItemData.note;
                                 
                                 contextActions: [
@@ -101,7 +119,7 @@ NavigationPane {
                     if (dueDate == 0) {
                         return "No due date";
                     } else {
-                        return "Due " + app.unixTimeToDateTime(dueDate).toDateString();
+                        return app.unixTimeToDateTime(dueDate).toDateString();
                     }
                 }
             }

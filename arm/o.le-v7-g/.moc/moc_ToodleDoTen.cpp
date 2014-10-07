@@ -22,8 +22,8 @@ static const uint qt_meta_data_ToodleDoTen[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      11,   14, // methods
-       1,   69, // properties
+      12,   14, // methods
+       1,   74, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
@@ -43,9 +43,10 @@ static const uint qt_meta_data_ToodleDoTen[] = {
      255,  225,   12,   12, 0x02,
      277,  225,   12,   12, 0x02,
      301,   12,   12,   12, 0x02,
+     318,  310,   12,   12, 0x02,
 
  // properties: name, type, flags
-     325,  310, 0x00095409,
+     352,  337, 0x00095409,
 
        0        // eod
 };
@@ -59,7 +60,8 @@ static const char qt_meta_stringdata_ToodleDoTen[] = {
     "uint\0dateTime\0dateTimeToUnixTime(QDateTime)\0"
     "refresh()\0taskData\0addTask(QVariantMap)\0"
     "editTask(QVariantMap)\0removeTask(QVariantMap)\0"
-    "logout()\0TaskDataModel*\0dataModel\0"
+    "logout()\0message\0showToast(QString)\0"
+    "TaskDataModel*\0dataModel\0"
 };
 
 void ToodleDoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -81,6 +83,7 @@ void ToodleDoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 8: _t->editTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
         case 9: _t->removeTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
         case 10: _t->logout(); break;
+        case 11: _t->showToast((*reinterpret_cast< QString(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -118,9 +121,9 @@ int ToodleDoTen::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 11)
+        if (_id < 12)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 11;
+        _id -= 12;
     }
 #ifndef QT_NO_PROPERTIES
       else if (_c == QMetaObject::ReadProperty) {
