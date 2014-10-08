@@ -11,8 +11,6 @@ public:
     TaskSenderReceiver(QObject *parent = 0);
     void fetchAllTasks();
     void fetchTask(int taskId);
-    void addTasks(QVariantList task);
-    void updateTasks(QVariantList task);
 
     static const QString getUrl;
     static const QString editUrl;
@@ -20,15 +18,16 @@ public:
     static const QString removeUrl;
 
 signals:
-    void tasksUpdated(QVariantList tasks);
-    void tasksAdded(QVariantList tasks);
-    void tasksRemoved(QVariantList taskIDs);
+    void taskEditReply(QVariantMap task);
+    void taskAddReply(QVariantMap task);
+    void taskRemoveReply(QVariantMap task);
+    void taskGetReply(QVariantMap task);
 
 public slots:
-    void onTaskAdded(QVariantList task);
-    void onTaskEdited(QVariantList task);
-    void onTaskRemoved(QVariantList task);
-    void onTasksReceived(QNetworkReply *reply);
+    void onTaskAdded(QVariantMap data);
+    void onTaskEdited(QVariantMap data);
+    void onTaskRemoved(QVariantMap data);
+    void onReplyReceived(QNetworkReply *reply);
 
 private:
     QNetworkAccessManager *_networkAccessManager;

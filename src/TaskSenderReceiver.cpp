@@ -14,7 +14,7 @@ TaskSenderReceiver::TaskSenderReceiver(QObject *parent) : QObject(parent) {
 
     bool isOk;
     isOk = connect(_networkAccessManager, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(onTasksReceived(QNetworkReply*)));
+            this, SLOT(onReplyReceived(QNetworkReply*)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
 }
@@ -22,7 +22,12 @@ TaskSenderReceiver::TaskSenderReceiver(QObject *parent) : QObject(parent) {
 void TaskSenderReceiver::fetchAllTasks() {
     QUrl url(getUrl);
     url.addQueryItem("access_token", PropertiesManager::getInstance()->accessToken);
-    url.addQueryItem("comp", QString::number(0)); //only get non-complete tasks
+    if (!_propMan->showCompletedTasks()) {
+        url.addQueryItem("comp", QString::number(0)); //only get incomplete tasks
+    } else {
+        //If we get complete and incomplete, limit to 50 (for now)
+        url.addQueryItem("num", QString::number(50));
+    }
     url.addEncodedQueryItem("fields", "duedate,note"); //id, title, modified, completed come automatically
 
     QNetworkRequest req(url);
@@ -39,33 +44,20 @@ void TaskSenderReceiver::fetchTask(int taskId) {
     _networkAccessManager->get(req);
 }
 
-void TaskSenderReceiver::addTasks(QVariantList task) {
-    //Task(s) added on site, need to fetch for TaskDataModel
-    //TODO: this.
-}
-
-void TaskSenderReceiver::updateTasks(QVariantList task) {
-    //Task(s) updated on site, need to fetch changes for TaskDataModel
-    //TODO: this.
-}
-
-void TaskSenderReceiver::onTaskAdded(QVariantList task) {
-    //Task was added by user in UI, need to upload new task
-    QVariantMap taskMap = task.first().toMap();
-
+void TaskSenderReceiver::onTaskAdded(QVariantMap task) {
     QUrl url(addUrl);
     QNetworkRequest req(url);
 
     //Build task data string from user's input
     QString encodedData = QString("[{");
-    if (taskMap["title"].toString() != "") {
-        encodedData.append("\"title\":\"" + taskMap["title"].toString() + "\",");
+    if (task["title"].toString() != "") {
+        encodedData.append("\"title\":\"" + task["title"].toString() + "\",");
     }
-    if (taskMap["duedate"].toLongLong(NULL) > 0) {
-        encodedData.append("\"duedate\":" + taskMap["duedate"].toString() + ",");
+    if (task["duedate"].toLongLong(NULL) > 0) {
+        encodedData.append("\"duedate\":" + task["duedate"].toString() + ",");
     }
-    if (taskMap["note"].toString() != "") {
-        encodedData.append("\"note\":\"" + taskMap["note"].toString() + "\",");
+    if (task["note"].toString() != "") {
+        encodedData.append("\"note\":\"" + task["note"].toString() + "\",");
     }
     encodedData.append("\"ref\":\"taskAdd\"}]");
     //Required for ToodleDo's API to replace some stuff
@@ -82,22 +74,16 @@ void TaskSenderReceiver::onTaskAdded(QVariantList task) {
     _networkAccessManager->post(req, data.encodedQuery());
 }
 
-void TaskSenderReceiver::onTaskEdited(QVariantList task) {
-    //Task was edited by user in UI, need to upload changes
-    qDebug() << Q_FUNC_INFO << "Task edited, sending to server";
-    qDebug() << task;
-
-    QVariantMap taskMap = task.first().toMap();
-
+void TaskSenderReceiver::onTaskEdited(QVariantMap task) {
     QUrl url(editUrl);
     QNetworkRequest req(url);
 
     //TODO: Make more efficient by only uploading changes
-    QString encodedData = QString("[{\"id\":" + taskMap["id"].toString() + "," +
-                            "\"completed\":" + taskMap["completed"].toString() + "," +
-                            "\"title\":\"" + taskMap["title"].toString() + "\"," +
-                            "\"duedate\":\"" + taskMap["duedate"].toString() + "\"," +
-                            "\"note\":\"" + taskMap["note"].toString() + "\"}]");
+    QString encodedData = QString("[{\"id\":" + task["id"].toString() + "," +
+                            "\"completed\":" + task["completed"].toString() + "," +
+                            "\"title\":\"" + task["title"].toString() + "\"," +
+                            "\"duedate\":\"" + task["duedate"].toString() + "\"," +
+                            "\"note\":\"" + task["note"].toString() + "\"}]");
     encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
     encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
 
@@ -113,60 +99,69 @@ void TaskSenderReceiver::onTaskEdited(QVariantList task) {
     _networkAccessManager->post(req, data.encodedQuery());
 }
 
-void TaskSenderReceiver::onTaskRemoved(QVariantList task) {
-    //Task was removed by user in UI, need to upload changes
-    QVariantMap taskMap = task.first().toMap();
-
+void TaskSenderReceiver::onTaskRemoved(QVariantMap task) {
     QUrl url(removeUrl);
     QNetworkRequest req(url);
 
     QUrl data;
     data.addQueryItem("access_token", _propMan->accessToken);
-    data.addQueryItem("tasks", "[\"" + taskMap["id"].toString() + "\"]");
+    data.addQueryItem("tasks", "[\"" + task["id"].toString() + "\"]");
 
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
     _networkAccessManager->post(req, data.encodedQuery());
 }
 
-void TaskSenderReceiver::onTasksReceived(QNetworkReply *reply) {
+void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
     QString response = reply->readAll();
-
-    qDebug() << Q_FUNC_INFO << "Reply:" << response;
 
     bb::data::JsonDataAccess jda;
     QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
     if (jda.hasError()) {
         qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+        qDebug() << Q_FUNC_INFO << response;
+        return;
     }
 
     if (reply->error() == QNetworkReply::NoError) {
-        QVariantMap firstEntry = data.first().toMap();
-
-        //If there's a summary entry, this is a list of all tasks
-        if (firstEntry.contains("num") && firstEntry.contains("total")) {
-            //Remove the summary item (gives number of tasks)
-            data.pop_front();
-            qDebug() << Q_FUNC_INFO << "Received tasks";
-            emit tasksUpdated(data);
-        }
-
-        //If the ref field is taskAdd, then this is a new-added task reply
-        if (firstEntry.contains("ref")) {
-            if (firstEntry["ref"].toString() == "taskAdd") {
-                qDebug() << Q_FUNC_INFO << "New task added";
-                emit tasksAdded(data);
+        if (reply->url().toString().contains(getUrl)) {
+            qDebug() << Q_FUNC_INFO << "Task(s) received";
+            if (data.first().toMap().contains("num") && data.first().toMap().contains("total")) {
+                data.pop_front();
             }
-        }
-
-        //If there is just an id field, this is a reply to a delete call
-        if (firstEntry.contains("id") && firstEntry.count() == 1) {
-            qDebug() << Q_FUNC_INFO << "Task deleted" << firstEntry["id"];
-            emit tasksRemoved(QVariantList() << firstEntry["id"]);
+            for (int i = 0; i < data.count(); ++i) {
+                emit taskGetReply(data.value(i).toMap());
+            }
+        } else if (reply->url().toString().contains(addUrl)) {
+            qDebug() << Q_FUNC_INFO << "New task(s) added";
+            for (int i = 0; i < data.count(); ++i) {
+                emit taskAddReply(data.value(i).toMap());
+            }
+        } else if (reply->url().toString().contains(removeUrl)) {
+            qDebug() << Q_FUNC_INFO << "Task(s) removed";
+            for (int i = 0; i < data.count(); ++i) {
+                emit taskRemoveReply(data.value(i).toMap());
+            }
+        } else if (reply->url().toString().contains(editUrl)) {
+            qDebug() << Q_FUNC_INFO << "Task(s) edited";
+            for (int i = 0; i < data.count(); ++i) {
+                emit taskEditReply(data.value(i).toMap());
+            }
+        } else {
+            qDebug() << Q_FUNC_INFO << "Unrecognized reply received:" << data;
         }
     } else {
         //ToodleDo will come back with various error codes if there's a problem
-        qDebug() << Q_FUNC_INFO << "Error code" << data.value(0) << "in network reply:" << data.value(1);
+        QVariantMap errorMap = jda.loadFromBuffer(response).value<QVariantMap>();
+        if (jda.hasError()) {
+            qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+            qDebug() << Q_FUNC_INFO << response;
+            return;
+        }
+
+        qDebug().nospace() << Q_FUNC_INFO << "ToodleDo error " <<
+                errorMap.value("errorCode").toInt(NULL) << ": " <<
+                errorMap.value("errorDesc").toString();
     }
     reply->deleteLater();
 }

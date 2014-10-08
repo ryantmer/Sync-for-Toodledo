@@ -37,12 +37,14 @@ public:
     Q_INVOKABLE void showToast(QString message);
 
 signals:
+    void taskAdded(QVariantMap data);
+    void taskEdited(QVariantMap data);
+    void taskRemoved(QVariantMap data);
 
 public slots:
     void onWebViewUrlChanged(QUrl url);
     void onAccessTokenRefreshed();
     void onRefreshTokenExpired();
-    void onTasksUpdated(QVariantList tasks);
 
 private:
     TaskDataModel *_dataModel;
@@ -52,7 +54,6 @@ private:
     LoginManager *_loginManager;
 
     NavigationPane *root;
-
     Page *loginPage;
     ScrollView *loginScrollView;
     WebView *loginWebView;

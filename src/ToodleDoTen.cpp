@@ -23,20 +23,21 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     //Create root QML document from main.qml and expose certain variables to QML
     QmlDocument *qml = QmlDocument::create("asset:///main.qml").parent(this);
     qml->setContextProperty("app", this);
-    qml->setContextProperty("propertyManager", _propertiesManager);
+    qml->setContextProperty("propertyManager", this->_propertiesManager);
     qml->setContextProperty("dataModel", this->_dataModel);
     root = qml->createRootObject<NavigationPane>();
     Application::instance()->setScene(root);
 
     //Expose app to the main listview
+    //TODO: Figure out what's not properly parented here, and isn't quitting properly
     QDeclarativeEngine *engine = QmlDocument::defaultDeclarativeEngine();
     QDeclarativeContext *rootContext = engine->rootContext();
     rootContext->setContextProperty("app", this);
 
     //Login page, shown if required
-    QmlDocument *loginQml = QmlDocument::create("asset:///Login.qml").parent(qml);
-    loginPage = loginQml->createRootObject<Page>();
-    loginWebView = loginPage->findChild<WebView*>("loginWebView");
+    QmlDocument *loginQml = QmlDocument::create("asset:///Login.qml").parent(this);
+    this->loginPage = loginQml->createRootObject<Page>();
+    this->loginWebView = loginPage->findChild<WebView*>("loginWebView");
 
     bool isOk;
     //ToodleDo10 listens for WebView changing URL
@@ -51,33 +52,33 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     isOk = connect(_loginManager, SIGNAL(refreshTokenExpired()),
             this, SLOT(onRefreshTokenExpired()));
     Q_ASSERT(isOk);
-    //ToodleDo10 listens for updated items in datamodel
-    isOk = connect(_taskSenderReceiver, SIGNAL(tasksUpdated(QVariantList)),
-            this, SLOT(onTasksUpdated(QVariantList)));
+    //Datamodel listens for task get reply signal from TSR
+    isOk = connect(_taskSenderReceiver, SIGNAL(taskGetReply(QVariantMap)),
+            _dataModel, SLOT(onTaskEdited(QVariantMap)));
     Q_ASSERT(isOk);
-    //DataModel listens for added signal from sender-receiver
-    isOk = connect(_taskSenderReceiver, SIGNAL(tasksAdded(QVariantList)),
-            _dataModel, SLOT(onTasksAdded(QVariantList)));
+    //Datamodel listens for task update (edit) reply signal from TSR
+    isOk = connect(_taskSenderReceiver, SIGNAL(taskEditReply(QVariantMap)),
+            _dataModel, SLOT(onTaskEdited(QVariantMap)));
     Q_ASSERT(isOk);
-    //DataModel listens for updated signal from sender-receiver
-    isOk = connect(_taskSenderReceiver, SIGNAL(tasksUpdated(QVariantList)),
-            _dataModel, SLOT(onTasksUpdated(QVariantList)));
+    //Datamodel listens for task add reply signal from TSR
+    isOk = connect(_taskSenderReceiver, SIGNAL(taskAddReply(QVariantMap)),
+            _dataModel, SLOT(onTaskAdded(QVariantMap)));
     Q_ASSERT(isOk);
-    //DataModel listens for removed signal from sender-receiver
-    isOk = connect(_taskSenderReceiver, SIGNAL(tasksRemoved(QVariantList)),
-            _dataModel, SLOT(onTasksRemoved(QVariantList)));
+    //Datamodel listens for task remove reply signal from TSR
+    isOk = connect(_taskSenderReceiver, SIGNAL(taskRemoveReply(QVariantMap)),
+            _dataModel, SLOT(onTaskRemoved(QVariantMap)));
     Q_ASSERT(isOk);
-    //Sender-receiver listens for added items in datamodel
-    isOk = connect(_dataModel, SIGNAL(taskAdded(QVariantList)),
-            _taskSenderReceiver, SLOT(onTaskAdded(QVariantList)));
+    //TSR listens for added signal
+    isOk = connect(this, SIGNAL(taskAdded(QVariantMap)),
+            _taskSenderReceiver, SLOT(onTaskAdded(QVariantMap)));
     Q_ASSERT(isOk);
-    //Sender-receiver listens for edited items in datamodel
-    isOk = connect(_dataModel, SIGNAL(taskEdited(QVariantList)),
-            _taskSenderReceiver, SLOT(onTaskEdited(QVariantList)));
+    //TSR listens for edited signal
+    isOk = connect(this, SIGNAL(taskEdited(QVariantMap)),
+            _taskSenderReceiver, SLOT(onTaskEdited(QVariantMap)));
     Q_ASSERT(isOk);
-    //Sender-receiver listens for removed items in datamodel
-    isOk = connect(_dataModel, SIGNAL(taskRemoved(QVariantList)),
-            _taskSenderReceiver, SLOT(onTaskRemoved(QVariantList)));
+    //TSR listens for removed signal
+    isOk = connect(this, SIGNAL(taskRemoved(QVariantMap)),
+            _taskSenderReceiver, SLOT(onTaskRemoved(QVariantMap)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
 
@@ -121,15 +122,15 @@ void ToodleDoTen::refresh() {
 }
 
 void ToodleDoTen::addTask(QVariantMap data) {
-    this->_dataModel->addTask(data);
+    emit taskAdded(data);
 }
 
 void ToodleDoTen::editTask(QVariantMap data) {
-    this->_dataModel->editTask(data);
+    emit taskEdited(data);
 }
 
 void ToodleDoTen::removeTask(QVariantMap data) {
-    this->_dataModel->removeTask(data);
+    emit taskRemoved(data);
 }
 
 void ToodleDoTen::logout() {
@@ -152,7 +153,7 @@ void ToodleDoTen::onWebViewUrlChanged(QUrl url) {
             //Remove webview from nav pane
             root->pop();
         } else {
-            qDebug() << "State didn't match";
+            qDebug() << Q_FUNC_INFO << "State didn't match";
         }
     }
 }
@@ -169,11 +170,6 @@ void ToodleDoTen::onRefreshTokenExpired() {
     showToast("Please log in!");
     root->push(loginPage);
     loginWebView->setUrl(_loginManager->getAuthorizeUrl().toString());
-}
-
-void ToodleDoTen::onTasksUpdated(QVariantList tasks) {
-    showToast("Tasks Refreshed!");
-    Q_UNUSED(tasks);
 }
 /*
  * Slots end

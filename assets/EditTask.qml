@@ -34,6 +34,11 @@ Sheet {
                     var c;
                     var d;
                     
+                    if (!taskName.text) {
+                        app.showToast("Task name required");
+                        return;
+                    }
+                    
                     if (taskCompleted.checked) {
                         c = Math.floor((new Date()).getTime() / 1000);
                     } else {

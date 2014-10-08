@@ -1,8 +1,7 @@
 1
-10
+9
 About.qml
 AddTask.qml
-data/serverTasks.json
 EditTask.qml
 images/ic_add.png
 images/ic_info.png

@@ -47,19 +47,19 @@ void PropertiesManager::updateAccessToken(QString accessToken, qlonglong expires
     settings.setValue("tokenType", this->tokenType);
 }
 
-bool PropertiesManager::showTaskTime() {
+bool PropertiesManager::showCompletedTasks() {
     QSettings settings("ryantmer", "ToodleDo10");
-    QVariant v = settings.value("showTaskTime", false);
+    QVariant v = settings.value("showCompletedTasks", false);
     return v.toBool();
 }
-void PropertiesManager::setShowTaskTime(bool show) {
+void PropertiesManager::setShowCompletedTasks(bool show) {
     QSettings settings("ryantmer", "ToodleDo10");
-    QVariant v = settings.value("showTaskTime", false);
+    QVariant v = settings.value("showCompletedTasks", false);
     bool b = v.toBool();
     if (b != show) {
-        settings.setValue("showTaskTime", show);
-        qDebug() << "PropertiesManager::showTaskTime changed to" << show;
-        emit showTaskTimeChanged(show);
+        settings.setValue("showCompletedTasks", show);
+        qDebug() << "PropertiesManager::showCompletedTasks changed to" << show;
+        emit showCompletedTasksChanged(show);
     }
 }
 

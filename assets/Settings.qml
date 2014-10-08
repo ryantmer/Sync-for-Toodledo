@@ -19,7 +19,7 @@ Sheet {
             acceptAction: ActionItem {
                 title: "Save"
                 onTriggered: {
-                    propertyManager.showTaskTime = showTimeCheckbox.checked;
+                    propertyManager.showCompletedTasks = showCompletedTasksCheckbox.checked;
                     propertyManager.advancedMode = advancedModeCheckbox.checked;
                     settingsSheet.close();
                 }
@@ -33,14 +33,14 @@ Sheet {
             rightPadding: 10
             
             CheckBox {
-                id: showTimeCheckbox
-                text: "Show Time in Add/Edit Tasks"
-                checked: propertyManager.showTaskTime
-            }
-            CheckBox {
                 id: advancedModeCheckbox
                 text: "Advanced Mode (shows all task fields)"
                 checked: propertyManager.advancedMode
+            }
+            CheckBox {
+                id: showCompletedTasksCheckbox
+                text: "Show Completed Tasks"
+                checked: propertyManager.showCompletedTasks
             }
             Button {
                 id: logoutButton

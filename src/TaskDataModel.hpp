@@ -18,24 +18,17 @@ public:
     Q_INVOKABLE virtual QString itemType(const QVariantList &indexPath);
     Q_INVOKABLE virtual QVariant data(const QVariantList &indexPath);
 
-    void addTask(QVariantMap data);
-    void editTask(QVariantMap data);
-    void removeTask(QVariantMap data);
-
 private:
     QVariantList internalDB;
     void initDatabase(const QString &filename);
     void sortTasksByDueDate();
 
 signals:
-    void taskEdited(QVariantList task);
-    void taskRemoved(QVariantList task);
-    void taskAdded(QVariantList task);
 
 public slots:
-    void onTasksUpdated(QVariantList tasks);
-    void onTasksAdded(QVariantList tasks);
-    void onTasksRemoved(QVariantList taskIDs);
+    void onTaskEdited(QVariantMap task);
+    void onTaskAdded(QVariantMap task);
+    void onTaskRemoved(QVariantMap task);
 };
 
 #endif /* TASKDATAMODEL_HPP_ */

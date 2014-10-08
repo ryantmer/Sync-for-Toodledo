@@ -8,7 +8,6 @@ using namespace bb::data;
 const QString TaskDataModel::databasePath = QString("app/native/assets/data/tasks.json");
 
 TaskDataModel::TaskDataModel(QObject *parent) : DataModel(parent) {
-//    this->initDatabase(TaskDataModel::databasePath);
 }
 TaskDataModel::~TaskDataModel() {
     bb::data::JsonDataAccess jda;
@@ -54,103 +53,52 @@ void TaskDataModel::sortTasksByDueDate() {
     qSort(this->internalDB.begin(), this->internalDB.end(), compareTasksByDueDate);
 }
 
-void TaskDataModel::addTask(QVariantMap taskData) {
-    //Task added in UI, need to add to datamodel
-
-    //A bunch of values come in as non-qlonglong values, convert them where applicable
-    foreach (QString k, taskData.keys()) {
-        if (taskData[k].canConvert(QVariant::LongLong) && taskData[k].type() != QVariant::String) {
-            taskData[k] = QVariant(taskData[k].toLongLong(NULL));
+void TaskDataModel::onTaskEdited(QVariantMap task) {
+    //Find task in datamodel, if it exists
+    for (int i = 0; i < this->internalDB.count(); ++i) {
+        if (this->internalDB.value(i).toMap().value("id").toLongLong(NULL) == task.value("id").toLongLong(NULL)) {
+            //Check if the task has been completed
+            if (task.value("completed").toLongLong(NULL) == 0) {
+                this->internalDB.replace(i, task);
+                sortTasksByDueDate();
+                emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+                qDebug() << Q_FUNC_INFO << "Task edited in TaskDataModel:" << task;
+            } else {
+                //If the task has a completion date, remove it from the datamodel
+                onTaskRemoved(task);
+            }
+            return;
         }
     }
 
-    emit taskAdded(QVariantList() << taskData); //Causes TaskSenderReceiver to push changes
+    //If not found in datamodel, then add as a new task
+    onTaskAdded(task);
 }
 
-void TaskDataModel::editTask(QVariantMap taskData) {
-    //Task edited in UI, need to update datamodel
+void TaskDataModel::onTaskAdded(QVariantMap task) {
+    //Just add task to end of list and re-sort list
+    this->internalDB.append(task);
 
-    //A bunch of values come in as non-qlonglong values, convert them where applicable
-    foreach (QString k, taskData.keys()) {
-        if (taskData[k].canConvert(QVariant::LongLong) && taskData[k].type() != QVariant::String) {
-            taskData[k] = QVariant(taskData[k].toLongLong(NULL));
-        }
-    }
-
-    //TODO: Improve efficiency here, so that only changed fields get updated
-    for (int i = 0; i < this->internalDB.count(); ++i) {
-        QVariantMap internalTask = this->internalDB.value(i).toMap();
-        if (internalTask["id"].toLongLong(NULL) == taskData["id"]) {
-            this->internalDB.replace(i, taskData);
-            emit itemUpdated(QVariantList() << i); //Causes ListView to update
-            emit taskEdited(QVariantList() << taskData); //Causes TaskSenderReceiver to push changes
-            break;
-        }
-    }
-
-//    sortTasksByDueDate();
+    sortTasksByDueDate();
+    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+    qDebug() << Q_FUNC_INFO << "New task added to TaskDataModel:" << task;
 }
 
-void TaskDataModel::removeTask(QVariantMap taskData) {
+void TaskDataModel::onTaskRemoved(QVariantMap task) {
     for (int i = 0; i < this->internalDB.count(); ++i) {
-        QVariantMap task = this->internalDB.value(i).toMap();
-        if (task["id"].toLongLong(NULL) == taskData["id"]) {
+        if (this->internalDB.value(i).toMap().value("id").toLongLong(NULL) == task.value("id").toLongLong(NULL)) {
             this->internalDB.removeAt(i);
-            emit itemRemoved(QVariantList() << i); //Causes ListView to update
-            emit taskRemoved(QVariantList() << taskData); //Causes TaskSenderReceiver to push changes
-            break;
+            sortTasksByDueDate();
+            emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+            qDebug() << Q_FUNC_INFO << "Task removed from TaskDataModel:" << task;
+            return;
         }
     }
 }
 
-void TaskDataModel::onTasksUpdated(QVariantList tasks) {
-    //Task updates received from TaskSenderReceiver, update datamodel with changes
-
-    //TODO: Make this more general, using the following
-//    //Cycle through received tasks and update data model if said tasks already
-//    //exist, or add them to the end if they don't
-//    for (int i = 0; i < tasks.count(); ++i) {
-//        QVariantMap receivedTask = tasks.value(i).toMap();
-//        bool inserted = false;
-//        for (int j = 0; j < this->internalDB.count(); ++j) {
-//            QVariantMap internalTask = this->internalDB.value(j).toMap();
-//
-//            if (internalTask["id"].toLongLong(NULL) == receivedTask["id"].toLongLong(NULL)) {
-//                this->internalDB.replace(j, receivedTask);
-//                inserted = true;
-//                break;
-//            }
-//        }
-//        //If task ID didn't already exist, task is new, so add to end
-//        if (!inserted) {
-//            this->internalDB.append(receivedTask);
-//        }
-//    }
-    this->internalDB = tasks;
-
-    sortTasksByDueDate();
-    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-    qDebug() << Q_FUNC_INFO << "Tasks in TaskDataModel updated from received tasks";
-}
-
-void TaskDataModel::onTasksAdded(QVariantList tasks) {
-    //Task additions received from TaskSenderReceiver, update datamodel with new tasks
-
-    //Just add tasks to end of list and re-sort list
-    for (int i = 0; i < tasks.count(); ++i) {
-        this->internalDB.append(tasks.value(i));
-    }
-
-    sortTasksByDueDate();
-    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-    qDebug() << Q_FUNC_INFO << "New tasks added to TaskDataModel";
-}
-
-void TaskDataModel::onTasksRemoved(QVariantList taskIDs) {
-    //Tasks removals received from TaskSenderReceiver, update datamodel with removed tasks
-    //TODO: This.
-}
-
+/*
+ * Functions required by DataModel. Not sure if these work.
+ */
 int TaskDataModel::childCount(const QVariantList &indexPath) {
     if (indexPath.length() == 0) {
         return this->internalDB.length();
@@ -174,10 +122,6 @@ bool TaskDataModel::hasChildren(const QVariantList &indexPath) {
 }
 QString TaskDataModel::itemType(const QVariantList &indexPath) {
     if (indexPath.length() == 1) {
-        QVariantMap map = this->internalDB.value(indexPath.value(0).toInt(NULL)).toMap();
-        if (map.contains("timecategory")) {
-            return QString("header");
-        }
         return QString("task");
     }
     return QString::null;
@@ -194,3 +138,6 @@ QVariant TaskDataModel::data(const QVariantList &indexPath) {
     }
     return QVariant();
 }
+/*
+ * End of functions required by DataModel
+ */

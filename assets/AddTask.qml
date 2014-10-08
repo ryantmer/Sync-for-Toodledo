@@ -30,6 +30,7 @@ Sheet {
                         app.showToast("Task name required");
                         return;
                     }
+                    
                     if (noDueDate.checked) {
                         d = 0;
                     } else {

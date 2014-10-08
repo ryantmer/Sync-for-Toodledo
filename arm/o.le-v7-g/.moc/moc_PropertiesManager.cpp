@@ -30,25 +30,25 @@ static const uint qt_meta_data_PropertiesManager[] = {
        2,       // signalCount
 
  // signals: signature, parameters, type, tag, flags
-      24,   19,   18,   18, 0x05,
-      59,   50,   18,   18, 0x05,
+      28,   19,   18,   18, 0x05,
+      59,   54,   18,   18, 0x05,
 
  // properties: name, type, flags
-      90,   85, 0x01495103,
-     103,   85, 0x01495103,
+      96,   91, 0x01495103,
+     115,   91, 0x01495103,
 
  // properties: notify_signal_id
-       0,
        1,
+       0,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_PropertiesManager[] = {
-    "PropertiesManager\0\0show\0"
-    "showTaskTimeChanged(bool)\0advanced\0"
-    "advancedModeChanged(bool)\0bool\0"
-    "showTaskTime\0advancedMode\0"
+    "PropertiesManager\0\0advanced\0"
+    "advancedModeChanged(bool)\0show\0"
+    "showCompletedTasksChanged(bool)\0bool\0"
+    "showCompletedTasks\0advancedMode\0"
 };
 
 void PropertiesManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -57,8 +57,8 @@ void PropertiesManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         Q_ASSERT(staticMetaObject.cast(_o));
         PropertiesManager *_t = static_cast<PropertiesManager *>(_o);
         switch (_id) {
-        case 0: _t->showTaskTimeChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 1: _t->advancedModeChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 0: _t->advancedModeChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 1: _t->showCompletedTasksChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -104,14 +104,14 @@ int PropertiesManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
       else if (_c == QMetaObject::ReadProperty) {
         void *_v = _a[0];
         switch (_id) {
-        case 0: *reinterpret_cast< bool*>(_v) = showTaskTime(); break;
+        case 0: *reinterpret_cast< bool*>(_v) = showCompletedTasks(); break;
         case 1: *reinterpret_cast< bool*>(_v) = advancedMode(); break;
         }
         _id -= 2;
     } else if (_c == QMetaObject::WriteProperty) {
         void *_v = _a[0];
         switch (_id) {
-        case 0: setShowTaskTime(*reinterpret_cast< bool*>(_v)); break;
+        case 0: setShowCompletedTasks(*reinterpret_cast< bool*>(_v)); break;
         case 1: setAdvancedMode(*reinterpret_cast< bool*>(_v)); break;
         }
         _id -= 2;
@@ -133,14 +133,14 @@ int PropertiesManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void PropertiesManager::showTaskTimeChanged(bool _t1)
+void PropertiesManager::advancedModeChanged(bool _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1
-void PropertiesManager::advancedModeChanged(bool _t1)
+void PropertiesManager::showCompletedTasksChanged(bool _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
