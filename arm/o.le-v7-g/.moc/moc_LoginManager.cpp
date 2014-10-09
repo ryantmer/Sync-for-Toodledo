@@ -22,7 +22,7 @@ static const uint qt_meta_data_LoginManager[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+       9,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -40,6 +40,7 @@ static const uint qt_meta_data_LoginManager[] = {
      145,   13,   13,   13, 0x0a,
      169,   13,   13,   13, 0x0a,
      198,  192,   13,   13, 0x0a,
+     237,   13,   13,   13, 0x0a,
 
        0        // eod
 };
@@ -51,6 +52,7 @@ static const char qt_meta_stringdata_LoginManager[] = {
     "refreshTokenRefreshed()\0accessTokenRefreshed()\0"
     "onRefreshTokenExpired()\0onAccessTokenExpired()\0"
     "reply\0onTokenRequestFinished(QNetworkReply*)\0"
+    "onLoggedOut()\0"
 };
 
 void LoginManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -67,6 +69,7 @@ void LoginManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 5: _t->onRefreshTokenExpired(); break;
         case 6: _t->onAccessTokenExpired(); break;
         case 7: _t->onTokenRequestFinished((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
+        case 8: _t->onLoggedOut(); break;
         default: ;
         }
     }
@@ -104,9 +107,9 @@ int LoginManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 9)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 9;
     }
     return _id;
 }

@@ -72,23 +72,35 @@ Sheet {
             CheckBox {
                 id: taskCompleted
                 text: "Completed"
+                topMargin: 20
+                leftMargin: 20
+                rightMargin: 20
+                bottomMargin: 20
             }
             TextField {
                 id: taskIdField
                 visible: false
+                topMargin: 20
+                leftMargin: 20
+                rightMargin: 20
+                bottomMargin: 20
             }
             TextField {
                 id: taskName
                 hintText: "Task Name"
                 horizontalAlignment: HorizontalAlignment.Fill
-                topMargin: 10.0
-                leftMargin: 10.0
-                rightMargin: 10.0
-                bottomMargin: 10.0
+                topMargin: 20
+                leftMargin: 20
+                rightMargin: 20
+                bottomMargin: 20
             }
             CheckBox {
                 id: noDueDate
                 text: "No Due Date"
+                topMargin: 20
+                leftMargin: 20
+                rightMargin: 20
+                bottomMargin: 20
                 onCheckedChanged: {
                     taskDueDate.enabled = !noDueDate.checked;
                 }
@@ -99,19 +111,19 @@ Sheet {
                 mode: DateTimePickerMode.Date
                 expanded: false
                 title: "Due Date"
-                topMargin: 10.0
-                leftMargin: 10.0
-                rightMargin: 10.0
-                bottomMargin: 10.0
+                topMargin: 20
+                leftMargin: 20
+                rightMargin: 20
+                bottomMargin: 20
             }
             TextArea {
                 id: taskNote
                 hintText: "Detailed notes about task"
                 horizontalAlignment: HorizontalAlignment.Fill
-                topMargin: 10.0
-                leftMargin: 10.0
-                rightMargin: 10.0
-                bottomMargin: 10.0
+                topMargin: 20
+                leftMargin: 20
+                rightMargin: 20
+                bottomMargin: 20
             }
         }
     }

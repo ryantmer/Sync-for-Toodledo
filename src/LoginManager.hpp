@@ -11,7 +11,7 @@ class LoginManager : public QObject {
 
 public:
     static LoginManager *getInstance();
-    LoginManager();
+    LoginManager(QObject *parent = NULL);
     virtual ~LoginManager();
 
     static const QString authorizeUrl;
@@ -22,12 +22,12 @@ public:
     QString getState();
     void refreshRefreshToken(QString authCode);
     void refreshAccessToken();
-    void logout();
 
 public slots:
     void onRefreshTokenExpired();
     void onAccessTokenExpired();
     void onTokenRequestFinished(QNetworkReply *reply);
+    void onLoggedOut();
 
 signals:
     void accessTokenReceived(QString accessToken);

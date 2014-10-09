@@ -66,6 +66,10 @@ Sheet {
             CheckBox {
                 id: noDueDate
                 text: "No Due Date"
+                topMargin: 20
+                leftMargin: 20
+                rightMargin: 20
+                bottomMargin: 20
                 onCheckedChanged: {
                     taskDueDate.enabled = !noDueDate.checked;
                 }

@@ -40,6 +40,7 @@ signals:
     void taskAdded(QVariantMap data);
     void taskEdited(QVariantMap data);
     void taskRemoved(QVariantMap data);
+    void loggedOut();
 
 public slots:
     void onWebViewUrlChanged(QUrl url);

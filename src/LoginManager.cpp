@@ -32,7 +32,7 @@ LoginManager *LoginManager::getInstance() {
     return singleton;
 }
 
-LoginManager::LoginManager() {
+LoginManager::LoginManager(QObject *parent) : QObject(parent) {
     loggedIn = false;
     _networkAccessManager = new QNetworkAccessManager(this);
     _propMan = PropertiesManager::getInstance();
@@ -68,6 +68,7 @@ LoginManager::LoginManager() {
 LoginManager::~LoginManager() {}
 
 bool LoginManager::isLoggedIn() {
+    qDebug() << _propMan->accessTokenExpiry << "    " << _propMan->refreshTokenExpiry;
     if (_propMan->accessTokenExpiry < QDateTime::currentDateTimeUtc().toTime_t()) {
         if (_propMan->refreshTokenExpiry < QDateTime::currentDateTimeUtc().toTime_t()) {
             emit refreshTokenExpired(); //implicitly refreshes access token as well
@@ -129,9 +130,9 @@ void LoginManager::refreshAccessToken() {
     _networkAccessManager->post(req, data.encodedQuery());
 }
 
-void LoginManager::logout() {
+void LoginManager::onLoggedOut() {
     this->loggedIn = false;
-    this->_propMan->updateAccessToken("", 0, "", "", "");
+    this->_propMan->clearTokens();
     qDebug() << Q_FUNC_INFO << "Logged out";
 }
 
@@ -148,13 +149,17 @@ void LoginManager::onAccessTokenExpired() {
 void LoginManager::onTokenRequestFinished(QNetworkReply *reply) {
     QString response = reply->readAll();
 
-    if (reply->error() == QNetworkReply::NoError) {
-        bb::data::JsonDataAccess jda;
-        QVariantMap data = jda.loadFromBuffer(response).value<QVariantMap>();
+    bb::data::JsonDataAccess jda;
+    QVariantMap data = jda.loadFromBuffer(response).value<QVariantMap>();
+    if (jda.hasError()) {
+        qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+        qDebug() << Q_FUNC_INFO << response;
+        return;
+    }
 
-        if (jda.hasError()) {
-            qDebug() << Q_FUNC_INFO << "Error reading reply:" << jda.error();
-        } else {
+    if (reply->error() == QNetworkReply::NoError) {
+        if (reply->url().toString().contains(tokenUrl)) {
+            qDebug() << Q_FUNC_INFO << "New tokens received";
             this->_propMan->updateAccessToken(data.value("access_token").toString(),
                     data.value("expires_in").toLongLong(NULL),
                     data.value("refresh_token").toString(),
@@ -170,14 +175,17 @@ void LoginManager::onTokenRequestFinished(QNetworkReply *reply) {
                     (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
         }
     } else {
-        qDebug() << Q_FUNC_INFO << "Error getting token!";
-        qDebug() << Q_FUNC_INFO << response;
-        bb::data::JsonDataAccess jda;
-        QVariantMap error = jda.loadFromBuffer(response).value<QVariantMap>();
-
-        if (error["errorCode"] == 103) {
-            qDebug() << Q_FUNC_INFO << "Too many token requests - please try again in an hour.";
+        //ToodleDo will come back with various error codes if there's a problem
+        QVariantMap errorMap = jda.loadFromBuffer(response).value<QVariantMap>();
+        if (jda.hasError()) {
+            qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+            qDebug() << Q_FUNC_INFO << response;
+            return;
         }
+
+        qDebug() << Q_FUNC_INFO << "ToodleDo error" <<
+                errorMap.value("errorCode").toInt(NULL) << ":" <<
+                errorMap.value("errorDesc").toString();
     }
     reply->deleteLater();
 }

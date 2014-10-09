@@ -47,6 +47,23 @@ void PropertiesManager::updateAccessToken(QString accessToken, qlonglong expires
     settings.setValue("tokenType", this->tokenType);
 }
 
+void PropertiesManager::clearTokens() {
+    this->accessToken = "";
+    this->accessTokenExpiry = 0;
+    this->refreshToken = "";
+    this->refreshTokenExpiry = 0;
+    this->tokenScope = "";
+    this->tokenType = "";
+
+    QSettings settings("ryantmer", "ToodleDo10");
+    settings.setValue("accessToken", this->accessToken);
+    settings.setValue("accessTokenExpiry", this->accessTokenExpiry);
+    settings.setValue("refreshToken", this->refreshToken);
+    settings.setValue("refreshTokenExpiry", this->refreshTokenExpiry);
+    settings.setValue("tokenScope", this->tokenScope);
+    settings.setValue("tokenType", this->tokenType);
+}
+
 bool PropertiesManager::showCompletedTasks() {
     QSettings settings("ryantmer", "ToodleDo10");
     QVariant v = settings.value("showCompletedTasks", false);

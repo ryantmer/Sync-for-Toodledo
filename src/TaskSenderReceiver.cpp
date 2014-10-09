@@ -159,8 +159,8 @@ void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
             return;
         }
 
-        qDebug().nospace() << Q_FUNC_INFO << "ToodleDo error " <<
-                errorMap.value("errorCode").toInt(NULL) << ": " <<
+        qDebug() << Q_FUNC_INFO << "ToodleDo error" <<
+                errorMap.value("errorCode").toInt(NULL) << ":" <<
                 errorMap.value("errorDesc").toString();
     }
     reply->deleteLater();

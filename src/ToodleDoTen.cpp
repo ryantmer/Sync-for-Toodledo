@@ -52,6 +52,10 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     isOk = connect(_loginManager, SIGNAL(refreshTokenExpired()),
             this, SLOT(onRefreshTokenExpired()));
     Q_ASSERT(isOk);
+    //LoginManager listens for loggedOut signal from UI
+    isOk = connect(this, SIGNAL(loggedOut()),
+            _loginManager, SLOT(onLoggedOut()));
+    Q_ASSERT(isOk);
     //Datamodel listens for task get reply signal from TSR
     isOk = connect(_taskSenderReceiver, SIGNAL(taskGetReply(QVariantMap)),
             _dataModel, SLOT(onTaskEdited(QVariantMap)));
@@ -134,7 +138,8 @@ void ToodleDoTen::removeTask(QVariantMap data) {
 }
 
 void ToodleDoTen::logout() {
-    this->_loginManager->logout();
+//    this->_loginManager->logout();
+    emit loggedOut();
 }
 /*
  * Q_INVOKABLE functions end

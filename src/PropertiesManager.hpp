@@ -8,8 +8,9 @@ public:
     Q_PROPERTY(bool advancedMode READ advancedMode WRITE setAdvancedMode NOTIFY advancedModeChanged);
 
     static PropertiesManager *getInstance();
-    PropertiesManager(QObject *parent = NULL);
+    PropertiesManager(QObject *parent = 0);
     virtual ~PropertiesManager();
+    void saveProperties();
 
     bool showCompletedTasks();
     void setShowCompletedTasks(bool show);
@@ -17,6 +18,7 @@ public:
     void setAdvancedMode(bool advanced);
 
     void updateAccessToken(QString accessToken, qlonglong expiresIn, QString refreshToken, QString tokenScope, QString tokenType);
+    void clearTokens();
 
     QString accessToken;
     uint accessTokenExpiry;
