@@ -31,14 +31,14 @@ public:
     Q_INVOKABLE uint dateTimeToUnixTime(QDateTime dateTime);
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void addTask(QVariantMap taskData);
-    Q_INVOKABLE void editTask(QVariantMap taskData);
+    Q_INVOKABLE void editTask(QVariantMap oldData, QVariantMap newData);
     Q_INVOKABLE void removeTask(QVariantMap taskData);
     Q_INVOKABLE void logout();
     Q_INVOKABLE void showToast(QString message);
 
 signals:
     void taskAdded(QVariantMap data);
-    void taskEdited(QVariantMap data);
+    void taskEdited(QVariantMap oldData, QVariantMap newData);
     void taskRemoved(QVariantMap data);
     void loggedOut();
 

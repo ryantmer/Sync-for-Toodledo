@@ -49,29 +49,25 @@ Sheet {
         
         Container {
             layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
-            topPadding: 10
-            leftPadding: 10
-            rightPadding: 10
-            bottomPadding: 10
+            topPadding: 30
+            leftPadding: 30
+            rightPadding: 30
+            bottomPadding: 30
             
             TextField {
                 id: taskName
                 hintText: "Task Name"
                 horizontalAlignment: HorizontalAlignment.Fill
-                topMargin: 20
-                leftMargin: 20
-                rightMargin: 20
-                bottomMargin: 20
+                topMargin: 40
+                bottomMargin: 40
             }
             CheckBox {
                 id: noDueDate
                 text: "No Due Date"
-                topMargin: 20
-                leftMargin: 20
-                rightMargin: 20
-                bottomMargin: 20
+                topMargin: 40
+                bottomMargin: 40
                 onCheckedChanged: {
-                    taskDueDate.enabled = !noDueDate.checked;
+                    taskDueDate.enabled = ! noDueDate.checked;
                 }
             }
             DateTimePicker {
@@ -80,20 +76,16 @@ Sheet {
                 mode: DateTimePickerMode.Date
                 expanded: false
                 title: "Due Date"
-                topMargin: 20
-                leftMargin: 20
-                rightMargin: 20
-                bottomMargin: 20
+                topMargin: 40
+                bottomMargin: 40
             }
-    
+
             TextArea {
                 id: taskNote
                 hintText: "Detailed notes about task"
                 horizontalAlignment: HorizontalAlignment.Fill
-                topMargin: 20
-                leftMargin: 20
-                rightMargin: 20
-                bottomMargin: 20
+                topMargin: 40
+                bottomMargin: 40
             }
         }
     }

@@ -56,19 +56,29 @@ NavigationPane {
                                 
                                 onCheckedChanged: {
                                     if (checked) {
-                                        var data = {"id": parseInt(ListItemData.id),
+                                        var oldData = {"id": parseInt(ListItemData.id),
+                                                "completed": ListItemData.completed,
+                                                "title": ListItemData.title,
+                                                "duedate": ListItemData.duedate,
+                                                "note": ListItemData.note};
+                                        var newData = {"id": parseInt(ListItemData.id),
                                                     "completed": Math.floor((new Date()).getTime() / 1000),
                                                     "title": ListItemData.title,
                                                     "duedate": ListItemData.duedate,
                                                     "note": ListItemData.note};
-                                        app.editTask(data);
+                                        app.editTask(oldData, newData);
                                     } else {
-                                        var data = {"id": parseInt(ListItemData.id),
+                                        var oldData = {"id": parseInt(ListItemData.id),
+                                            "completed": ListItemData.completed,
+                                            "title": ListItemData.title,
+                                            "duedate": ListItemData.duedate,
+                                            "note": ListItemData.note};
+                                        var newData = {"id": parseInt(ListItemData.id),
                                             "completed": 0,
                                             "title": ListItemData.title,
                                             "duedate": ListItemData.duedate,
                                             "note": ListItemData.note};
-                                        app.editTask(data);
+                                        app.editTask(oldData, newData);
                                     }
                                 }
                             }
@@ -112,6 +122,8 @@ NavigationPane {
                     if (selectedTask.note) {
                         p.note = selectedTask.note;
                     }
+                    
+                    p.oldData = selectedTask;
                     
                     p.open();
                 }

@@ -37,9 +37,9 @@ static const uint qt_meta_data_TaskSenderReceiver[] = {
 
  // slots: signature, parameters, type, tag, flags
      138,  133,   19,   19, 0x0a,
-     163,  133,   19,   19, 0x0a,
-     189,  133,   19,   19, 0x0a,
-     222,  216,   19,   19, 0x0a,
+     179,  163,   19,   19, 0x0a,
+     217,  133,   19,   19, 0x0a,
+     250,  244,   19,   19, 0x0a,
 
        0        // eod
 };
@@ -50,8 +50,8 @@ static const char qt_meta_stringdata_TaskSenderReceiver[] = {
     "taskAddReply(QVariantMap)\0"
     "taskRemoveReply(QVariantMap)\0"
     "taskGetReply(QVariantMap)\0data\0"
-    "onTaskAdded(QVariantMap)\0"
-    "onTaskEdited(QVariantMap)\0"
+    "onTaskAdded(QVariantMap)\0oldData,newData\0"
+    "onTaskEdited(QVariantMap,QVariantMap)\0"
     "onTaskRemoved(QVariantMap)\0reply\0"
     "onReplyReceived(QNetworkReply*)\0"
 };
@@ -67,7 +67,7 @@ void TaskSenderReceiver::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
         case 2: _t->taskRemoveReply((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
         case 3: _t->taskGetReply((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
         case 4: _t->onTaskAdded((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 5: _t->onTaskEdited((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 5: _t->onTaskEdited((*reinterpret_cast< QVariantMap(*)>(_a[1])),(*reinterpret_cast< QVariantMap(*)>(_a[2]))); break;
         case 6: _t->onTaskRemoved((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
         case 7: _t->onReplyReceived((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
         default: ;

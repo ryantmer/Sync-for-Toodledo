@@ -68,7 +68,6 @@ LoginManager::LoginManager(QObject *parent) : QObject(parent) {
 LoginManager::~LoginManager() {}
 
 bool LoginManager::isLoggedIn() {
-    qDebug() << _propMan->accessTokenExpiry << "    " << _propMan->refreshTokenExpiry;
     if (_propMan->accessTokenExpiry < QDateTime::currentDateTimeUtc().toTime_t()) {
         if (_propMan->refreshTokenExpiry < QDateTime::currentDateTimeUtc().toTime_t()) {
             emit refreshTokenExpired(); //implicitly refreshes access token as well

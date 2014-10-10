@@ -77,8 +77,8 @@ ToodleDoTen::ToodleDoTen() : QObject() {
             _taskSenderReceiver, SLOT(onTaskAdded(QVariantMap)));
     Q_ASSERT(isOk);
     //TSR listens for edited signal
-    isOk = connect(this, SIGNAL(taskEdited(QVariantMap)),
-            _taskSenderReceiver, SLOT(onTaskEdited(QVariantMap)));
+    isOk = connect(this, SIGNAL(taskEdited(QVariantMap, QVariantMap)),
+            _taskSenderReceiver, SLOT(onTaskEdited(QVariantMap, QVariantMap)));
     Q_ASSERT(isOk);
     //TSR listens for removed signal
     isOk = connect(this, SIGNAL(taskRemoved(QVariantMap)),
@@ -129,8 +129,8 @@ void ToodleDoTen::addTask(QVariantMap data) {
     emit taskAdded(data);
 }
 
-void ToodleDoTen::editTask(QVariantMap data) {
-    emit taskEdited(data);
+void ToodleDoTen::editTask(QVariantMap oldData, QVariantMap newData) {
+    emit taskEdited(oldData, newData);
 }
 
 void ToodleDoTen::removeTask(QVariantMap data) {

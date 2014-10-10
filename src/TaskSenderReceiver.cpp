@@ -7,6 +7,7 @@ const QString TaskSenderReceiver::getUrl = QString("http://api.toodledo.com/3/ta
 const QString TaskSenderReceiver::editUrl = QString("http://api.toodledo.com/3/tasks/edit.php");
 const QString TaskSenderReceiver::addUrl = QString("http://api.toodledo.com/3/tasks/add.php");
 const QString TaskSenderReceiver::removeUrl = QString("http://api.toodledo.com/3/tasks/delete.php");
+const QString TaskSenderReceiver::folderUrl = QString("http://api.toodledo.com/3/folders/get.php");
 
 TaskSenderReceiver::TaskSenderReceiver(QObject *parent) : QObject(parent) {
     _networkAccessManager = new QNetworkAccessManager(this);
@@ -74,20 +75,27 @@ void TaskSenderReceiver::onTaskAdded(QVariantMap task) {
     _networkAccessManager->post(req, data.encodedQuery());
 }
 
-void TaskSenderReceiver::onTaskEdited(QVariantMap task) {
+void TaskSenderReceiver::onTaskEdited(QVariantMap oldData, QVariantMap newData) {
     QUrl url(editUrl);
     QNetworkRequest req(url);
 
-    //TODO: Make more efficient by only uploading changes
-    QString encodedData = QString("[{\"id\":" + task["id"].toString() + "," +
-                            "\"completed\":" + task["completed"].toString() + "," +
-                            "\"title\":\"" + task["title"].toString() + "\"," +
-                            "\"duedate\":\"" + task["duedate"].toString() + "\"," +
-                            "\"note\":\"" + task["note"].toString() + "\"}]");
+    //Build data string to only include fields that actually changed
+    QString encodedData = QString("[{\"id\":" + newData["id"].toString());
+    if (oldData["completed"] != newData["completed"]) {
+        encodedData.append(",\"completed\":" + newData["completed"].toString());
+    }
+    if (oldData["title"] != newData["title"]) {
+        encodedData.append(",\"title\":\"" + newData["title"].toString() + "\"");
+    }
+    if (oldData["duedate"] != newData["duedate"]) {
+        encodedData.append(",\"duedate\":" + newData["duedate"].toString());
+    }
+    if (oldData["note"] != newData["note"]) {
+        encodedData.append(",\"note\":\"" + newData["note"].toString() + "\"");
+    }
+    encodedData.append("}]");
     encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
     encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
-
-    qDebug() << Q_FUNC_INFO << encodedData;
 
     QUrl data;
     data.addQueryItem("access_token", _propMan->accessToken);
@@ -147,6 +155,9 @@ void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
             for (int i = 0; i < data.count(); ++i) {
                 emit taskEditReply(data.value(i).toMap());
             }
+        } else if (reply->url().toString().contains(folderUrl)) {
+            qDebug() << Q_FUNC_INFO << "Folder(s) received";
+            qDebug() << data;
         } else {
             qDebug() << Q_FUNC_INFO << "Unrecognized reply received:" << data;
         }

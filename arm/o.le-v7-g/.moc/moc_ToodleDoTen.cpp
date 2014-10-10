@@ -31,34 +31,34 @@ static const uint qt_meta_data_ToodleDoTen[] = {
 
  // signals: signature, parameters, type, tag, flags
       18,   13,   12,   12, 0x05,
-      41,   13,   12,   12, 0x05,
-      65,   13,   12,   12, 0x05,
-      90,   12,   12,   12, 0x05,
+      57,   41,   12,   12, 0x05,
+      93,   13,   12,   12, 0x05,
+     118,   12,   12,   12, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-     106,  102,   12,   12, 0x0a,
-     132,   12,   12,   12, 0x0a,
-     157,   12,   12,   12, 0x0a,
+     134,  130,   12,   12, 0x0a,
+     160,   12,   12,   12, 0x0a,
+     185,   12,   12,   12, 0x0a,
 
  // methods: signature, parameters, type, tag, flags
-     200,  191,  181,   12, 0x02,
-     239,  230,  225,   12, 0x02,
-     269,   12,   12,   12, 0x02,
-     288,  279,   12,   12, 0x02,
-     309,  279,   12,   12, 0x02,
-     331,  279,   12,   12, 0x02,
-     355,   12,   12,   12, 0x02,
-     372,  364,   12,   12, 0x02,
+     228,  219,  209,   12, 0x02,
+     267,  258,  253,   12, 0x02,
+     297,   12,   12,   12, 0x02,
+     316,  307,   12,   12, 0x02,
+     337,   41,   12,   12, 0x02,
+     371,  307,   12,   12, 0x02,
+     395,   12,   12,   12, 0x02,
+     412,  404,   12,   12, 0x02,
 
  // properties: name, type, flags
-     406,  391, 0x00095409,
+     446,  431, 0x00095409,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_ToodleDoTen[] = {
     "ToodleDoTen\0\0data\0taskAdded(QVariantMap)\0"
-    "taskEdited(QVariantMap)\0"
+    "oldData,newData\0taskEdited(QVariantMap,QVariantMap)\0"
     "taskRemoved(QVariantMap)\0loggedOut()\0"
     "url\0onWebViewUrlChanged(QUrl)\0"
     "onAccessTokenRefreshed()\0"
@@ -66,9 +66,10 @@ static const char qt_meta_stringdata_ToodleDoTen[] = {
     "unixTime\0unixTimeToDateTime(uint)\0"
     "uint\0dateTime\0dateTimeToUnixTime(QDateTime)\0"
     "refresh()\0taskData\0addTask(QVariantMap)\0"
-    "editTask(QVariantMap)\0removeTask(QVariantMap)\0"
-    "logout()\0message\0showToast(QString)\0"
-    "TaskDataModel*\0dataModel\0"
+    "editTask(QVariantMap,QVariantMap)\0"
+    "removeTask(QVariantMap)\0logout()\0"
+    "message\0showToast(QString)\0TaskDataModel*\0"
+    "dataModel\0"
 };
 
 void ToodleDoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -78,7 +79,7 @@ void ToodleDoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         ToodleDoTen *_t = static_cast<ToodleDoTen *>(_o);
         switch (_id) {
         case 0: _t->taskAdded((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 1: _t->taskEdited((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 1: _t->taskEdited((*reinterpret_cast< QVariantMap(*)>(_a[1])),(*reinterpret_cast< QVariantMap(*)>(_a[2]))); break;
         case 2: _t->taskRemoved((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
         case 3: _t->loggedOut(); break;
         case 4: _t->onWebViewUrlChanged((*reinterpret_cast< QUrl(*)>(_a[1]))); break;
@@ -90,7 +91,7 @@ void ToodleDoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
         case 9: _t->refresh(); break;
         case 10: _t->addTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 11: _t->editTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 11: _t->editTask((*reinterpret_cast< QVariantMap(*)>(_a[1])),(*reinterpret_cast< QVariantMap(*)>(_a[2]))); break;
         case 12: _t->removeTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
         case 13: _t->logout(); break;
         case 14: _t->showToast((*reinterpret_cast< QString(*)>(_a[1]))); break;
@@ -169,9 +170,9 @@ void ToodleDoTen::taskAdded(QVariantMap _t1)
 }
 
 // SIGNAL 1
-void ToodleDoTen::taskEdited(QVariantMap _t1)
+void ToodleDoTen::taskEdited(QVariantMap _t1, QVariantMap _t2)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 

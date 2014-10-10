@@ -16,6 +16,7 @@ public:
     static const QString editUrl;
     static const QString addUrl;
     static const QString removeUrl;
+    static const QString folderUrl;
 
 signals:
     void taskEditReply(QVariantMap task);
@@ -25,7 +26,7 @@ signals:
 
 public slots:
     void onTaskAdded(QVariantMap data);
-    void onTaskEdited(QVariantMap data);
+    void onTaskEdited(QVariantMap oldData, QVariantMap newData);
     void onTaskRemoved(QVariantMap data);
     void onReplyReceived(QNetworkReply *reply);
 

@@ -14,6 +14,7 @@ Sheet {
     property alias dueDateEnabled: taskDueDate.enabled
     property alias noDueDate: noDueDate.checked
     property alias note: taskNote.text
+    property variant oldData;
     
     Page {
         titleBar: TitleBar {
@@ -56,7 +57,7 @@ Sheet {
                                 "duedate": d,
                                 "note": taskNote.text};
                     
-                    app.editTask(taskData);
+                    app.editTask(oldData, taskData);
                     editTaskSheet.close();
                 }
             }
@@ -64,43 +65,35 @@ Sheet {
             
         Container {
             layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
-            topPadding: 10.0
-            leftPadding: 10.0
-            rightPadding: 10.0
-            bottomPadding: 10.0
+            topPadding: 30
+            leftPadding: 30
+            rightPadding: 30
+            bottomPadding: 30
                 
             CheckBox {
                 id: taskCompleted
                 text: "Completed"
-                topMargin: 20
-                leftMargin: 20
-                rightMargin: 20
-                bottomMargin: 20
+                topMargin: 40
+                bottomMargin: 40
             }
             TextField {
                 id: taskIdField
                 visible: false
-                topMargin: 20
-                leftMargin: 20
-                rightMargin: 20
-                bottomMargin: 20
+                topMargin: 40
+                bottomMargin: 40
             }
             TextField {
                 id: taskName
                 hintText: "Task Name"
                 horizontalAlignment: HorizontalAlignment.Fill
-                topMargin: 20
-                leftMargin: 20
-                rightMargin: 20
-                bottomMargin: 20
+                topMargin: 40
+                bottomMargin: 40
             }
             CheckBox {
                 id: noDueDate
                 text: "No Due Date"
-                topMargin: 20
-                leftMargin: 20
-                rightMargin: 20
-                bottomMargin: 20
+                topMargin: 40
+                bottomMargin: 40
                 onCheckedChanged: {
                     taskDueDate.enabled = !noDueDate.checked;
                 }
@@ -111,19 +104,15 @@ Sheet {
                 mode: DateTimePickerMode.Date
                 expanded: false
                 title: "Due Date"
-                topMargin: 20
-                leftMargin: 20
-                rightMargin: 20
-                bottomMargin: 20
+                topMargin: 40
+                bottomMargin: 40
             }
             TextArea {
                 id: taskNote
                 hintText: "Detailed notes about task"
                 horizontalAlignment: HorizontalAlignment.Fill
-                topMargin: 20
-                leftMargin: 20
-                rightMargin: 20
-                bottomMargin: 20
+                topMargin: 40
+                bottomMargin: 40
             }
         }
     }

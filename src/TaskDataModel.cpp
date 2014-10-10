@@ -45,7 +45,7 @@ bool compareTasksByDueDate(QVariant &a, QVariant &b) {
     } else if (second.value("duedate").toLongLong(NULL) == 0) {
         return true;
     } else {
-        return first.value("duedate").toLongLong(NULL) < second.value("duedate").toLongLong(NULL);
+        return first.value("duedate").toLongLong(NULL) <= second.value("duedate").toLongLong(NULL);
     }
 }
 
