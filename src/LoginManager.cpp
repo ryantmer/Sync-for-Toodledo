@@ -17,7 +17,7 @@
 
 const QString LoginManager::authorizeUrl = QString("https://api.toodledo.com/3/account/authorize.php");
 const QString LoginManager::tokenUrl = QString("https://api.toodledo.com/3/account/token.php");
-const QString LoginManager::credentials = QString("");
+const QString LoginManager::credentials = QString("ToodleDo10:api53ed061e20f0f");
 
 LoginManager *LoginManager::getInstance() {
     static LoginManager *singleton = NULL;
