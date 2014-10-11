@@ -10,7 +10,6 @@ class TaskSenderReceiver : public QObject {
 public:
     TaskSenderReceiver(QObject *parent = 0);
     void fetchAllTasks();
-    void fetchTask(int taskId);
 
     static const QString getUrl;
     static const QString editUrl;

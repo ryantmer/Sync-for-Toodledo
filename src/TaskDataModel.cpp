@@ -44,6 +44,9 @@ bool compareTasksByDueDate(QVariant &a, QVariant &b) {
         return false;
     } else if (second.value("duedate").toLongLong(NULL) == 0) {
         return true;
+    } else if (first.value("duedate").toLongLong(NULL) == second.value("duedate").toLongLong(NULL)) {
+        //If two tasks has the same duedate timestamp, order by modified timestamp
+        return first.value("modified").toLongLong(NULL) >= second.value("modified").toLongLong(NULL);
     } else {
         return first.value("duedate").toLongLong(NULL) <= second.value("duedate").toLongLong(NULL);
     }
@@ -53,6 +56,9 @@ void TaskDataModel::sortTasksByDueDate() {
     qSort(this->internalDB.begin(), this->internalDB.end(), compareTasksByDueDate);
 }
 
+/*
+ * Slots
+ */
 void TaskDataModel::onTaskEdited(QVariantMap task) {
     //Find task in datamodel, if it exists
     for (int i = 0; i < this->internalDB.count(); ++i) {
@@ -96,6 +102,17 @@ void TaskDataModel::onTaskRemoved(QVariantMap task) {
     }
 }
 
+void TaskDataModel::onLoggedOut() {
+    //Clear all stored tasks
+    this->internalDB = QVariantList();
+    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+    bb::data::JsonDataAccess jda;
+    jda.save(this->internalDB, TaskDataModel::databasePath);
+}
+/*
+ * End slots
+ */
+
 /*
  * Functions required by DataModel. Not sure if these work.
  */
@@ -129,6 +146,7 @@ QString TaskDataModel::itemType(const QVariantList &indexPath) {
 QVariant TaskDataModel::data(const QVariantList &indexPath) {
     if (indexPath.length() == 1) {
         QVariantMap map = this->internalDB.value(indexPath.value(0).toInt(NULL)).toMap();
+        qDebug() << Q_FUNC_INFO << indexPath << map;
         return QVariant(map);
     } else if (indexPath.length() == 2) {
         //Only used to return attachment property of tasks

@@ -35,16 +35,6 @@ void TaskSenderReceiver::fetchAllTasks() {
     _networkAccessManager->get(req);
 }
 
-void TaskSenderReceiver::fetchTask(int taskId) {
-    QUrl url(getUrl);
-    url.addQueryItem("access_token", PropertiesManager::getInstance()->accessToken);
-    url.addQueryItem("id", QString::number(taskId));
-    url.addEncodedQueryItem("fields", "duedate"); //id, title, modified, completed come automatically
-
-    QNetworkRequest req(url);
-    _networkAccessManager->get(req);
-}
-
 void TaskSenderReceiver::onTaskAdded(QVariantMap task) {
     QUrl url(addUrl);
     QNetworkRequest req(url);
@@ -53,6 +43,11 @@ void TaskSenderReceiver::onTaskAdded(QVariantMap task) {
     QString encodedData = QString("[{");
     if (task["title"].toString() != "") {
         encodedData.append("\"title\":\"" + task["title"].toString() + "\",");
+    } else {
+        //Can't add a task without a title
+        //This should never be hit, as QML doesn't allow adding without a title
+        qDebug() << Q_FUNC_INFO << "Can't add task without title! (you shouldn't ever see this)";
+        return;
     }
     if (task["duedate"].toLongLong(NULL) > 0) {
         encodedData.append("\"duedate\":" + task["duedate"].toString() + ",");
@@ -60,7 +55,7 @@ void TaskSenderReceiver::onTaskAdded(QVariantMap task) {
     if (task["note"].toString() != "") {
         encodedData.append("\"note\":\"" + task["note"].toString() + "\",");
     }
-    encodedData.append("\"ref\":\"taskAdd\"}]");
+    encodedData.append("}]");
     //Required for ToodleDo's API to replace some stuff
     encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
     encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
@@ -78,6 +73,12 @@ void TaskSenderReceiver::onTaskAdded(QVariantMap task) {
 void TaskSenderReceiver::onTaskEdited(QVariantMap oldData, QVariantMap newData) {
     QUrl url(editUrl);
     QNetworkRequest req(url);
+
+    if (oldData["completed"] == newData["completed"] && oldData["title"] == newData["title"] &&
+            oldData["duedate"] == newData["duedate"] && oldData["note"] == newData["note"]) {
+        //If nothing has changed, don't need to upload anything
+        return;
+    }
 
     //Build data string to only include fields that actually changed
     QString encodedData = QString("[{\"id\":" + newData["id"].toString());

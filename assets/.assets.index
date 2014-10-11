@@ -1,7 +1,8 @@
 1
-9
+10
 About.qml
 AddTask.qml
+Cover.qml
 EditTask.qml
 images/ic_add.png
 images/ic_info.png

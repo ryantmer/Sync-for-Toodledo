@@ -29,6 +29,7 @@ public slots:
     void onTaskEdited(QVariantMap task);
     void onTaskAdded(QVariantMap task);
     void onTaskRemoved(QVariantMap task);
+    void onLoggedOut();
 };
 
 #endif /* TASKDATAMODEL_HPP_ */

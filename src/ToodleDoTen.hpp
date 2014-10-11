@@ -17,14 +17,14 @@
 
 using namespace bb::cascades;
 
-class ToodleDoTen : public QObject {
+class ToodledoTen : public QObject {
     Q_OBJECT
 
 public:
     Q_PROPERTY(TaskDataModel *dataModel READ dataModel CONSTANT);
 
-    ToodleDoTen();
-    virtual ~ToodleDoTen();
+    ToodledoTen();
+    virtual ~ToodledoTen();
     TaskDataModel *dataModel();
 
     Q_INVOKABLE QDateTime unixTimeToDateTime(uint unixTime);
@@ -46,6 +46,7 @@ public slots:
     void onWebViewUrlChanged(QUrl url);
     void onAccessTokenRefreshed();
     void onRefreshTokenExpired();
+    void onAppMinimize();
 
 private:
     TaskDataModel *_dataModel;

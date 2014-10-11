@@ -3,13 +3,16 @@
 
 #include "ToodleDoTen.hpp"
 
+#include <bb/cascades/Container>
+#include <bb/cascades/SceneCover>
 #include <bb/system/SystemToast>
 #include <bb/system/SystemUiPosition>
 
 using namespace bb::cascades;
 using namespace bb::system;
 
-ToodleDoTen::ToodleDoTen() : QObject() {
+ToodledoTen::ToodledoTen() : QObject() {
+    //TODO: Figure out what's not properly parented here, and isn't quitting properly
     qmlRegisterType<TaskDataModel>("TaskUtilities", 1, 0, "TaskDataModel");
 
     _propertiesManager = PropertiesManager::getInstance();
@@ -27,7 +30,6 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     Application::instance()->setScene(root);
 
     //Expose app to the main listview
-    //TODO: Figure out what's not properly parented here, and isn't quitting properly
     QDeclarativeEngine *engine = QmlDocument::defaultDeclarativeEngine();
     QDeclarativeContext *rootContext = engine->rootContext();
     rootContext->setContextProperty("app", this);
@@ -38,7 +40,11 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     this->loginWebView = loginPage->findChild<WebView*>("loginWebView");
 
     bool isOk;
-    //ToodleDo10 listens for WebView changing URL
+    //Toodledo10 listens for minimize signal
+    isOk = connect(Application::instance(), SIGNAL(thumbnail()),
+            this, SLOT(onAppMinimize()));
+    Q_ASSERT(isOk);
+    //Toodledo10 listens for WebView changing URL
     isOk = connect(loginWebView, SIGNAL(urlChanged(QUrl)),
             this, SLOT(onWebViewUrlChanged(QUrl)));
     Q_ASSERT(isOk);
@@ -53,6 +59,10 @@ ToodleDoTen::ToodleDoTen() : QObject() {
     //LoginManager listens for loggedOut signal from UI
     isOk = connect(this, SIGNAL(loggedOut()),
             _loginManager, SLOT(onLoggedOut()));
+    Q_ASSERT(isOk);
+    //Datamodel listens for loggedOut signal from UI
+    isOk = connect(this, SIGNAL(loggedOut()),
+            _dataModel, SLOT(onLoggedOut()));
     Q_ASSERT(isOk);
     //Datamodel listens for task get reply signal from TSR
     isOk = connect(_taskSenderReceiver, SIGNAL(taskGetReply(QVariantMap)),
@@ -86,13 +96,13 @@ ToodleDoTen::ToodleDoTen() : QObject() {
 
     refresh();
 }
-ToodleDoTen::~ToodleDoTen() {};
+ToodledoTen::~ToodledoTen() {};
 
-TaskDataModel *ToodleDoTen::dataModel() {
+TaskDataModel *ToodledoTen::dataModel() {
     return this->_dataModel;
 }
 
-void ToodleDoTen::showToast(QString message) {
+void ToodledoTen::showToast(QString message) {
     SystemToast *toast = new SystemToast(this);
     toast->setBody(message);
     toast->setPosition(SystemUiPosition::MiddleCenter);
@@ -102,15 +112,15 @@ void ToodleDoTen::showToast(QString message) {
 /*
  * Q_INVOKABLE functions begin
  */
-QDateTime ToodleDoTen::unixTimeToDateTime(uint unixTime) {
+QDateTime ToodledoTen::unixTimeToDateTime(uint unixTime) {
     return QDateTime::fromTime_t(unixTime);
 }
 
-uint ToodleDoTen::dateTimeToUnixTime(QDateTime dateTime) {
+uint ToodledoTen::dateTimeToUnixTime(QDateTime dateTime) {
     return dateTime.toTime_t();
 }
 
-void ToodleDoTen::refresh() {
+void ToodledoTen::refresh() {
     if (this->_networkManager->isConnected()) {
         if (this->_loginManager->isLoggedIn()) {
             this->_taskSenderReceiver->fetchAllTasks();
@@ -123,20 +133,19 @@ void ToodleDoTen::refresh() {
     }
 }
 
-void ToodleDoTen::addTask(QVariantMap data) {
+void ToodledoTen::addTask(QVariantMap data) {
     emit taskAdded(data);
 }
 
-void ToodleDoTen::editTask(QVariantMap oldData, QVariantMap newData) {
+void ToodledoTen::editTask(QVariantMap oldData, QVariantMap newData) {
     emit taskEdited(oldData, newData);
 }
 
-void ToodleDoTen::removeTask(QVariantMap data) {
+void ToodledoTen::removeTask(QVariantMap data) {
     emit taskRemoved(data);
 }
 
-void ToodleDoTen::logout() {
-//    this->_loginManager->logout();
+void ToodledoTen::logout() {
     emit loggedOut();
 }
 /*
@@ -146,7 +155,7 @@ void ToodleDoTen::logout() {
 /*
  * Slots begin
  */
-void ToodleDoTen::onWebViewUrlChanged(QUrl url) {
+void ToodledoTen::onWebViewUrlChanged(QUrl url) {
     if (url.hasQueryItem("code") && url.hasQueryItem("state")) {
         if (url.queryItemValue("state") == _loginManager->getState()) {
             //Get authCode from webview's URL
@@ -161,18 +170,28 @@ void ToodleDoTen::onWebViewUrlChanged(QUrl url) {
     }
 }
 
-void ToodleDoTen::onAccessTokenRefreshed() {
+void ToodledoTen::onAccessTokenRefreshed() {
     //access token is automatically refreshed when it expires using refresh token
     //When a new access token is received, refresh
     refresh();
 }
 
-void ToodleDoTen::onRefreshTokenExpired() {
+void ToodledoTen::onRefreshTokenExpired() {
     //emitted by LoginManager when refresh token is no longer valid (30-day expiry)
     //when this occurs, user has to log in again
     showToast("Please log in!");
     root->push(loginPage);
     loginWebView->setUrl(_loginManager->getAuthorizeUrl().toString());
+}
+
+void ToodledoTen::onAppMinimize() {
+    //Add cover QML for app
+    QmlDocument *qmlCover = QmlDocument::create("asset:///Cover.qml").parent(this);
+    qmlCover->setContextProperty("app", this);
+    Container *rootContainer = qmlCover->createRootObject<Container>();
+    //TODO: Fix this memory leak - cover is created each time app is minimized
+    SceneCover *cover = SceneCover::create().content(rootContainer);
+    Application::instance()->setCover(cover);
 }
 /*
  * Slots end

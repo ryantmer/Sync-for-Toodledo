@@ -29,20 +29,20 @@
     <id>com.example.Toodledo10</id>
     <configuration name="Device-Debug">
        <platformArchitecture>armle-v7</platformArchitecture>
-       <asset path="arm/o.le-v7-g/ToodleDo10Test" entry="true" type="Qnx/Elf">ToodleDo10Test</asset>
+       <asset path="arm/o.le-v7-g/Toodledo10" entry="true" type="Qnx/Elf">Toodledo10</asset>
     </configuration>
     <configuration name="Device-Release">
        <entryPointType>Qnx/Cascades</entryPointType>
        <platformArchitecture>armle-v7</platformArchitecture>
-       <asset path="arm/o.le-v7/ToodleDo10Test.so" entry="true" type="Qnx/Elf">ToodleDo10Test.so</asset>
+       <asset path="arm/o.le-v7/Toodledo10.so" entry="true" type="Qnx/Elf">Toodledo10.so</asset>
     </configuration>
     <configuration name="Device-Profile">
        <platformArchitecture>armle-v7</platformArchitecture>
-       <asset path="arm-p/o.le-v7-g/ToodleDo10Test" entry="true" type="Qnx/Elf">ToodleDo10Test</asset>
+       <asset path="arm-p/o.le-v7-g/Toodledo10" entry="true" type="Qnx/Elf">Toodledo10</asset>
     </configuration>
     <configuration name="Simulator-Debug">
        <platformArchitecture>x86</platformArchitecture>
-       <asset path="x86/o-g/ToodleDo10Test" entry="true" type="Qnx/Elf">ToodleDo10Test</asset>
+       <asset path="x86/o-g/Toodledo10" entry="true" type="Qnx/Elf">Toodledo10</asset>
     </configuration>
 
     <!-- The name that is displayed in the BlackBerry 10 application installer.
@@ -77,6 +77,11 @@
     <splashScreens>
        <image>splash-screen-1280x720.png</image>
        <image>splash-screen-720x1280.png</image>
+       <image>splash-screen-1280x768.png</image>
+       <image>splash-screen-720x720.png</image>
+       <image>splash-screen-768x1280.png</image>
+       <image>splash-screen-1024x600.png</image>
+       <image>splash-screen-600x1024.png</image>
     </splashScreens>
     <authorId>gYAAgCgfEw589DBHUpqjdpiUd8g</authorId>
     <author>ryantmer</author>
@@ -85,8 +90,8 @@
     <!-- <authorId>ABC1234YjsnUk235h</authorId> -->
 
     <initialWindow>
-        <autoOrients>true</autoOrients>
         <systemChrome>none</systemChrome>
+        <autoOrients>true</autoOrients>
     </initialWindow>
 
     <!--  The icon for the application, which should be 114x114. -->
@@ -103,6 +108,11 @@
     <asset path="logo94.png">logo94.png</asset>
     <asset path="splash-screen-1280x720.png">splash-screen-1280x720.png</asset>
     <asset path="splash-screen-720x1280.png">splash-screen-720x1280.png</asset>
+    <asset path="splash-screen-1280x768.png">splash-screen-1280x768.png</asset>
+    <asset path="splash-screen-720x720.png">splash-screen-720x720.png</asset>
+    <asset path="splash-screen-768x1280.png">splash-screen-768x1280.png</asset>
+    <asset path="splash-screen-1024x600.png">splash-screen-1024x600.png</asset>
+    <asset path="splash-screen-600x1024.png">splash-screen-600x1024.png</asset>
 
     <!-- Request permission to execute native code.  Required for native applications. -->
     <permission system="true">run_native</permission>

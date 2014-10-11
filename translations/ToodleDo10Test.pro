@@ -1,1 +1,1 @@
-include (../ToodleDo10Test.pro)
+include (../Toodledo10.pro)
