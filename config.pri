@@ -83,6 +83,9 @@ lupdate_inclusion {
         $$quote($$BASEDIR/../assets/data/*.qml) \
         $$quote($$BASEDIR/../assets/data/*.js) \
         $$quote($$BASEDIR/../assets/data/*.qs) \
+        $$quote($$BASEDIR/../assets/icons/*.qml) \
+        $$quote($$BASEDIR/../assets/icons/*.js) \
+        $$quote($$BASEDIR/../assets/icons/*.qs) \
         $$quote($$BASEDIR/../assets/images/*.qml) \
         $$quote($$BASEDIR/../assets/images/*.js) \
         $$quote($$BASEDIR/../assets/images/*.qs)

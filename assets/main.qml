@@ -81,6 +81,8 @@ NavigationPane {
                                         app.editTask(oldData, newData);
                                     }
                                 }
+                                accessibility.name: "completed"
+                                accessibility.description: "Checked when task is completed"
                             }
                             StandardListItem {
                                 title: ListItemData.title

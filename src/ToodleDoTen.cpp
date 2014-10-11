@@ -5,11 +5,9 @@
 
 #include <bb/system/SystemToast>
 #include <bb/system/SystemUiPosition>
-#include <bb/data/JsonDataAccess>
 
 using namespace bb::cascades;
 using namespace bb::system;
-using namespace bb::data;
 
 ToodleDoTen::ToodleDoTen() : QObject() {
     qmlRegisterType<TaskDataModel>("TaskUtilities", 1, 0, "TaskDataModel");

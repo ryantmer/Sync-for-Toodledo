@@ -81,6 +81,8 @@ Sheet {
                 visible: false
                 topMargin: 40
                 bottomMargin: 40
+                accessibility.name: "Task ID Field"
+                accessibility.description: "Hidden field containing task's ID number"
             }
             TextField {
                 id: taskName
