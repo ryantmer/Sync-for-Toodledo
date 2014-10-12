@@ -2,12 +2,15 @@ import bb.cascades 1.2
 
 Sheet {
     id: addTaskSheet
+    accessibility.name: "Add task sheet"
     
     onClosed: {
         destroy();
     }
     
     Page {
+        accessibility.name: "Add task page"
+        
         titleBar: TitleBar {
             title: "Add Task"
             visibility: ChromeVisibility.Visible
@@ -48,6 +51,7 @@ Sheet {
         }
         
         Container {
+            accessibility.name: "Add task page container"
             layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
             topPadding: 30
             leftPadding: 30

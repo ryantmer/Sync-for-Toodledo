@@ -146,7 +146,6 @@ QString TaskDataModel::itemType(const QVariantList &indexPath) {
 QVariant TaskDataModel::data(const QVariantList &indexPath) {
     if (indexPath.length() == 1) {
         QVariantMap map = this->internalDB.value(indexPath.value(0).toInt(NULL)).toMap();
-        qDebug() << Q_FUNC_INFO << indexPath << map;
         return QVariant(map);
     } else if (indexPath.length() == 2) {
         //Only used to return attachment property of tasks

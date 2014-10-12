@@ -5,6 +5,7 @@ import bb.system 1.2
 NavigationPane {
     id: mainNavPane
     objectName: "mainNavPane"
+    accessibility.name: "Navigation pane for main task list"
     
     Menu.definition: MenuDefinition {
         settingsAction: SettingsActionItem {
@@ -25,14 +26,16 @@ NavigationPane {
     }
     
     Page {
+        accessibility.name: "Main task list page"
         titleBar: TitleBar {
             title: "ToodleDo10"
         }
         
         Container {
+            accessibility.name: "Main task list page container"
             ListView {
                 id: taskListView
-                accessibility.name: "Task List"
+                accessibility.name: "Main task list"
                 layout: StackListLayout {
                     headerMode: ListHeaderMode.Sticky
                 }
@@ -45,6 +48,7 @@ NavigationPane {
                         type: "task"
                         Container {
                             id: taskItemContainer
+                            accessibility.name: "List item component container"
                             layout: StackLayout {
                                 orientation: LayoutOrientation.LeftToRight
                             }

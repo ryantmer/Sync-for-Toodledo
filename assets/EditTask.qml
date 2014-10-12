@@ -2,6 +2,7 @@ import bb.cascades 1.2
 
 Sheet {
     id: editTaskSheet
+    accessibility.name: "Edit task sheet"
     
     onClosed: {
         destroy();
@@ -17,6 +18,7 @@ Sheet {
     property variant oldData;
     
     Page {
+        accessibility.name: "Edit task page"
         titleBar: TitleBar {
             title: "Edit Task"
             visibility: ChromeVisibility.Visible
@@ -64,6 +66,7 @@ Sheet {
         }
             
         Container {
+            accessibility.name: "Edit task page container"
             layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
             topPadding: 30
             leftPadding: 30

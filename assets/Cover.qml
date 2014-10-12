@@ -1,6 +1,7 @@
 import bb.cascades 1.2
 
 Container {
+    accessibility.name: "Cover container"
     layout: StackLayout {}
     
     topPadding: 10

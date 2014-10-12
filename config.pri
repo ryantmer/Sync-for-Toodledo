@@ -45,6 +45,17 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/images/ic_add.png) \
         $$quote($$BASEDIR/assets/images/ic_info.png) \
         $$quote($$BASEDIR/assets/images/ic_reload.png) \
+        $$quote($$BASEDIR/assets/images/logos/logo114.png) \
+        $$quote($$BASEDIR/assets/images/logos/logo480.png) \
+        $$quote($$BASEDIR/assets/images/logos/logo86.png) \
+        $$quote($$BASEDIR/assets/images/logos/logo94.png) \
+        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-1024x600.png) \
+        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-1280x720.png) \
+        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-1280x768.png) \
+        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-600x1024.png) \
+        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-720x1280.png) \
+        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-720x720.png) \
+        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-768x1280.png) \
         $$quote($$BASEDIR/assets/main.qml)
 }
 
@@ -83,7 +94,13 @@ lupdate_inclusion {
         $$quote($$BASEDIR/../assets/*.qs) \
         $$quote($$BASEDIR/../assets/images/*.qml) \
         $$quote($$BASEDIR/../assets/images/*.js) \
-        $$quote($$BASEDIR/../assets/images/*.qs)
+        $$quote($$BASEDIR/../assets/images/*.qs) \
+        $$quote($$BASEDIR/../assets/images/logos/*.qml) \
+        $$quote($$BASEDIR/../assets/images/logos/*.js) \
+        $$quote($$BASEDIR/../assets/images/logos/*.qs) \
+        $$quote($$BASEDIR/../assets/images/splashscreens/*.qml) \
+        $$quote($$BASEDIR/../assets/images/splashscreens/*.js) \
+        $$quote($$BASEDIR/../assets/images/splashscreens/*.qs)
 
     HEADERS += \
         $$quote($$BASEDIR/../src/*.h) \

@@ -70,18 +70,18 @@
     <!--  Name of author which is used for signing. Must match the developer name of your development certificate. -->
     <description>Toodledo10 brings the power of Toodledo to your BlackBerry 10 device!</description>
     <icon>
-       <image>logo114.png</image>
-       <image>logo86.png</image>
-       <image>logo94.png</image>
+       <image>assets/images/logos/logo114.png</image>
+       <image>assets/images/logos/logo86.png</image>
+       <image>assets/images/logos/logo94.png</image>
     </icon>
     <splashScreens>
-       <image>splash-screen-1280x720.png</image>
-       <image>splash-screen-720x1280.png</image>
-       <image>splash-screen-1280x768.png</image>
-       <image>splash-screen-720x720.png</image>
-       <image>splash-screen-768x1280.png</image>
-       <image>splash-screen-1024x600.png</image>
-       <image>splash-screen-600x1024.png</image>
+       <image>assets/images/splashscreens/splash-screen-1280x720.png</image>
+       <image>assets/images/splashscreens/splash-screen-720x1280.png</image>
+       <image>assets/images/splashscreens/splash-screen-1280x768.png</image>
+       <image>assets/images/splashscreens/splash-screen-720x720.png</image>
+       <image>assets/images/splashscreens/splash-screen-768x1280.png</image>
+       <image>assets/images/splashscreens/splash-screen-1024x600.png</image>
+       <image>assets/images/splashscreens/splash-screen-600x1024.png</image>
     </splashScreens>
     <authorId>gYAAgCgfEw589DBHUpqjdpiUd8g</authorId>
     <author>ryantmer</author>
@@ -102,17 +102,6 @@
     <asset path="translations" dest="qm">
         <include name="*.qm"/>
     </asset>
-    <asset path="logo.png">logo.png</asset>
-    <asset path="logo114.png">logo114.png</asset>
-    <asset path="logo86.png">logo86.png</asset>
-    <asset path="logo94.png">logo94.png</asset>
-    <asset path="splash-screen-1280x720.png">splash-screen-1280x720.png</asset>
-    <asset path="splash-screen-720x1280.png">splash-screen-720x1280.png</asset>
-    <asset path="splash-screen-1280x768.png">splash-screen-1280x768.png</asset>
-    <asset path="splash-screen-720x720.png">splash-screen-720x720.png</asset>
-    <asset path="splash-screen-768x1280.png">splash-screen-768x1280.png</asset>
-    <asset path="splash-screen-1024x600.png">splash-screen-1024x600.png</asset>
-    <asset path="splash-screen-600x1024.png">splash-screen-600x1024.png</asset>
 
     <!-- Request permission to execute native code.  Required for native applications. -->
     <permission system="true">run_native</permission>

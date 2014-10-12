@@ -42,7 +42,7 @@ void TaskSenderReceiver::onTaskAdded(QVariantMap task) {
     //Build task data string from user's input
     QString encodedData = QString("[{");
     if (task["title"].toString() != "") {
-        encodedData.append("\"title\":\"" + task["title"].toString() + "\",");
+        encodedData.append("\"title\":\"" + task["title"].toString() + "\"");
     } else {
         //Can't add a task without a title
         //This should never be hit, as QML doesn't allow adding without a title
@@ -50,10 +50,10 @@ void TaskSenderReceiver::onTaskAdded(QVariantMap task) {
         return;
     }
     if (task["duedate"].toLongLong(NULL) > 0) {
-        encodedData.append("\"duedate\":" + task["duedate"].toString() + ",");
+        encodedData.append(",\"duedate\":" + task["duedate"].toString());
     }
     if (task["note"].toString() != "") {
-        encodedData.append("\"note\":\"" + task["note"].toString() + "\",");
+        encodedData.append(",\"note\":\"" + task["note"].toString() + "\"");
     }
     encodedData.append("}]");
     //Required for ToodleDo's API to replace some stuff
@@ -143,6 +143,7 @@ void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
             }
         } else if (reply->url().toString().contains(addUrl)) {
             qDebug() << Q_FUNC_INFO << "New task(s) added";
+            qDebug() << response;
             for (int i = 0; i < data.count(); ++i) {
                 emit taskAddReply(data.value(i).toMap());
             }
