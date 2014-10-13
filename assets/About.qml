@@ -20,73 +20,63 @@ Sheet {
             }
         }
         Container {
-            id: aboutContent
-            accessibility.name: "About page outer container"
             layout: DockLayout {}
             
             Container {
-                accessibility.name: "About page inner container"
+                id: aboutContent
+                accessibility.name: "About page container"
                 layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
                 verticalAlignment: VerticalAlignment.Center
                 horizontalAlignment: HorizontalAlignment.Center
                 Label {
                     text: "ToodleDo10"
-                    textStyle.base: SystemDefaults.TextStyles.BigText
+                    textStyle.fontSize: FontSize.XXLarge
                     verticalAlignment: VerticalAlignment.Center
                     horizontalAlignment: HorizontalAlignment.Center
+                    bottomMargin: 30
                 }
                 Label {
                     text: "Created by Ryan Mahler (ryantmer)"
-                    textStyle.base: SystemDefaults.TextStyles.PrimaryText
+                    textStyle.fontSize: FontSize.Default
                     verticalAlignment: VerticalAlignment.Center
                     horizontalAlignment: HorizontalAlignment.Center
+                    bottomMargin: 30
                 }
                 Button {
-                    text: "Support"
+                    text: "Contact / Help!"
                     verticalAlignment: VerticalAlignment.Center
                     horizontalAlignment: HorizontalAlignment.Center
+                    bottomMargin: 30
+                    attachedObjects: [
+                        Invocation {
+                            id: emailInvoke
+                            query: InvokeQuery {
+                                id: emailInvokeQuery
+                                mimeType: ""
+                                invokeTargetId: "sys.pim.uib.email.hybridcomposer"
+                                uri: "mailto:toodledo10app@gmail.com?subject=Toodledo10%20Help"
+                                invokerIncluded: true
+                                onQueryChanged: {
+                                    emailInvokeQuery.updateQuery();
+                                }
+                            }
+                        }
+                    ]
                     onClicked: {
-                        supportDialog.open();
+                        emailInvoke.trigger("bb.action.SENDEMAIL");
                     }
+                }
+                TextArea {
+                    text: "http://toodledo10.ryantmer.com"
+                    editable: false
+                    inputMode: TextAreaInputMode.Text
+                    textStyle.fontSize: FontSize.Default
+                    textStyle.textAlign: TextAlign.Center
+                    verticalAlignment: VerticalAlignment.Center
+                    horizontalAlignment: HorizontalAlignment.Center
+                    bottomMargin: 30
                 }
             }
         }
-    
-        attachedObjects: [
-            Dialog {
-                id: supportDialog
-                onOpenedChanged: {
-                    aboutContent.opacity = 0.1
-                }
-                onClosed: {
-                    aboutContent.opacity = 1.0
-                }
-                Container {
-                    background: Color.LightGray
-                    horizontalAlignment: HorizontalAlignment.Center
-                    verticalAlignment: VerticalAlignment.Center
-                    layout: DockLayout {}
-                    leftPadding: 20
-                    rightPadding: 20
-                    topPadding: 20
-                    bottomPadding: 20
-                    
-                    Container {
-                        layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
-                        Label {
-                            text: "Email ryantmer@gmail.com for help!"
-                            horizontalAlignment: HorizontalAlignment.Center
-                        }
-                        Button {
-                            text: "Close"
-                            horizontalAlignment: HorizontalAlignment.Center
-                            onClicked: {
-                                supportDialog.close();
-                            }
-                        }
-                    }
-                }
-            }
-        ]
     }
 }

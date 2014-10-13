@@ -1,14 +1,14 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'TaskDataModel.hpp'
+** Meta object code from reading C++ file 'FolderDataModel.hpp'
 **
 ** Created by: The Qt Meta Object Compiler version 63 (Qt 4.8.5)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../../src/TaskDataModel.hpp"
+#include "../../../src/FolderDataModel.hpp"
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'TaskDataModel.hpp' doesn't include <QObject>."
+#error "The header file 'FolderDataModel.hpp' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 63
 #error "This file was generated using the moc from 4.8.5. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -16,7 +16,7 @@
 #endif
 
 QT_BEGIN_MOC_NAMESPACE
-static const uint qt_meta_data_TaskDataModel[] = {
+static const uint qt_meta_data_FolderDataModel[] = {
 
  // content:
        6,       // revision
@@ -30,25 +30,26 @@ static const uint qt_meta_data_TaskDataModel[] = {
        0,       // signalCount
 
  // slots: signature, parameters, type, tag, flags
-      20,   15,   14,   14, 0x0a,
-      46,   15,   14,   14, 0x0a,
-      71,   15,   14,   14, 0x0a,
-      98,   14,   14,   14, 0x0a,
-     112,   14,   14,   14, 0x0a,
+      24,   17,   16,   16, 0x0a,
+      52,   17,   16,   16, 0x0a,
+      79,   17,   16,   16, 0x0a,
+     108,   16,   16,   16, 0x0a,
+     122,   16,   16,   16, 0x0a,
 
  // methods: signature, parameters, type, tag, flags
-     142,  132,  128,   14, 0x02,
-     172,  132,  167,   14, 0x02,
-     206,  132,  198,   14, 0x02,
-     238,  132,  229,   14, 0x02,
+     152,  142,  138,   16, 0x02,
+     182,  142,  177,   16, 0x02,
+     216,  142,  208,   16, 0x02,
+     248,  142,  239,   16, 0x02,
 
        0        // eod
 };
 
-static const char qt_meta_stringdata_TaskDataModel[] = {
-    "TaskDataModel\0\0task\0onTaskEdited(QVariantMap)\0"
-    "onTaskAdded(QVariantMap)\0"
-    "onTaskRemoved(QVariantMap)\0onLoggedOut()\0"
+static const char qt_meta_stringdata_FolderDataModel[] = {
+    "FolderDataModel\0\0folder\0"
+    "onFolderEdited(QVariantMap)\0"
+    "onFolderAdded(QVariantMap)\0"
+    "onFolderRemoved(QVariantMap)\0onLoggedOut()\0"
     "onAboutToQuit()\0int\0indexPath\0"
     "childCount(QVariantList)\0bool\0"
     "hasChildren(QVariantList)\0QString\0"
@@ -56,15 +57,15 @@ static const char qt_meta_stringdata_TaskDataModel[] = {
     "data(QVariantList)\0"
 };
 
-void TaskDataModel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void FolderDataModel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         Q_ASSERT(staticMetaObject.cast(_o));
-        TaskDataModel *_t = static_cast<TaskDataModel *>(_o);
+        FolderDataModel *_t = static_cast<FolderDataModel *>(_o);
         switch (_id) {
-        case 0: _t->onTaskEdited((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 1: _t->onTaskAdded((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 2: _t->onTaskRemoved((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 0: _t->onFolderEdited((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 1: _t->onFolderAdded((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 2: _t->onFolderRemoved((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
         case 3: _t->onLoggedOut(); break;
         case 4: _t->onAboutToQuit(); break;
         case 5: { int _r = _t->childCount((*reinterpret_cast< const QVariantList(*)>(_a[1])));
@@ -80,34 +81,34 @@ void TaskDataModel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
     }
 }
 
-const QMetaObjectExtraData TaskDataModel::staticMetaObjectExtraData = {
+const QMetaObjectExtraData FolderDataModel::staticMetaObjectExtraData = {
     0,  qt_static_metacall 
 };
 
-const QMetaObject TaskDataModel::staticMetaObject = {
-    { &bb::cascades::DataModel::staticMetaObject, qt_meta_stringdata_TaskDataModel,
-      qt_meta_data_TaskDataModel, &staticMetaObjectExtraData }
+const QMetaObject FolderDataModel::staticMetaObject = {
+    { &bb::cascades::DataModel::staticMetaObject, qt_meta_stringdata_FolderDataModel,
+      qt_meta_data_FolderDataModel, &staticMetaObjectExtraData }
 };
 
 #ifdef Q_NO_DATA_RELOCATION
-const QMetaObject &TaskDataModel::getStaticMetaObject() { return staticMetaObject; }
+const QMetaObject &FolderDataModel::getStaticMetaObject() { return staticMetaObject; }
 #endif //Q_NO_DATA_RELOCATION
 
-const QMetaObject *TaskDataModel::metaObject() const
+const QMetaObject *FolderDataModel::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->metaObject : &staticMetaObject;
 }
 
-void *TaskDataModel::qt_metacast(const char *_clname)
+void *FolderDataModel::qt_metacast(const char *_clname)
 {
     if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_TaskDataModel))
-        return static_cast<void*>(const_cast< TaskDataModel*>(this));
+    if (!strcmp(_clname, qt_meta_stringdata_FolderDataModel))
+        return static_cast<void*>(const_cast< FolderDataModel*>(this));
     typedef bb::cascades::DataModel QMocSuperClass;
     return QMocSuperClass::qt_metacast(_clname);
 }
 
-int TaskDataModel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int FolderDataModel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     typedef bb::cascades::DataModel QMocSuperClass;
     _id = QMocSuperClass::qt_metacall(_c, _id, _a);

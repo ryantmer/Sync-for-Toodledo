@@ -15,7 +15,6 @@ public:
     static const QString editUrl;
     static const QString addUrl;
     static const QString removeUrl;
-    static const QString folderUrl;
 
 signals:
     void taskEditReply(QVariantMap task);

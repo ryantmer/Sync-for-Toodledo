@@ -21,8 +21,8 @@ Sheet {
             acceptAction: ActionItem {
                 title: "Save"
                 onTriggered: {
-                    propertyManager.showCompletedTasks = showCompletedTasksCheckbox.checked;
-                    propertyManager.advancedMode = advancedModeCheckbox.checked;
+                    propertyManager.showCompletedTasks = showCompletedTasks.checked;
+                    propertyManager.advancedMode = advancedMode.checked;
                     settingsSheet.close();
                 }
             }
@@ -30,26 +30,70 @@ Sheet {
         Container {
             accessibility.name: "Settings page container"
             layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
-            topPadding: 10
-            bottomPadding: 10
-            leftPadding: 10
-            rightPadding: 10
             
-            CheckBox {
-                id: advancedModeCheckbox
-                text: "Advanced Mode (shows all task fields)"
-                checked: propertyManager.advancedMode
+            Container {
+                topPadding: 10
+                bottomPadding: 10
+                leftPadding: 10
+                rightPadding: 10
+                layout: DockLayout {}
+                horizontalAlignment: HorizontalAlignment.Fill
+                Label {
+                    text: "Advanced Mode (shows all task fields)"
+                    textStyle.fontSize: FontSize.Large
+                    verticalAlignment: VerticalAlignment.Center
+                    horizontalAlignment: HorizontalAlignment.Left
+                }
+                ToggleButton {
+                    id: advancedMode
+                    checked: propertyManager.advancedMode
+                    accessibility.name: "Advanced mode toggle"
+                    verticalAlignment: VerticalAlignment.Center
+                    horizontalAlignment: HorizontalAlignment.Right
+                }
             }
-            CheckBox {
-                id: showCompletedTasksCheckbox
-                text: "Show Completed Tasks"
-                checked: propertyManager.showCompletedTasks
+            Container {
+                topPadding: 10
+                bottomPadding: 10
+                leftPadding: 10
+                rightPadding: 10
+                layout: DockLayout {}
+                horizontalAlignment: HorizontalAlignment.Fill
+                Label {
+                    text: "Show Recently Completed Tasks"
+                    textStyle.fontSize: FontSize.Large
+                    verticalAlignment: VerticalAlignment.Center
+                    horizontalAlignment: HorizontalAlignment.Left
+                }
+                ToggleButton {
+                    id: showCompletedTasks
+                    checked: propertyManager.showCompletedTasks
+                    accessibility.name: "Show recently completed tasks toggle"
+                    verticalAlignment: VerticalAlignment.Center
+                    horizontalAlignment: HorizontalAlignment.Right
+                }
             }
-            Button {
-                id: logoutButton
-                text: "Log Out"
-                onClicked: {
-                    app.logout();
+            Container {
+                topPadding: 10
+                bottomPadding: 10
+                leftPadding: 10
+                rightPadding: 10
+                layout: DockLayout {}
+                horizontalAlignment: HorizontalAlignment.Fill
+                Label {
+                    text: "Log out current user"
+                    textStyle.fontSize: FontSize.Large
+                    verticalAlignment: VerticalAlignment.Center
+                    horizontalAlignment: HorizontalAlignment.Left
+                }
+                Button {
+                    id: logoutButton
+                    text: "Log Out"
+                    verticalAlignment: VerticalAlignment.Center
+                    horizontalAlignment: HorizontalAlignment.Right
+                    onClicked: {
+                        app.logout();
+                    }
                 }
             }
         }

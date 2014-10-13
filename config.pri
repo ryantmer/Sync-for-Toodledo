@@ -45,6 +45,7 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/images/ic_add.png) \
         $$quote($$BASEDIR/assets/images/ic_info.png) \
         $$quote($$BASEDIR/assets/images/ic_reload.png) \
+        $$quote($$BASEDIR/assets/images/ic_save.png) \
         $$quote($$BASEDIR/assets/images/logos/logo114.png) \
         $$quote($$BASEDIR/assets/images/logos/logo480.png) \
         $$quote($$BASEDIR/assets/images/logos/logo86.png) \
@@ -61,6 +62,8 @@ config_pri_assets {
 
 config_pri_source_group1 {
     SOURCES += \
+        $$quote($$BASEDIR/src/FolderDataModel.cpp) \
+        $$quote($$BASEDIR/src/FolderSenderReceiver.cpp) \
         $$quote($$BASEDIR/src/LoginManager.cpp) \
         $$quote($$BASEDIR/src/NetworkManager.cpp) \
         $$quote($$BASEDIR/src/PropertiesManager.cpp) \
@@ -70,6 +73,8 @@ config_pri_source_group1 {
         $$quote($$BASEDIR/src/main.cpp)
 
     HEADERS += \
+        $$quote($$BASEDIR/src/FolderDataModel.hpp) \
+        $$quote($$BASEDIR/src/FolderSenderReceiver.hpp) \
         $$quote($$BASEDIR/src/LoginManager.hpp) \
         $$quote($$BASEDIR/src/NetworkManager.hpp) \
         $$quote($$BASEDIR/src/PropertiesManager.hpp) \

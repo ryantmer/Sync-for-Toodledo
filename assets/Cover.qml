@@ -10,10 +10,10 @@ Container {
     rightPadding: 10
     
     Label {
-        text: app.dataModel.data([0]).title
+        text: app.taskDataModel.data([0]).title
     }
     Label {
-        text: dueDateString(app.dataModel.data([0]).duedate)
+        text: dueDateString(app.taskDataModel.data([0]).duedate)
         textFormat: TextFormat.Auto
     }
     

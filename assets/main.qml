@@ -41,7 +41,7 @@ NavigationPane {
                 }
                 horizontalAlignment: HorizontalAlignment.Fill
                 
-                dataModel: app.dataModel
+                dataModel: app.taskDataModel
                 
                 listItemComponents: [
                     ListItemComponent {
@@ -61,27 +61,15 @@ NavigationPane {
                                 onCheckedChanged: {
                                     if (checked) {
                                         var oldData = {"id": parseInt(ListItemData.id),
-                                                "completed": ListItemData.completed,
-                                                "title": ListItemData.title,
-                                                "duedate": ListItemData.duedate,
-                                                "note": ListItemData.note};
+                                                "completed": ListItemData.completed};
                                         var newData = {"id": parseInt(ListItemData.id),
-                                                    "completed": Math.floor((new Date()).getTime() / 1000),
-                                                    "title": ListItemData.title,
-                                                    "duedate": ListItemData.duedate,
-                                                    "note": ListItemData.note};
+                                                    "completed": Math.floor((new Date()).getTime() / 1000)};
                                         app.editTask(oldData, newData);
                                     } else {
                                         var oldData = {"id": parseInt(ListItemData.id),
-                                            "completed": ListItemData.completed,
-                                            "title": ListItemData.title,
-                                            "duedate": ListItemData.duedate,
-                                            "note": ListItemData.note};
+                                            "completed": ListItemData.completed};
                                         var newData = {"id": parseInt(ListItemData.id),
-                                            "completed": 0,
-                                            "title": ListItemData.title,
-                                            "duedate": ListItemData.duedate,
-                                            "note": ListItemData.note};
+                                            "completed": 0};
                                         app.editTask(oldData, newData);
                                     }
                                 }
@@ -110,28 +98,11 @@ NavigationPane {
                 ]
                 
                 onTriggered: {
-                    var p = editTaskSheetDefinition.createObject();
-                    var selectedTask = dataModel.data(indexPath);
-                    p.taskId = selectedTask.id;
-                    p.completed = selectedTask.completed;
-                    p.title = selectedTask.title;
-                    
-                    if (selectedTask.duedate == 0) {
-                        p.noDueDate = true;
-                        p.dueDateEnabled = false;
-                    } else {
-                        p.duedate = app.unixTimeToDateTime(selectedTask.duedate);
-                        p.noDueDate = false;
-                        p.dueDateEnabled = true;
-                    }
-                    
-                    if (selectedTask.note) {
-                        p.note = selectedTask.note;
-                    }
-                    
-                    p.oldData = selectedTask;
-                    
-                    p.open();
+                    var task = dataModel.data(indexPath);
+                    var page = editTaskSheetDefinition.createObject();
+                    page.data = task;
+                    page.populateFolderDropDown();
+                    mainNavPane.push(page);
                 }
                 
                 function dueDateString(dueDate) {
@@ -154,7 +125,7 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    app.refresh();
+                    app.refreshTasks();
                 }
             },
             ActionItem {
@@ -162,8 +133,9 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_add.png"
                 onTriggered: {
-                    var p = addTaskSheetDefinition.createObject();
-                    p.open();
+                    var page = addTaskSheetDefinition.createObject();
+                    page.populateFolderDropDown();
+                    mainNavPane.push(page);
                 }
             }
         ]

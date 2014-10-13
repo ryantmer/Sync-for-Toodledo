@@ -1,5 +1,5 @@
 1
-21
+22
 About.qml
 AddTask.qml
 Cover.qml
@@ -7,6 +7,7 @@ EditTask.qml
 images/ic_add.png
 images/ic_info.png
 images/ic_reload.png
+images/ic_save.png
 images/logos/logo114.png
 images/logos/logo480.png
 images/logos/logo86.png
