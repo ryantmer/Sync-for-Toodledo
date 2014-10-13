@@ -83,69 +83,74 @@ Page {
         }
     ]
     
-    Container {
-        accessibility.name: "Edit task page container"
-        layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
-        topPadding: 30
-        leftPadding: 30
-        rightPadding: 30
-        bottomPadding: 30
-        
-        CheckBox {
-            id: taskCompleted
-            text: "Completed"
-            bottomMargin: 40
+    ScrollView {
+        accessibility.name: "Edit task page scrollview"
+        scrollViewProperties {
+            scrollMode: ScrollMode.Vertical
         }
-        TextField {
-            id: taskIdField
-            visible: false
-            bottomMargin: 40
-            accessibility.name: "Task ID Field"
-            accessibility.description: "Hidden field containing task's ID number"
-        }
-        Label {
-            id: titleRequired
-            text: "Required"
-            textStyle.color: Color.Red
-            visible: false            
-        }
-        TextField {
-            id: taskName
-            hintText: "Task Name"
-            horizontalAlignment: HorizontalAlignment.Fill
-            bottomMargin: 40            
-        }
-        CheckBox {
-            id: noDueDate
-            text: "No Due Date"
-            bottomMargin: 40
-            onCheckedChanged: {
-                taskDueDate.enabled = !noDueDate.checked;
+        Container {
+            accessibility.name: "Edit task page container"
+            layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
+            topPadding: 30
+            leftPadding: 30
+            rightPadding: 30
+            bottomPadding: 30
+            
+            CheckBox {
+                id: taskCompleted
+                text: "Completed"
+                bottomMargin: 40
             }
-        }
-        DateTimePicker {
-            id: taskDueDate
-            horizontalAlignment: HorizontalAlignment.Fill
-            mode: DateTimePickerMode.Date
-            expanded: false
-            title: "Due Date"
-            bottomMargin: 40
-        }
-        DropDown {
-            id: folderDropDown
-            accessibility.name: "Folder drop-down list"
-            Option {
-                text: "No folder"
-                value: 0
-                selected: true
+            Label {
+                id: titleRequired
+                text: "Required"
+                textStyle.color: Color.Red
+                visible: false            
             }
-            bottomMargin: 40
-        }
-        TextArea {
-            id: taskNote
-            hintText: "Detailed notes about task"
-            horizontalAlignment: HorizontalAlignment.Fill
-            bottomMargin: 40
+            TextField {
+                id: taskName
+                hintText: "Task Name"
+                horizontalAlignment: HorizontalAlignment.Fill
+                bottomMargin: 40            
+            }
+            TextArea {
+                id: taskNote
+                hintText: "Detailed notes about task"
+                horizontalAlignment: HorizontalAlignment.Fill
+                bottomMargin: 40
+            }
+            CheckBox {
+                id: noDueDate
+                text: "No Due Date"
+                bottomMargin: 40
+                onCheckedChanged: {
+                    taskDueDate.enabled = !noDueDate.checked;
+                }
+            }
+            DateTimePicker {
+                id: taskDueDate
+                horizontalAlignment: HorizontalAlignment.Fill
+                mode: DateTimePickerMode.Date
+                expanded: false
+                title: "Due Date"
+                bottomMargin: 40
+            }
+            DropDown {
+                id: folderDropDown
+                accessibility.name: "Folder drop-down list"
+                Option {
+                    text: "No folder"
+                    value: 0
+                    selected: true
+                }
+                bottomMargin: 40
+            }
+            TextField {
+                id: taskIdField
+                visible: false
+                bottomMargin: 40
+                accessibility.name: "Hidden textfield containing task ID number"
+            }
         }
     }
     

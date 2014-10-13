@@ -25,6 +25,7 @@ private:
     void initDatabase();
 
 signals:
+    void toast(QString message);
 
 public slots:
     void onFolderEdited(QVariantMap folder);

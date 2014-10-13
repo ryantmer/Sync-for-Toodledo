@@ -22,8 +22,8 @@ static const uint qt_meta_data_ToodledoTen[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      24,   14, // methods
-       2,  134, // properties
+      25,   14, // methods
+       2,  139, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
@@ -43,25 +43,26 @@ static const uint qt_meta_data_ToodledoTen[] = {
      250,   12,   12,   12, 0x0a,
      275,   12,   12,   12, 0x0a,
      299,   12,   12,   12, 0x0a,
+     323,  315,   12,   12, 0x0a,
 
  // methods: signature, parameters, type, tag, flags
-     334,  325,  315,   12, 0x02,
-     373,  364,  359,   12, 0x02,
-     403,   12,   12,   12, 0x02,
-     418,   12,   12,   12, 0x02,
-     435,   13,   12,   12, 0x02,
-     456,   41,   12,   12, 0x02,
-     490,   13,   12,   12, 0x02,
-     514,   13,   12,   12, 0x02,
-     537,   41,   12,   12, 0x02,
-     573,   13,   12,   12, 0x02,
-     612,   12,  599,   12, 0x02,
-     628,   12,   12,   12, 0x02,
-     645,  637,   12,   12, 0x02,
+     359,  350,  340,   12, 0x02,
+     398,  389,  384,   12, 0x02,
+     428,   12,   12,   12, 0x02,
+     443,   12,   12,   12, 0x02,
+     460,   13,   12,   12, 0x02,
+     481,   41,   12,   12, 0x02,
+     515,   13,   12,   12, 0x02,
+     539,   13,   12,   12, 0x02,
+     562,   41,   12,   12, 0x02,
+     598,   13,   12,   12, 0x02,
+     637,   12,  624,   12, 0x02,
+     653,   12,   12,   12, 0x02,
+     662,  315,   12,   12, 0x02,
 
  // properties: name, type, flags
-     679,  664, 0x00095409,
-     710,  693, 0x00095409,
+     696,  681, 0x00095409,
+     727,  710, 0x00095409,
 
        0        // eod
 };
@@ -76,7 +77,8 @@ static const char qt_meta_stringdata_ToodledoTen[] = {
     "url\0onWebViewUrlChanged(QUrl)\0"
     "onAccessTokenRefreshed()\0"
     "onRefreshTokenExpired()\0onAppMinimize()\0"
-    "QDateTime\0unixTime\0unixTimeToDateTime(uint)\0"
+    "message\0onToast(QString)\0QDateTime\0"
+    "unixTime\0unixTimeToDateTime(uint)\0"
     "uint\0dateTime\0dateTimeToUnixTime(QDateTime)\0"
     "refreshTasks()\0refreshFolders()\0"
     "addTask(QVariantMap)\0"
@@ -84,10 +86,9 @@ static const char qt_meta_stringdata_ToodledoTen[] = {
     "removeTask(QVariantMap)\0addFolder(QVariantMap)\0"
     "editFolder(QVariantMap,QVariantMap)\0"
     "removeFolder(QVariantMap)\0QVariantList\0"
-    "getFolderList()\0logout()\0message\0"
-    "showToast(QString)\0TaskDataModel*\0"
-    "taskDataModel\0FolderDataModel*\0"
-    "folderDataModel\0"
+    "getFolderList()\0logout()\0showToast(QString)\0"
+    "TaskDataModel*\0taskDataModel\0"
+    "FolderDataModel*\0folderDataModel\0"
 };
 
 void ToodledoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -107,22 +108,23 @@ void ToodledoTen::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 8: _t->onAccessTokenRefreshed(); break;
         case 9: _t->onRefreshTokenExpired(); break;
         case 10: _t->onAppMinimize(); break;
-        case 11: { QDateTime _r = _t->unixTimeToDateTime((*reinterpret_cast< uint(*)>(_a[1])));
+        case 11: _t->onToast((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 12: { QDateTime _r = _t->unixTimeToDateTime((*reinterpret_cast< uint(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QDateTime*>(_a[0]) = _r; }  break;
-        case 12: { uint _r = _t->dateTimeToUnixTime((*reinterpret_cast< QDateTime(*)>(_a[1])));
+        case 13: { uint _r = _t->dateTimeToUnixTime((*reinterpret_cast< QDateTime(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< uint*>(_a[0]) = _r; }  break;
-        case 13: _t->refreshTasks(); break;
-        case 14: _t->refreshFolders(); break;
-        case 15: _t->addTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 16: _t->editTask((*reinterpret_cast< QVariantMap(*)>(_a[1])),(*reinterpret_cast< QVariantMap(*)>(_a[2]))); break;
-        case 17: _t->removeTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 18: _t->addFolder((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 19: _t->editFolder((*reinterpret_cast< QVariantMap(*)>(_a[1])),(*reinterpret_cast< QVariantMap(*)>(_a[2]))); break;
-        case 20: _t->removeFolder((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 21: { QVariantList _r = _t->getFolderList();
+        case 14: _t->refreshTasks(); break;
+        case 15: _t->refreshFolders(); break;
+        case 16: _t->addTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 17: _t->editTask((*reinterpret_cast< QVariantMap(*)>(_a[1])),(*reinterpret_cast< QVariantMap(*)>(_a[2]))); break;
+        case 18: _t->removeTask((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 19: _t->addFolder((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 20: _t->editFolder((*reinterpret_cast< QVariantMap(*)>(_a[1])),(*reinterpret_cast< QVariantMap(*)>(_a[2]))); break;
+        case 21: _t->removeFolder((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 22: { QVariantList _r = _t->getFolderList();
             if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = _r; }  break;
-        case 22: _t->logout(); break;
-        case 23: _t->showToast((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 23: _t->logout(); break;
+        case 24: _t->showToast((*reinterpret_cast< QString(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -160,9 +162,9 @@ int ToodledoTen::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 24)
+        if (_id < 25)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 24;
+        _id -= 25;
     }
 #ifndef QT_NO_PROPERTIES
       else if (_c == QMetaObject::ReadProperty) {

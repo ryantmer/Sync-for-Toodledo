@@ -22,32 +22,35 @@ static const uint qt_meta_data_FolderDataModel[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       9,   14, // methods
+      10,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       0,       // signalCount
+       1,       // signalCount
+
+ // signals: signature, parameters, type, tag, flags
+      25,   17,   16,   16, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      24,   17,   16,   16, 0x0a,
-      52,   17,   16,   16, 0x0a,
-      79,   17,   16,   16, 0x0a,
-     108,   16,   16,   16, 0x0a,
-     122,   16,   16,   16, 0x0a,
+      47,   40,   16,   16, 0x0a,
+      75,   40,   16,   16, 0x0a,
+     102,   40,   16,   16, 0x0a,
+     131,   16,   16,   16, 0x0a,
+     145,   16,   16,   16, 0x0a,
 
  // methods: signature, parameters, type, tag, flags
-     152,  142,  138,   16, 0x02,
-     182,  142,  177,   16, 0x02,
-     216,  142,  208,   16, 0x02,
-     248,  142,  239,   16, 0x02,
+     175,  165,  161,   16, 0x02,
+     205,  165,  200,   16, 0x02,
+     239,  165,  231,   16, 0x02,
+     271,  165,  262,   16, 0x02,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_FolderDataModel[] = {
-    "FolderDataModel\0\0folder\0"
-    "onFolderEdited(QVariantMap)\0"
+    "FolderDataModel\0\0message\0toast(QString)\0"
+    "folder\0onFolderEdited(QVariantMap)\0"
     "onFolderAdded(QVariantMap)\0"
     "onFolderRemoved(QVariantMap)\0onLoggedOut()\0"
     "onAboutToQuit()\0int\0indexPath\0"
@@ -63,18 +66,19 @@ void FolderDataModel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         Q_ASSERT(staticMetaObject.cast(_o));
         FolderDataModel *_t = static_cast<FolderDataModel *>(_o);
         switch (_id) {
-        case 0: _t->onFolderEdited((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 1: _t->onFolderAdded((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 2: _t->onFolderRemoved((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
-        case 3: _t->onLoggedOut(); break;
-        case 4: _t->onAboutToQuit(); break;
-        case 5: { int _r = _t->childCount((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 0: _t->toast((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 1: _t->onFolderEdited((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 2: _t->onFolderAdded((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 3: _t->onFolderRemoved((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
+        case 4: _t->onLoggedOut(); break;
+        case 5: _t->onAboutToQuit(); break;
+        case 6: { int _r = _t->childCount((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 6: { bool _r = _t->hasChildren((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 7: { bool _r = _t->hasChildren((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 7: { QString _r = _t->itemType((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 8: { QString _r = _t->itemType((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = _r; }  break;
-        case 8: { QVariant _r = _t->data((*reinterpret_cast< const QVariantList(*)>(_a[1])));
+        case 9: { QVariant _r = _t->data((*reinterpret_cast< const QVariantList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QVariant*>(_a[0]) = _r; }  break;
         default: ;
         }
@@ -115,10 +119,17 @@ int FolderDataModel::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 9)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 10;
     }
     return _id;
+}
+
+// SIGNAL 0
+void FolderDataModel::toast(QString _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 QT_END_MOC_NAMESPACE

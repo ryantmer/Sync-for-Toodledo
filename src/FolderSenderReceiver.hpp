@@ -21,6 +21,7 @@ signals:
     void folderAddReply(QVariantMap folder);
     void folderRemoveReply(QVariantMap folder);
     void folderGetReply(QVariantMap folder);
+    void toast(QString message);
 
 public slots:
     void onFolderAdded(QVariantMap data);

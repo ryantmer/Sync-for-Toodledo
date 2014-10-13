@@ -58,6 +58,28 @@ ToodledoTen::ToodledoTen() : QObject() {
     isOk = connect(_loginManager, SIGNAL(refreshTokenExpired()),
             this, SLOT(onRefreshTokenExpired()));
     Q_ASSERT(isOk);
+    //YEAH TOAST
+    isOk = connect(_propertiesManager, SIGNAL(toast(QString)),
+            this, SLOT(onToast(QString)));
+    Q_ASSERT(isOk);
+    isOk = connect(_loginManager, SIGNAL(toast(QString)),
+            this, SLOT(onToast(QString)));
+    Q_ASSERT(isOk);
+    isOk = connect(_networkManager, SIGNAL(toast(QString)),
+            this, SLOT(onToast(QString)));
+    Q_ASSERT(isOk);
+    isOk = connect(_taskSenderReceiver, SIGNAL(toast(QString)),
+            this, SLOT(onToast(QString)));
+    Q_ASSERT(isOk);
+    isOk = connect(_folderSenderReceiver, SIGNAL(toast(QString)),
+            this, SLOT(onToast(QString)));
+    Q_ASSERT(isOk);
+    isOk = connect(_taskDataModel, SIGNAL(toast(QString)),
+            this, SLOT(onToast(QString)));
+    Q_ASSERT(isOk);
+    isOk = connect(_folderDataModel, SIGNAL(toast(QString)),
+            this, SLOT(onToast(QString)));
+    Q_ASSERT(isOk);
 
     //LoginManager listeners
     isOk = connect(this, SIGNAL(loggedOut()),
@@ -264,6 +286,10 @@ void ToodledoTen::onAppMinimize() {
     //TODO: Fix this memory leak - cover is created each time app is minimized
     SceneCover *cover = SceneCover::create().content(rootContainer);
     Application::instance()->setCover(cover);
+}
+
+void ToodledoTen::onToast(QString message) {
+    showToast(message);
 }
 /*
  * Slots end

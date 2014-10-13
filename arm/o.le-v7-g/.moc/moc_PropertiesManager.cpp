@@ -22,20 +22,21 @@ static const uint qt_meta_data_PropertiesManager[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
-       2,   24, // properties
+       3,   14, // methods
+       2,   29, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       2,       // signalCount
+       3,       // signalCount
 
  // signals: signature, parameters, type, tag, flags
       28,   19,   18,   18, 0x05,
       59,   54,   18,   18, 0x05,
+      99,   91,   18,   18, 0x05,
 
  // properties: name, type, flags
-      96,   91, 0x01495103,
-     115,   91, 0x01495103,
+     119,  114, 0x01495103,
+     138,  114, 0x01495103,
 
  // properties: notify_signal_id
        1,
@@ -47,8 +48,9 @@ static const uint qt_meta_data_PropertiesManager[] = {
 static const char qt_meta_stringdata_PropertiesManager[] = {
     "PropertiesManager\0\0advanced\0"
     "advancedModeChanged(bool)\0show\0"
-    "showCompletedTasksChanged(bool)\0bool\0"
-    "showCompletedTasks\0advancedMode\0"
+    "showCompletedTasksChanged(bool)\0message\0"
+    "toast(QString)\0bool\0showCompletedTasks\0"
+    "advancedMode\0"
 };
 
 void PropertiesManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -59,6 +61,7 @@ void PropertiesManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         switch (_id) {
         case 0: _t->advancedModeChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 1: _t->showCompletedTasksChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 2: _t->toast((*reinterpret_cast< QString(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -96,9 +99,9 @@ int PropertiesManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     }
 #ifndef QT_NO_PROPERTIES
       else if (_c == QMetaObject::ReadProperty) {
@@ -144,5 +147,12 @@ void PropertiesManager::showCompletedTasksChanged(bool _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
+}
+
+// SIGNAL 2
+void PropertiesManager::toast(QString _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 QT_END_MOC_NAMESPACE

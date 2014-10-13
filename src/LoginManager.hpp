@@ -35,6 +35,7 @@ signals:
     void accessTokenExpired();
     void refreshTokenRefreshed();
     void accessTokenRefreshed();
+    void toast(QString message);
 
 private:
     static const QString credentials;

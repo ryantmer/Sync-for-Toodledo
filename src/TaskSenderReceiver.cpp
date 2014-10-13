@@ -152,21 +152,25 @@ void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
             for (int i = 0; i < data.count(); ++i) {
                 emit taskGetReply(data.value(i).toMap());
             }
+            emit toast("Tasks updated");
         } else if (reply->url().toString().contains(addUrl)) {
             qDebug() << Q_FUNC_INFO << "New task(s) added";
             for (int i = 0; i < data.count(); ++i) {
                 emit taskAddReply(data.value(i).toMap());
             }
+            emit toast("Task added");
         } else if (reply->url().toString().contains(removeUrl)) {
             qDebug() << Q_FUNC_INFO << "Task(s) removed";
             for (int i = 0; i < data.count(); ++i) {
                 emit taskRemoveReply(data.value(i).toMap());
             }
+            emit toast("Task deleted");
         } else if (reply->url().toString().contains(editUrl)) {
             qDebug() << Q_FUNC_INFO << "Task(s) edited";
             for (int i = 0; i < data.count(); ++i) {
                 emit taskEditReply(data.value(i).toMap());
             }
+            emit toast("Task edited");
         } else {
             qDebug() << Q_FUNC_INFO << "Unrecognized reply received:" << data;
         }
@@ -182,6 +186,8 @@ void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
         qDebug() << Q_FUNC_INFO << "ToodleDo error" <<
                 errorMap.value("errorCode").toInt(NULL) << ":" <<
                 errorMap.value("errorDesc").toString();
+        emit toast("Toodledo Error " + errorMap.value("errorCode").toString() +
+                    " : " + errorMap.value("errorDesc").toString());
     }
     reply->deleteLater();
 }

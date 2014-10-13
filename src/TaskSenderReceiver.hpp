@@ -21,6 +21,7 @@ signals:
     void taskAddReply(QVariantMap task);
     void taskRemoveReply(QVariantMap task);
     void taskGetReply(QVariantMap task);
+    void toast(QString message);
 
 public slots:
     void onTaskAdded(QVariantMap data);

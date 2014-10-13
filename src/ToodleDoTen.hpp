@@ -59,6 +59,7 @@ public slots:
     void onAccessTokenRefreshed();
     void onRefreshTokenExpired();
     void onAppMinimize();
+    void onToast(QString message);
 
 private:
     TaskDataModel *_taskDataModel;

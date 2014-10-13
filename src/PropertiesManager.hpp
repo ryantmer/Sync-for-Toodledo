@@ -30,6 +30,7 @@ public:
 signals:
     void advancedModeChanged(bool advanced);
     void showCompletedTasksChanged(bool show);
+    void toast(QString message);
 
 private:
 };

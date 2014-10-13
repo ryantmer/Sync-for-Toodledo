@@ -24,6 +24,7 @@ private:
     void sortTasksByDueDate();
 
 signals:
+    void toast(QString message);
 
 public slots:
     void onTaskEdited(QVariantMap task);

@@ -22,25 +22,27 @@ static const uint qt_meta_data_NetworkManager[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       1,       // signalCount
+       2,       // signalCount
 
  // signals: signature, parameters, type, tag, flags
       33,   16,   15,   15, 0x05,
+      67,   59,   15,   15, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      65,   59,   15,   15, 0x08,
+      88,   82,   15,   15, 0x08,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_NetworkManager[] = {
     "NetworkManager\0\0activeConnection\0"
-    "networkStateChanged(bool)\0state\0"
+    "networkStateChanged(bool)\0message\0"
+    "toast(QString)\0state\0"
     "onNetworkStateChanged(QNetworkSession::State)\0"
 };
 
@@ -51,7 +53,8 @@ void NetworkManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         NetworkManager *_t = static_cast<NetworkManager *>(_o);
         switch (_id) {
         case 0: _t->networkStateChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 1: _t->onNetworkStateChanged((*reinterpret_cast< QNetworkSession::State(*)>(_a[1]))); break;
+        case 1: _t->toast((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 2: _t->onNetworkStateChanged((*reinterpret_cast< QNetworkSession::State(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -89,9 +92,9 @@ int NetworkManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     }
     return _id;
 }
@@ -101,5 +104,12 @@ void NetworkManager::networkStateChanged(bool _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+
+// SIGNAL 1
+void NetworkManager::toast(QString _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 QT_END_MOC_NAMESPACE

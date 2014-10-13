@@ -15,6 +15,7 @@ public:
 
 signals:
     void networkStateChanged(bool activeConnection);
+    void toast(QString message);
 
 private slots:
     void onNetworkStateChanged(QNetworkSession::State state);
