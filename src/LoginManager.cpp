@@ -132,7 +132,7 @@ void LoginManager::refreshAccessToken() {
 void LoginManager::onLoggedOut() {
     this->loggedIn = false;
     this->_propMan->clearTokens();
-    qDebug() << Q_FUNC_INFO << "Logged out";
+    emit toast("Logged out");
 }
 
 void LoginManager::onRefreshTokenExpired() {

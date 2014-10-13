@@ -4,37 +4,9 @@
 using namespace bb::cascades;
 using namespace bb::data;
 
-//Location where DB is stored by app on exit
-const QString TaskDataModel::taskDBPath = QString("app/native/assets/data/tasks.json");
+TaskDataModel::TaskDataModel(QObject *parent) : DataModel(parent) {}
 
-TaskDataModel::TaskDataModel(QObject *parent) : DataModel(parent) {
-    initDatabase();
-}
-TaskDataModel::~TaskDataModel() {
-    bb::data::JsonDataAccess jda;
-    jda.save(taskDB, TaskDataModel::taskDBPath);
-}
-
-void TaskDataModel::initDatabase() {
-    bb::data::JsonDataAccess jda;
-    bool loaded = false;
-
-    if (QFile::exists(taskDBPath)) {
-        qDebug() << Q_FUNC_INFO << "Found local database, loading.";
-        taskDB = jda.load(taskDBPath).value<QVariantList>();
-        if (jda.hasError()) {
-            bb::data::DataAccessError e = jda.error();
-            qDebug() << Q_FUNC_INFO << "JSON loading error: " << taskDBPath << e.errorType() << ": " << e.errorMessage();
-        } else {
-            loaded = true;
-        }
-    }
-
-    if (!loaded) {
-        qDebug() << Q_FUNC_INFO << "FAILED TO LOAD DATABASE";
-    }
-    sortTasksByDueDate();
-}
+TaskDataModel::~TaskDataModel() {}
 
 bool compareTasksByDueDate(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
@@ -115,13 +87,6 @@ void TaskDataModel::onLoggedOut() {
     //Clear all stored tasks
     taskDB = QVariantList();
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-    bb::data::JsonDataAccess jda;
-    jda.save(taskDB, TaskDataModel::taskDBPath);
-}
-
-void TaskDataModel::onAboutToQuit() {
-    bb::data::JsonDataAccess jda;
-    jda.save(taskDB, TaskDataModel::taskDBPath);
 }
 /*
  * End slots

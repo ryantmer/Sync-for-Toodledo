@@ -4,39 +4,23 @@
 using namespace bb::cascades;
 using namespace bb::data;
 
-//Location where DB is stored by app on exit
-const QString FolderDataModel::folderDBPath = QString("app/native/assets/data/folders.json");
+FolderDataModel::FolderDataModel(QObject *parent) : DataModel(parent) {}
 
-FolderDataModel::FolderDataModel(QObject *parent) : DataModel(parent) {
-    initDatabase();
-}
-FolderDataModel::~FolderDataModel() {
-    bb::data::JsonDataAccess jda;
-    jda.save(folderDB, FolderDataModel::folderDBPath);
-}
-
-void FolderDataModel::initDatabase() {
-    bb::data::JsonDataAccess jda;
-    bool loaded = false;
-
-    if (QFile::exists(folderDBPath)) {
-        qDebug() << Q_FUNC_INFO << "Found local database, loading.";
-        folderDB = jda.load(folderDBPath).value<QVariantList>();
-        if (jda.hasError()) {
-            bb::data::DataAccessError e = jda.error();
-            qDebug() << Q_FUNC_INFO << "JSON loading error: " << folderDBPath << e.errorType() << ": " << e.errorMessage();
-        } else {
-            loaded = true;
-        }
-    }
-
-    if (!loaded) {
-        qDebug() << Q_FUNC_INFO << "FAILED TO LOAD DATABASE";
-    }
-}
+FolderDataModel::~FolderDataModel() {}
 
 QVariantList FolderDataModel::getFolderList() {
     return folderDB;
+}
+
+bool compareFoldersByOrd(QVariant &a, QVariant &b) {
+    QVariantMap first = a.toMap();
+    QVariantMap second = b.toMap();
+
+    return first.value("ord").toLongLong(NULL) < second.value("ord").toLongLong(NULL);
+}
+
+void FolderDataModel::sortFoldersByOrd() {
+    qSort(folderDB.begin(), folderDB.end(), compareFoldersByOrd);
 }
 
 /*
@@ -95,13 +79,6 @@ void FolderDataModel::onLoggedOut() {
     //Clear all stored folders
     folderDB = QVariantList();
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-    bb::data::JsonDataAccess jda;
-    jda.save(folderDB, FolderDataModel::folderDBPath);
-}
-
-void FolderDataModel::onAboutToQuit() {
-    bb::data::JsonDataAccess jda;
-    jda.save(folderDB, FolderDataModel::folderDBPath);
 }
 /*
  * End slots

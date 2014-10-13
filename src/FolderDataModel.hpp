@@ -6,7 +6,6 @@
 
 class FolderDataModel : public bb::cascades::DataModel {
     Q_OBJECT
-    static const QString folderDBPath;
 
 public:
     FolderDataModel(QObject *parent = 0);
@@ -22,7 +21,7 @@ public:
 
 private:
     QVariantList folderDB;
-    void initDatabase();
+    void sortFoldersByOrd();
 
 signals:
     void toast(QString message);
@@ -32,7 +31,6 @@ public slots:
     void onFolderAdded(QVariantMap folder);
     void onFolderRemoved(QVariantMap folder);
     void onLoggedOut();
-    void onAboutToQuit();
 };
 
 #endif /* FOLDERDATAMODEL_HPP_ */

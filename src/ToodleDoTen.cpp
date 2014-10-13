@@ -102,9 +102,6 @@ ToodledoTen::ToodledoTen() : QObject() {
     isOk = connect(_taskSenderReceiver, SIGNAL(taskRemoveReply(QVariantMap)),
             _taskDataModel, SLOT(onTaskRemoved(QVariantMap)));
     Q_ASSERT(isOk);
-    isOk = connect(Application::instance(), SIGNAL(aboutToQuit()),
-            _taskDataModel, SLOT(onAboutToQuit()));
-    Q_ASSERT(isOk);
 
     //FDM listeners
     isOk = connect(this, SIGNAL(loggedOut()),
@@ -121,9 +118,6 @@ ToodledoTen::ToodledoTen() : QObject() {
     Q_ASSERT(isOk);
     isOk = connect(_folderSenderReceiver, SIGNAL(folderRemoveReply(QVariantMap)),
             _folderDataModel, SLOT(onFolderRemoved(QVariantMap)));
-    Q_ASSERT(isOk);
-    isOk = connect(Application::instance(), SIGNAL(aboutToQuit()),
-            _folderDataModel, SLOT(onAboutToQuit()));
     Q_ASSERT(isOk);
 
     //TSR listeners
@@ -284,7 +278,7 @@ void ToodledoTen::onAppMinimize() {
     qmlCover->setContextProperty("app", this);
     Container *rootContainer = qmlCover->createRootObject<Container>();
     //TODO: Fix this memory leak - cover is created each time app is minimized
-    SceneCover *cover = SceneCover::create().content(rootContainer);
+    SceneCover *cover = SceneCover::create().content(rootContainer).parent(this);
     Application::instance()->setCover(cover);
 }
 

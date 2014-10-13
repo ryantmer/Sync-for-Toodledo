@@ -47,23 +47,10 @@ Sheet {
                     verticalAlignment: VerticalAlignment.Center
                     horizontalAlignment: HorizontalAlignment.Center
                     bottomMargin: 30
-                    attachedObjects: [
-                        Invocation {
-                            id: emailInvoke
-                            query: InvokeQuery {
-                                id: emailInvokeQuery
-                                mimeType: ""
-                                invokeTargetId: "sys.pim.uib.email.hybridcomposer"
-                                uri: "mailto:toodledo10app@gmail.com?subject=Toodledo10%20Help"
-                                invokerIncluded: true
-                                onQueryChanged: {
-                                    emailInvokeQuery.updateQuery();
-                                }
-                            }
-                        }
-                    ]
+                    
                     onClicked: {
-                        emailInvoke.trigger("bb.action.SENDEMAIL");
+                        emailInvoke.query.uri = "mailto:toodledo10app@gmail.com?subject=Toodledo10%20Help";
+                        emailInvoke.query.updateQuery();
                     }
                 }
                 TextArea {
@@ -76,6 +63,18 @@ Sheet {
                     horizontalAlignment: HorizontalAlignment.Center
                     bottomMargin: 30
                 }
+                
+                attachedObjects: [
+                    Invocation {
+                        id: emailInvoke
+                        query.mimeType: "text/plain"
+                        query.invokeTargetId: "sys.pim.uib.email.hybridcomposer"
+                        query.invokeActionId: "bb.action.SENDEMAIL"
+                        onArmed: {
+                            emailInvoke.trigger(emailInvoke.query.invokeActionId);
+                        }
+                    }
+                ]
             }
         }
     }

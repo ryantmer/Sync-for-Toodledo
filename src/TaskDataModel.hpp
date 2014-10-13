@@ -6,7 +6,6 @@
 
 class TaskDataModel : public bb::cascades::DataModel {
     Q_OBJECT
-    static const QString taskDBPath;
 
 public:
     TaskDataModel(QObject *parent = 0);
@@ -20,7 +19,6 @@ public:
 
 private:
     QVariantList taskDB;
-    void initDatabase();
     void sortTasksByDueDate();
 
 signals:
@@ -31,7 +29,6 @@ public slots:
     void onTaskAdded(QVariantMap task);
     void onTaskRemoved(QVariantMap task);
     void onLoggedOut();
-    void onAboutToQuit();
 };
 
 #endif /* TASKDATAMODEL_HPP_ */
