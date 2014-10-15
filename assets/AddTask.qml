@@ -10,7 +10,7 @@ Page {
         for (var x = 0; x < folders.length; x++) {
             var opt = option.createObject();
             opt.text = folders[x].name;
-            opt.value = folders[x].value;
+            opt.value = folders[x].id;
             folderDropDown.add(opt);
         }
     }

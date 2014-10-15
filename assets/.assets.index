@@ -1,5 +1,5 @@
 1
-22
+11
 About.qml
 AddTask.qml
 Cover.qml
@@ -8,17 +8,6 @@ images/ic_add.png
 images/ic_info.png
 images/ic_reload.png
 images/ic_save.png
-images/logos/logo114.png
-images/logos/logo480.png
-images/logos/logo86.png
-images/logos/logo94.png
-images/splashscreens/splash-screen-1024x600.png
-images/splashscreens/splash-screen-1280x720.png
-images/splashscreens/splash-screen-1280x768.png
-images/splashscreens/splash-screen-600x1024.png
-images/splashscreens/splash-screen-720x1280.png
-images/splashscreens/splash-screen-720x720.png
-images/splashscreens/splash-screen-768x1280.png
 Login.qml
 main.qml
 Settings.qml

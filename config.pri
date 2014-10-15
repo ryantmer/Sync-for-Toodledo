@@ -46,17 +46,6 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/images/ic_info.png) \
         $$quote($$BASEDIR/assets/images/ic_reload.png) \
         $$quote($$BASEDIR/assets/images/ic_save.png) \
-        $$quote($$BASEDIR/assets/images/logos/logo114.png) \
-        $$quote($$BASEDIR/assets/images/logos/logo480.png) \
-        $$quote($$BASEDIR/assets/images/logos/logo86.png) \
-        $$quote($$BASEDIR/assets/images/logos/logo94.png) \
-        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-1024x600.png) \
-        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-1280x720.png) \
-        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-1280x768.png) \
-        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-600x1024.png) \
-        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-720x1280.png) \
-        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-720x720.png) \
-        $$quote($$BASEDIR/assets/images/splashscreens/splash-screen-768x1280.png) \
         $$quote($$BASEDIR/assets/main.qml)
 }
 

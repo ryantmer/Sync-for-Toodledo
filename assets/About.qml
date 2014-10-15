@@ -54,7 +54,7 @@ Sheet {
                     }
                 }
                 TextArea {
-                    text: "http://toodledo10.ryantmer.com"
+                    text: "http://www.ryantmer.com/toodledo10"
                     editable: false
                     inputMode: TextAreaInputMode.Text
                     textStyle.fontSize: FontSize.Default

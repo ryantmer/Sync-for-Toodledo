@@ -82,8 +82,7 @@ void TaskSenderReceiver::onTaskEdited(QVariantMap oldData, QVariantMap newData) 
     QUrl url(editUrl);
     QNetworkRequest req(url);
 
-    if (oldData["completed"] == newData["completed"] && oldData["title"] == newData["title"] &&
-            oldData["duedate"] == newData["duedate"] && oldData["note"] == newData["note"]) {
+    if (oldData == newData) {
         //If nothing has changed, don't need to upload anything
         return;
     }
