@@ -25,35 +25,25 @@ NetworkManager *NetworkManager::getInstance() {
 
 NetworkManager::NetworkManager() {
     _netConfigManager = new QNetworkConfigurationManager(this);
-    _netSession = new QNetworkSession(_netConfigManager->configurationFromIdentifier("bps:ti0"), this);
-
-    //TODO: Make this work properly
-//    if (_netSession->state() == QNetworkSession::Connected) {
-//        this->connected = true;
-//    } else {
-//        this->connected = false;
-//    }
-//    qDebug() << Q_FUNC_INFO << _netSession->state() << this->connected;
-    this->connected = true;
+    this->_connected = _netConfigManager->isOnline();
 
     bool isOk;
-    isOk = connect(_netSession, SIGNAL(stateChanged(QNetworkSession::State)),
-            this, SLOT(onNetworkStateChanged(QNetworkSession::State)));
+    isOk = connect(_netConfigManager, SIGNAL(onlineStateChanged(bool)),
+            this, SLOT(onOnlineStateChanged(bool)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
 }
 NetworkManager::~NetworkManager() {}
 
 bool NetworkManager::isConnected() {
-    return this->connected;
+    return this->_connected;
 }
 
-void NetworkManager::onNetworkStateChanged(QNetworkSession::State state) {
-    if (state == QNetworkSession::Connected) {
-        this->connected = true;
+void NetworkManager::onOnlineStateChanged(bool online) {
+    if (online) {
+        this->_connected = true;
     } else {
-        this->connected = false;
+        this->_connected = false;
     }
-
-    emit networkStateChanged(this->connected);
+    emit networkStateChanged(this->_connected);
 }

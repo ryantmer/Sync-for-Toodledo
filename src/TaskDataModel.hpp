@@ -11,6 +11,8 @@ public:
     TaskDataModel(QObject *parent = 0);
     virtual ~TaskDataModel();
 
+    QVariant firstEntry();
+
     //Required by bb::cascades::DataModel
     Q_INVOKABLE virtual int childCount(const QVariantList &indexPath);
     Q_INVOKABLE virtual bool hasChildren(const QVariantList &indexPath);

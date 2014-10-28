@@ -8,6 +8,14 @@ TaskDataModel::TaskDataModel(QObject *parent) : DataModel(parent) {}
 
 TaskDataModel::~TaskDataModel() {}
 
+QVariant TaskDataModel::firstEntry() {
+    if (taskDB.length() > 0) {
+        return taskDB.first();
+    } else {
+        return QVariant();
+    }
+}
+
 bool compareTasksByDueDate(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
     QVariantMap second = b.toMap();

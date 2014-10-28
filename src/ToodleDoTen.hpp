@@ -5,6 +5,7 @@
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
 #include <bb/cascades/NavigationPane>
+#include <bb/cascades/Container>
 #include <bb/cascades/Page>
 #include <bb/cascades/WebView>
 #include <bb/cascades/ScrollView>
@@ -55,10 +56,11 @@ signals:
     void loggedOut();
 
 public slots:
+    void onAppMinimized();
+    void onNetworkStateChanged(bool connected);
     void onWebViewUrlChanged(QUrl url);
     void onAccessTokenRefreshed();
     void onRefreshTokenExpired();
-    void onAppMinimize();
     void onToast(QString message);
 
 private:
@@ -70,10 +72,11 @@ private:
     PropertiesManager *_propertiesManager;
     LoginManager *_loginManager;
 
-    NavigationPane *root;
-    Page *loginPage;
-    ScrollView *loginScrollView;
-    WebView *loginWebView;
+    NavigationPane *_root;
+    Container *_coverRoot;
+    Page *_loginPage;
+    ScrollView *_loginScrollView;
+    WebView *_loginWebView;
 };
 
 #endif /* TOODLEDOTEN_HPP_ */

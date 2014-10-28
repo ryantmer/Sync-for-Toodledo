@@ -5,6 +5,7 @@
 
 #include <bb/cascades/Container>
 #include <bb/cascades/SceneCover>
+#include <bb/cascades/Label>
 #include <bb/system/SystemToast>
 #include <bb/system/SystemUiPosition>
 
@@ -12,6 +13,7 @@ using namespace bb::cascades;
 using namespace bb::system;
 
 ToodledoTen::ToodledoTen() : QObject() {
+
     //TODO: Figure out what's not properly parented here, and isn't quitting properly
     qmlRegisterType<TaskDataModel>("TaskUtilities", 1, 0, "TaskDataModel");
     qmlRegisterType<FolderDataModel>("FolderUtilities", 1, 0, "FolderDataModel");
@@ -30,8 +32,8 @@ ToodledoTen::ToodledoTen() : QObject() {
     qml->setContextProperty("propertyManager", _propertiesManager);
     qml->setContextProperty("taskDataModel", _taskDataModel);
     qml->setContextProperty("folderDataModel", _folderDataModel);
-    root = qml->createRootObject<NavigationPane>();
-    Application::instance()->setScene(root);
+    _root = qml->createRootObject<NavigationPane>();
+    Application::instance()->setScene(_root);
 
     //Expose app to the main listview
     QDeclarativeEngine *engine = QmlDocument::defaultDeclarativeEngine();
@@ -40,16 +42,23 @@ ToodledoTen::ToodledoTen() : QObject() {
 
     //Login page, shown if required
     QmlDocument *loginQml = QmlDocument::create("asset:///Login.qml").parent(this);
-    loginPage = loginQml->createRootObject<Page>();
-    loginWebView = loginPage->findChild<WebView*>("loginWebView");
+    _loginPage = loginQml->createRootObject<Page>();
+    _loginWebView = _loginPage->findChild<WebView*>("loginWebView");
+
+    //Add cover QML for app
+    QmlDocument *qmlCover = QmlDocument::create("asset:///Cover.qml").parent(this);
+    qmlCover->setContextProperty("app", this);
+    _coverRoot = qmlCover->createRootObject<Container>();
+    SceneCover *cover = SceneCover::create().content(_coverRoot);
+    Application::instance()->setCover(cover);
 
     bool isOk;
 
     //Toodledo10 listeners
     isOk = connect(Application::instance(), SIGNAL(thumbnail()),
-            this, SLOT(onAppMinimize()));
+            this, SLOT(onAppMinimized()));
     Q_ASSERT(isOk);
-    isOk = connect(loginWebView, SIGNAL(urlChanged(QUrl)),
+    isOk = connect(_loginWebView, SIGNAL(urlChanged(QUrl)),
             this, SLOT(onWebViewUrlChanged(QUrl)));
     Q_ASSERT(isOk);
     isOk = connect(_loginManager, SIGNAL(accessTokenRefreshed()),
@@ -57,6 +66,9 @@ ToodledoTen::ToodledoTen() : QObject() {
     Q_ASSERT(isOk);
     isOk = connect(_loginManager, SIGNAL(refreshTokenExpired()),
             this, SLOT(onRefreshTokenExpired()));
+    Q_ASSERT(isOk);
+    isOk = connect(_networkManager, SIGNAL(networkStateChanged(bool)),
+            this, SLOT(onNetworkStateChanged(bool)));
     Q_ASSERT(isOk);
     //YEAH TOAST
     isOk = connect(_propertiesManager, SIGNAL(toast(QString)),
@@ -143,9 +155,6 @@ ToodledoTen::ToodledoTen() : QObject() {
     Q_ASSERT(isOk);
 
     Q_UNUSED(isOk);
-
-    refreshTasks();
-    refreshFolders();
 }
 ToodledoTen::~ToodledoTen() {};
 
@@ -242,6 +251,25 @@ void ToodledoTen::logout() {
 /*
  * Slots begin
  */
+void ToodledoTen::onAppMinimized() {
+    QVariantMap v = _taskDataModel->firstEntry().toMap();
+    if (v.size() > 0) {
+        _coverRoot->findChild<Label*>("taskTitle")->setText(v.value("title").toString());
+        QDateTime dueDate = unixTimeToDateTime(v.value("duedate").toLongLong(NULL));
+        _coverRoot->findChild<Label*>("taskDue")->setText(dueDate.date().toString());
+    }
+}
+
+void ToodledoTen::onNetworkStateChanged(bool connected) {
+    if (connected) {
+        refreshFolders();
+        refreshTasks();
+    } else {
+        qDebug() << Q_FUNC_INFO << "Network connection lost";
+        showToast("Network connection lost");
+    }
+}
+
 void ToodledoTen::onWebViewUrlChanged(QUrl url) {
     if (url.hasQueryItem("code") && url.hasQueryItem("state")) {
         if (url.queryItemValue("state") == _loginManager->getState()) {
@@ -250,7 +278,7 @@ void ToodledoTen::onWebViewUrlChanged(QUrl url) {
             //Start access token request
             _loginManager->refreshRefreshToken(authCode);
             //Remove webview from nav pane
-            root->pop();
+            _root->pop();
         } else {
             qDebug() << Q_FUNC_INFO << "State didn't match";
         }
@@ -268,18 +296,8 @@ void ToodledoTen::onRefreshTokenExpired() {
     //emitted by LoginManager when refresh token is no longer valid (30-day expiry)
     //when this occurs, user has to log in again
     showToast("Please log in!");
-    root->push(loginPage);
-    loginWebView->setUrl(_loginManager->getAuthorizeUrl().toString());
-}
-
-void ToodledoTen::onAppMinimize() {
-    //Add cover QML for app
-    QmlDocument *qmlCover = QmlDocument::create("asset:///Cover.qml").parent(this);
-    qmlCover->setContextProperty("app", this);
-    Container *rootContainer = qmlCover->createRootObject<Container>();
-    //TODO: Fix this memory leak - cover is created each time app is minimized
-    SceneCover *cover = SceneCover::create().content(rootContainer).parent(this);
-    Application::instance()->setCover(cover);
+    _root->push(_loginPage);
+    _loginWebView->setUrl(_loginManager->getAuthorizeUrl().toString());
 }
 
 void ToodledoTen::onToast(QString message) {

@@ -18,13 +18,11 @@ signals:
     void toast(QString message);
 
 private slots:
-    void onNetworkStateChanged(QNetworkSession::State state);
+    void onOnlineStateChanged(bool online);
 
 private:
     QNetworkConfigurationManager *_netConfigManager;
-    QNetworkSession *_netSession;
-
-    bool connected;
+    bool _connected;
 };
 
 #endif /* NETWORKMANAGER_HPP_ */

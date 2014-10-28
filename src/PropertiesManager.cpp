@@ -64,6 +64,7 @@ void PropertiesManager::clearTokens() {
     settings.setValue("tokenType", this->tokenType);
 }
 
+//Not implemented in UI
 bool PropertiesManager::showCompletedTasks() {
     QSettings settings("ryantmer", "ToodleDo10");
     QVariant v = settings.value("showCompletedTasks", false);
@@ -80,6 +81,7 @@ void PropertiesManager::setShowCompletedTasks(bool show) {
     }
 }
 
+//Not implemented in UI
 bool PropertiesManager::advancedMode() {
     QSettings settings("ryantmer", "ToodleDo10");
     QVariant v = settings.value("advancedMode", false);

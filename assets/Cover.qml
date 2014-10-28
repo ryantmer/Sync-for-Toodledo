@@ -10,22 +10,11 @@ Container {
     rightPadding: 10
     
     Label {
-        text: app.taskDataModel.data([0]).title
+        id: taskTitle
+        objectName: "taskTitle"
     }
     Label {
-        text: dueDateString(app.taskDataModel.data([0]).duedate)
-        textFormat: TextFormat.Auto
-    }
-    
-    function dueDateString(dueDate) {
-        if (dueDate == 0) {
-            return "No due date";
-        } else if (dueDate <= Math.floor((new Date()).getTime() / 1000)) {
-            return "<html><body style=\"color:red\"><b>" +
-            app.unixTimeToDateTime(dueDate).toDateString() +
-            "</b></body></html>";
-        } else {
-            return app.unixTimeToDateTime(dueDate).toDateString();
-        }
+        id: taskDue
+        objectName: "taskDue"
     }
 }
