@@ -187,6 +187,7 @@ uint ToodledoTen::dateTimeToUnixTime(QDateTime dateTime) {
 void ToodledoTen::refreshTasks() {
     if (_networkManager->isConnected()) {
         if (_loginManager->isLoggedIn()) {
+            _taskDataModel->clear();
             _taskSenderReceiver->fetchAllTasks();
         } else {
             qDebug() << Q_FUNC_INFO << "LoginManager indicated not logged in";
@@ -200,6 +201,7 @@ void ToodledoTen::refreshTasks() {
 void ToodledoTen::refreshFolders() {
     if (_networkManager->isConnected()) {
         if (_loginManager->isLoggedIn()) {
+            _folderDataModel->clear();
             _folderSenderReceiver->fetchAllFolders();
         } else {
             qDebug() << Q_FUNC_INFO << "LoginManager indicated not logged in";

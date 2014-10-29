@@ -11,13 +11,14 @@ public:
     FolderDataModel(QObject *parent = 0);
     virtual ~FolderDataModel();
 
+    void clear();
+    QVariantList getFolderList();
+
     //Required by bb::cascades::DataModel
     Q_INVOKABLE virtual int childCount(const QVariantList &indexPath);
     Q_INVOKABLE virtual bool hasChildren(const QVariantList &indexPath);
     Q_INVOKABLE virtual QString itemType(const QVariantList &indexPath);
     Q_INVOKABLE virtual QVariant data(const QVariantList &indexPath);
-
-    QVariantList getFolderList();
 
 private:
     QVariantList folderDB;

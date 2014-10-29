@@ -8,6 +8,10 @@ FolderDataModel::FolderDataModel(QObject *parent) : DataModel(parent) {}
 
 FolderDataModel::~FolderDataModel() {}
 
+void FolderDataModel::clear() {
+    folderDB.clear();
+}
+
 QVariantList FolderDataModel::getFolderList() {
     return folderDB;
 }

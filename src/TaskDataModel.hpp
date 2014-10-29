@@ -12,6 +12,7 @@ public:
     virtual ~TaskDataModel();
 
     QVariant firstEntry();
+    void clear();
 
     //Required by bb::cascades::DataModel
     Q_INVOKABLE virtual int childCount(const QVariantList &indexPath);

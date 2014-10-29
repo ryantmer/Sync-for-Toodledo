@@ -151,7 +151,7 @@ void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
             for (int i = 0; i < data.count(); ++i) {
                 emit taskGetReply(data.value(i).toMap());
             }
-            emit toast("Tasks updated");
+            emit toast("Tasks received");
         } else if (reply->url().toString().contains(addUrl)) {
             qDebug() << Q_FUNC_INFO << "New task(s) added";
             for (int i = 0; i < data.count(); ++i) {
@@ -165,11 +165,11 @@ void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
             }
             emit toast("Task deleted");
         } else if (reply->url().toString().contains(editUrl)) {
-            qDebug() << Q_FUNC_INFO << "Task(s) edited";
+            qDebug() << Q_FUNC_INFO << "Task(s) updated";
             for (int i = 0; i < data.count(); ++i) {
                 emit taskEditReply(data.value(i).toMap());
             }
-            emit toast("Task edited");
+            emit toast("Task updated");
         } else {
             qDebug() << Q_FUNC_INFO << "Unrecognized reply received:" << data;
         }

@@ -16,6 +16,10 @@ QVariant TaskDataModel::firstEntry() {
     }
 }
 
+void TaskDataModel::clear() {
+    taskDB.clear();
+}
+
 bool compareTasksByDueDate(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
     QVariantMap second = b.toMap();
