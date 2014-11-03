@@ -88,13 +88,7 @@ lupdate_inclusion {
         $$quote($$BASEDIR/../assets/*.qs) \
         $$quote($$BASEDIR/../assets/images/*.qml) \
         $$quote($$BASEDIR/../assets/images/*.js) \
-        $$quote($$BASEDIR/../assets/images/*.qs) \
-        $$quote($$BASEDIR/../assets/images/logos/*.qml) \
-        $$quote($$BASEDIR/../assets/images/logos/*.js) \
-        $$quote($$BASEDIR/../assets/images/logos/*.qs) \
-        $$quote($$BASEDIR/../assets/images/splashscreens/*.qml) \
-        $$quote($$BASEDIR/../assets/images/splashscreens/*.js) \
-        $$quote($$BASEDIR/../assets/images/splashscreens/*.qs)
+        $$quote($$BASEDIR/../assets/images/*.qs)
 
     HEADERS += \
         $$quote($$BASEDIR/../src/*.h) \
