@@ -29,7 +29,7 @@ Sheet {
                 verticalAlignment: VerticalAlignment.Center
                 horizontalAlignment: HorizontalAlignment.Center
                 Label {
-                    text: "ToodleDo10"
+                    text: "Sync for Toodledo"
                     textStyle.fontSize: FontSize.XXLarge
                     verticalAlignment: VerticalAlignment.Center
                     horizontalAlignment: HorizontalAlignment.Center
@@ -49,12 +49,12 @@ Sheet {
                     bottomMargin: 30
                     
                     onClicked: {
-                        emailInvoke.query.uri = "mailto:toodledo10app@gmail.com?subject=Toodledo10%20Help";
+                        emailInvoke.query.uri = "mailto:syncfortoodledo@gmail.com?subject=Sync%20for%20Toodledo%20Help";
                         emailInvoke.query.updateQuery();
                     }
                 }
                 TextArea {
-                    text: "http://www.ryantmer.com/toodledo10"
+                    text: "http://www.ryantmer.com/syncfortoodledo"
                     editable: false
                     inputMode: TextAreaInputMode.Text
                     textStyle.fontSize: FontSize.Default

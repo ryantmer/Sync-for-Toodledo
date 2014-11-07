@@ -28,7 +28,7 @@ NavigationPane {
     Page {
         accessibility.name: "Main task list page"
         titleBar: TitleBar {
-            title: "ToodleDo10"
+            title: "Sync for Toodledo"
         }
         
         Container {
