@@ -56,7 +56,6 @@ signals:
     void loggedOut();
 
 public slots:
-    void onAppMinimized();
     void onNetworkStateChanged(bool connected);
     void onWebViewUrlChanged(QUrl url);
     void onAccessTokenRefreshed();

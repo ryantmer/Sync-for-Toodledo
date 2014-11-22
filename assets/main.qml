@@ -36,9 +36,7 @@ NavigationPane {
             ListView {
                 id: taskListView
                 accessibility.name: "Main task list"
-                layout: StackListLayout {
-                    headerMode: ListHeaderMode.Sticky
-                }
+                layout: StackListLayout {}
                 horizontalAlignment: HorizontalAlignment.Fill
                 
                 dataModel: app.taskDataModel

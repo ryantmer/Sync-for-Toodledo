@@ -55,9 +55,6 @@ ToodledoTen::ToodledoTen() : QObject() {
     bool isOk;
 
     //Toodledo10 listeners
-    isOk = connect(Application::instance(), SIGNAL(thumbnail()),
-            this, SLOT(onAppMinimized()));
-    Q_ASSERT(isOk);
     isOk = connect(_loginWebView, SIGNAL(urlChanged(QUrl)),
             this, SLOT(onWebViewUrlChanged(QUrl)));
     Q_ASSERT(isOk);
@@ -253,15 +250,6 @@ void ToodledoTen::logout() {
 /*
  * Slots begin
  */
-void ToodledoTen::onAppMinimized() {
-    QVariantMap v = _taskDataModel->firstEntry().toMap();
-    if (v.size() > 0) {
-        _coverRoot->findChild<Label*>("taskTitle")->setText(v.value("title").toString());
-        QDateTime dueDate = unixTimeToDateTime(v.value("duedate").toLongLong(NULL));
-        _coverRoot->findChild<Label*>("taskDue")->setText(dueDate.date().toString());
-    }
-}
-
 void ToodledoTen::onNetworkStateChanged(bool connected) {
     if (connected) {
         refreshFolders();
