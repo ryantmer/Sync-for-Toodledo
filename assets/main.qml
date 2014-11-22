@@ -97,9 +97,10 @@ NavigationPane {
                 
                 onTriggered: {
                     var task = dataModel.data(indexPath);
-                    var page = editTaskSheetDefinition.createObject();
+                    var page = addEditTaskSheetDefinition.createObject();
                     page.data = task;
-                    page.populateFolderDropDown();
+                    page.edit = true;
+                    page.setup();
                     mainNavPane.push(page);
                 }
                 
@@ -131,8 +132,9 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_add.png"
                 onTriggered: {
-                    var page = addTaskSheetDefinition.createObject();
-                    page.populateFolderDropDown();
+                    var page = addEditTaskSheetDefinition.createObject();
+                    page.edit = false;
+                    page.setup();
                     mainNavPane.push(page);
                 }
             }
@@ -141,12 +143,8 @@ NavigationPane {
     
     attachedObjects: [
         ComponentDefinition {
-            id: addTaskSheetDefinition
-            content: AddTask {}
-        },
-        ComponentDefinition {
-            id: editTaskSheetDefinition
-            content: EditTask {}
+            id: addEditTaskSheetDefinition
+            content: AddEditTask{}
         },
         ComponentDefinition {
             id: settingsSheetDefinition

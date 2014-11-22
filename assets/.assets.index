@@ -1,6 +1,7 @@
 1
-11
+12
 About.qml
+AddEditTask.qml
 AddTask.qml
 Cover.qml
 EditTask.qml

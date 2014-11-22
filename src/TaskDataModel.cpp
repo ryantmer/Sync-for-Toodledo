@@ -60,10 +60,9 @@ void TaskDataModel::onTaskEdited(QVariantMap task) {
                 emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
                 qDebug() << Q_FUNC_INFO << "Task edited in TaskDataModel:" << task;
             } else {
-                //If the task has a completion date, remove it from the datamodel
-                //Note that this doesn't emit itemsChanged, so the UI doesn't automatically update
                 taskDB.removeAt(i);
                 sortTasksByDueDate();
+                emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
                 qDebug() << Q_FUNC_INFO << "Task removed from TaskDataModel:" << task;
             }
             return;
