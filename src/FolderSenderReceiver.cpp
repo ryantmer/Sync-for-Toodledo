@@ -59,60 +59,71 @@ void FolderSenderReceiver::onFolderEdited(QVariantMap oldData, QVariantMap newDa
 }
 
 void FolderSenderReceiver::onFolderRemoved(QVariantMap folder) {
-    //Removing folders not currently supported
-    Q_UNUSED(folder);
+    QUrl url(removeUrl);
+    QNetworkRequest req(url);
+
+    QUrl data;
+    data.addQueryItem("access_token", _propMan->accessToken);
+    data.addQueryItem("id", folder["id"].toString());
+
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    _networkAccessManager->post(req, data.encodedQuery());
 }
 
 void FolderSenderReceiver::onReplyReceived(QNetworkReply *reply) {
     QString response = reply->readAll();
 
+    qDebug() << response;
+
     if (reply->error() == QNetworkReply::NoError) {
+        /* Reply handling here looks waaaaay too complicated, but it's because
+         * replies come in one of three formats: a single map, a list of maps
+         * with only one entry, or a list of maps with multiple entries. Way
+         * to be consistent, Toodledo API...
+         */
         JsonDataAccess jda;
-        QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
+        QVariantList dataList = jda.loadFromBuffer(response).value<QVariantList>();
         if (jda.hasError()) {
             qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
             qDebug() << Q_FUNC_INFO << response;
             return;
         }
 
-        //If the reply can't be interpreted as a List, try as a Map (errors come back in this format)
-        if (data.length() == 0) {
-            QVariantMap errorMap = jda.loadFromBuffer(response).value<QVariantMap>();
-            if (jda.hasError()) {
-                qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-                qDebug() << Q_FUNC_INFO << response;
-                return;
-            }
-            qDebug() << Q_FUNC_INFO << "ToodleDo error" <<
-                        errorMap.value("errorCode").toInt(NULL) << ":" <<
-                        errorMap.value("errorDesc").toString();
-            emit toast("Toodledo Error " + errorMap.value("errorCode").toString() +
-                        " : " + errorMap.value("errorDesc").toString());
+        QVariantMap dataMap = jda.loadFromBuffer(response).value<QVariantMap>();
+        if (jda.hasError()) {
+            qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+            qDebug() << Q_FUNC_INFO << response;
+            return;
+        }
+
+        if (dataMap.contains("errorDesc")) {
+            qDebug() << Q_FUNC_INFO << "Toodledo error" <<
+                        dataMap.value("errorCode").toInt(NULL) << ":" <<
+                        dataMap.value("errorDesc").toString();
+            emit toast("Toodledo Error " + dataMap.value("errorCode").toString() +
+                        " : " + dataMap.value("errorDesc").toString());
             return;
         }
 
         if (reply->url().toString().contains(getUrl)) {
             qDebug() << Q_FUNC_INFO << "Folder(s) received";
-            for (int i = 0; i < data.count(); ++i) {
-                emit folderGetReply(data.value(i).toMap());
+            for (int i = 0; i < dataList.count(); ++i) {
+                emit folderGetReply(dataList.value(i).toMap());
             }
         } else if (reply->url().toString().contains(addUrl)) {
             qDebug() << Q_FUNC_INFO << "New folder(s) added";
-            for (int i = 0; i < data.count(); ++i) {
-                emit folderAddReply(data.value(i).toMap());
+            for (int i = 0; i < dataList.count(); ++ i) {
+                emit folderAddReply(dataList.value(i).toMap());
             }
         } else if (reply->url().toString().contains(removeUrl)) {
             qDebug() << Q_FUNC_INFO << "Folder(s) removed";
-            for (int i = 0; i < data.count(); ++i) {
-                emit folderRemoveReply(data.value(i).toMap());
-            }
-        } else if (reply->url().toString().contains(editUrl)) {
-            qDebug() << Q_FUNC_INFO << "Folder(s) edited";
-            for (int i = 0; i < data.count(); ++i) {
-                emit folderEditReply(data.value(i).toMap());
-            }
+            emit folderRemoveReply(dataMap);
+//        } else if (reply->url().toString().contains(editUrl)) {
+//            qDebug() << Q_FUNC_INFO << "Folder(s) edited";
+//            emit folderEditReply(data);
         } else {
-            qDebug() << Q_FUNC_INFO << "Unrecognized reply received:" << data;
+            qDebug() << Q_FUNC_INFO << "Unrecognized reply received:" << response;
         }
     } else {
         qDebug() << Q_FUNC_INFO << response;

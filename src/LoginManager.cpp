@@ -103,7 +103,8 @@ void LoginManager::refreshRefreshToken(QString authCode) {
     QUrl data;
     data.addQueryItem("grant_type", "authorization_code");
     data.addQueryItem("code", authCode);
-    data.addQueryItem("version", QString::number(1));
+    //TODO: update version number
+    data.addQueryItem("version", "7");
     QString auth = QString("Basic " + credentials.toAscii().toBase64());
 
     req.setRawHeader(QByteArray("Authorization"), auth.toAscii());

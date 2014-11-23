@@ -70,7 +70,7 @@ void FolderDataModel::onFolderAdded(QVariantMap folder) {
 
 void FolderDataModel::onFolderRemoved(QVariantMap folder) {
     for (int i = 0; i < folderDB.count(); ++i) {
-        if (folderDB.value(i).toMap().value("id").toLongLong(NULL) == folder.value("id").toLongLong(NULL)) {
+        if (folderDB.value(i).toMap().value("id").toLongLong(NULL) == folder.value("deleted").toLongLong(NULL)) {
             folderDB.removeAt(i);
             emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
             qDebug() << Q_FUNC_INFO << "Folder removed from FolderDataModel:" << folder;
