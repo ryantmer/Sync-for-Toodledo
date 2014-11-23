@@ -37,15 +37,18 @@ simulator {
 config_pri_assets {
     OTHER_FILES += \
         $$quote($$BASEDIR/assets/About.qml) \
+        $$quote($$BASEDIR/assets/AddEditFolder.qml) \
         $$quote($$BASEDIR/assets/AddEditTask.qml) \
         $$quote($$BASEDIR/assets/Cover.qml) \
+        $$quote($$BASEDIR/assets/FolderMain.qml) \
         $$quote($$BASEDIR/assets/Login.qml) \
         $$quote($$BASEDIR/assets/Settings.qml) \
+        $$quote($$BASEDIR/assets/TaskMain.qml) \
         $$quote($$BASEDIR/assets/images/ic_add.png) \
         $$quote($$BASEDIR/assets/images/ic_info.png) \
         $$quote($$BASEDIR/assets/images/ic_reload.png) \
         $$quote($$BASEDIR/assets/images/ic_save.png) \
-        $$quote($$BASEDIR/assets/main.qml)
+        $$quote($$BASEDIR/assets/images/ic_settings.png)
 }
 
 config_pri_source_group1 {

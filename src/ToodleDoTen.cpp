@@ -13,8 +13,6 @@ using namespace bb::cascades;
 using namespace bb::system;
 
 ToodledoTen::ToodledoTen() : QObject() {
-
-    //TODO: Figure out what's not properly parented here, and isn't quitting properly
     qmlRegisterType<TaskDataModel>("TaskUtilities", 1, 0, "TaskDataModel");
     qmlRegisterType<FolderDataModel>("FolderUtilities", 1, 0, "FolderDataModel");
 
@@ -27,7 +25,7 @@ ToodledoTen::ToodledoTen() : QObject() {
     _folderDataModel = new FolderDataModel(this);
 
     //Create root QML document from main.qml and expose certain variables to QML
-    QmlDocument *qml = QmlDocument::create("asset:///main.qml").parent(this);
+    QmlDocument *qml = QmlDocument::create("asset:///TaskMain.qml").parent(this);
     qml->setContextProperty("app", this);
     qml->setContextProperty("propertyManager", _propertiesManager);
     qml->setContextProperty("taskDataModel", _taskDataModel);
@@ -96,6 +94,7 @@ ToodledoTen::ToodledoTen() : QObject() {
     Q_ASSERT(isOk);
 
     //TDM listeners
+    //UI->sender/receiver->datamodel
     isOk = connect(this, SIGNAL(loggedOut()),
             _taskDataModel, SLOT(onLoggedOut()));
     Q_ASSERT(isOk);
@@ -113,6 +112,7 @@ ToodledoTen::ToodledoTen() : QObject() {
     Q_ASSERT(isOk);
 
     //FDM listeners
+    //UI->sender/receiver->datamodel
     isOk = connect(this, SIGNAL(loggedOut()),
             _folderDataModel, SLOT(onLoggedOut()));
     Q_ASSERT(isOk);
@@ -223,16 +223,19 @@ void ToodledoTen::removeTask(QVariantMap data) {
 }
 
 void ToodledoTen::addFolder(QVariantMap data) {
+    qDebug() << Q_FUNC_INFO << "Folder added";
     emit folderAdded(data);
 }
 
 void ToodledoTen::editFolder(QVariantMap oldData, QVariantMap newData) {
+    qDebug() << Q_FUNC_INFO << "Folder edited";
     if (oldData != newData) {
         emit folderEdited(oldData, newData);
     }
 }
 
 void ToodledoTen::removeFolder(QVariantMap data) {
+    qDebug() << Q_FUNC_INFO << "Folder removed";
     emit folderRemoved(data);
 }
 
