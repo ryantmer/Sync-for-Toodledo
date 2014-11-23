@@ -24,6 +24,8 @@ Page {
                         accessibility.name: "List item component container"
                         StandardListItem {
                             title: ListItemData.name
+                            description: folderItemContainer.ListItem.view.privateOrArchived(
+                                        ListItemData.private, ListItemData.archived)
                             
                             contextActions: [
                                 ActionSet {
@@ -47,6 +49,18 @@ Page {
                 page.edit = true;
                 page.setup();
                 mainNavPane.push(page);
+            }
+            
+            function privateOrArchived(isPrivate, isArchived) {
+                if (isPrivate == 1 && isArchived == 1) {
+                    return "Archived, Private";
+                } else if (isPrivate == 1) {
+                    return "Private, Not Archived";
+                } else if (isArchived == 1) {
+                    return "Archived, Not Private";
+                } else {
+                    return "Not Archived, Not Private";
+                }
             }
         }
     }

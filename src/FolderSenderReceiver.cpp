@@ -30,8 +30,26 @@ void FolderSenderReceiver::fetchAllFolders() {
  * Slots
  */
 void FolderSenderReceiver::onFolderAdded(QVariantMap folder) {
-    //Adding folders not currently supported
-    Q_UNUSED(folder);
+    QUrl url(addUrl);
+    QNetworkRequest req(url);
+
+    QUrl data;
+    data.addQueryItem("access_token", _propMan->accessToken);
+    if (folder["name"].toString() != "") {
+        data.addQueryItem("name", folder["name"].toString());
+    } else {
+        //Can't add a folder without a name
+        //This should never be hit, as QML doesn't allow adding without a name
+        qDebug() << Q_FUNC_INFO << "Can't add folder without name! (you shouldn't ever see this)";
+        return;
+    }
+    if (folder["private"].toInt(NULL) == 1) {
+        data.addQueryItem("private", folder["private"].toString());
+    }
+
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    _networkAccessManager->post(req, data.encodedQuery());
 }
 
 void FolderSenderReceiver::onFolderEdited(QVariantMap oldData, QVariantMap newData) {
@@ -48,15 +66,31 @@ void FolderSenderReceiver::onFolderRemoved(QVariantMap folder) {
 void FolderSenderReceiver::onReplyReceived(QNetworkReply *reply) {
     QString response = reply->readAll();
 
-    JsonDataAccess jda;
-    QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
-    if (jda.hasError()) {
-        qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-        qDebug() << Q_FUNC_INFO << response;
-        return;
-    }
-
     if (reply->error() == QNetworkReply::NoError) {
+        JsonDataAccess jda;
+        QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
+        if (jda.hasError()) {
+            qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+            qDebug() << Q_FUNC_INFO << response;
+            return;
+        }
+
+        //If the reply can't be interpreted as a List, try as a Map (errors come back in this format)
+        if (data.length() == 0) {
+            QVariantMap errorMap = jda.loadFromBuffer(response).value<QVariantMap>();
+            if (jda.hasError()) {
+                qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+                qDebug() << Q_FUNC_INFO << response;
+                return;
+            }
+            qDebug() << Q_FUNC_INFO << "ToodleDo error" <<
+                        errorMap.value("errorCode").toInt(NULL) << ":" <<
+                        errorMap.value("errorDesc").toString();
+            emit toast("Toodledo Error " + errorMap.value("errorCode").toString() +
+                        " : " + errorMap.value("errorDesc").toString());
+            return;
+        }
+
         if (reply->url().toString().contains(getUrl)) {
             qDebug() << Q_FUNC_INFO << "Folder(s) received";
             for (int i = 0; i < data.count(); ++i) {
@@ -81,17 +115,8 @@ void FolderSenderReceiver::onReplyReceived(QNetworkReply *reply) {
             qDebug() << Q_FUNC_INFO << "Unrecognized reply received:" << data;
         }
     } else {
-        //ToodleDo will come back with various error codes if there's a problem
-        QVariantMap errorMap = jda.loadFromBuffer(response).value<QVariantMap>();
-        if (jda.hasError()) {
-            qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-            qDebug() << Q_FUNC_INFO << response;
-            return;
-        }
-
-        qDebug() << Q_FUNC_INFO << "ToodleDo error" <<
-                errorMap.value("errorCode").toInt(NULL) << ":" <<
-                errorMap.value("errorDesc").toString();
+        qDebug() << Q_FUNC_INFO << response;
+        emit toast("Network error!");
     }
     reply->deleteLater();
 }

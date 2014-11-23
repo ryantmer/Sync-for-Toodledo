@@ -44,13 +44,11 @@ Page {
                                 "name": folderName.text,
                                 "private": folderPrivate.checked,
                                 "archived": folderArchived.checked};
-                    console.log(folderData);
                     app.editFolder(data, folderData);
                 } else {
                     var folderData = {"name": folderName.text,
                                 "private": folderPrivate.checked,
                                 "archived": folderArchived.checked};
-                    console.log(folderData);
                     app.addFolder(folderData);
                 }
                 mainNavPane.pop();
