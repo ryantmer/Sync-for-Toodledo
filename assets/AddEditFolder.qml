@@ -89,6 +89,7 @@ Page {
                 id: folderArchived
                 text: "Archived"
                 bottomMargin: 30
+                visible: edit //only show when editing a folder
             }
             CheckBox {
                 id: folderPrivate
