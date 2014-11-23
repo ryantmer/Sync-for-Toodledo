@@ -22,15 +22,7 @@ TaskSenderReceiver::TaskSenderReceiver(QObject *parent) : QObject(parent) {
 void TaskSenderReceiver::fetchAllTasks() {
     QUrl url(getUrl);
     url.addQueryItem("access_token", _propMan->accessToken);
-    if (!_propMan->showCompletedTasks()) {
-        url.addQueryItem("comp", 0); //only get incomplete tasks
-    } else {
-        url.addQueryItem("comp", QString::number(-1)); //get complete and incomplete
-        url.addQueryItem("after", QString::number(
-                QDateTime::currentDateTimeUtc().toTime_t() - 172800)); //tasks modified in past 48 hours
-        url.addQueryItem("start", QString::number(0));
-        url.addQueryItem("num", QString::number(30)); //only get first 30 tasks
-    }
+    url.addQueryItem("comp", 0); //only get incomplete tasks
     url.addEncodedQueryItem("fields", "duedate,note,folder"); //id, title, modified, completed come automatically
 
     QNetworkRequest req(url);
