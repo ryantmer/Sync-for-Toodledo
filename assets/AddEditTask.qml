@@ -12,10 +12,12 @@ Page {
         
         //Populate options in folder dropdown
         for (var x = 0; x < folders.length; x++) {
-            var opt = option.createObject();
-            opt.text = folders[x].name;
-            opt.value = folders[x].id;
-            folderDropDown.add(opt);
+            if (folders[x].archived == 0) {
+                var opt = option.createObject();
+                opt.text = folders[x].name;
+                opt.value = folders[x].id;
+                folderDropDown.add(opt);
+            }
         }
         
         //If we're editing a task, rather than adding a new one

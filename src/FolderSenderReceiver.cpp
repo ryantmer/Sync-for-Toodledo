@@ -53,9 +53,31 @@ void FolderSenderReceiver::onFolderAdded(QVariantMap folder) {
 }
 
 void FolderSenderReceiver::onFolderEdited(QVariantMap oldData, QVariantMap newData) {
-    //Editing folders not currently supported
-    Q_UNUSED(oldData);
-    Q_UNUSED(newData);
+    QUrl url(editUrl);
+    QNetworkRequest req(url);
+
+    qDebug() << oldData;
+    qDebug() << newData;
+
+    if (oldData == newData) {
+        //If nothing has changed, don't need to upload anything
+        return;
+    }
+
+    QUrl data;
+    data.addQueryItem("access_token", _propMan->accessToken);
+    data.addQueryItem("id", newData["id"].toString());
+    QVariantMap::iterator i;
+    for (i = newData.begin(); i != newData.end(); ++i) {
+        if (oldData[i.key()] != newData[i.key()]) {
+            data.addQueryItem(i.key(), newData[i.key()].toString());
+        }
+    }
+
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    qDebug() << data.encodedQuery();
+    _networkAccessManager->post(req, data.encodedQuery());
 }
 
 void FolderSenderReceiver::onFolderRemoved(QVariantMap folder) {
@@ -119,9 +141,11 @@ void FolderSenderReceiver::onReplyReceived(QNetworkReply *reply) {
         } else if (reply->url().toString().contains(removeUrl)) {
             qDebug() << Q_FUNC_INFO << "Folder(s) removed";
             emit folderRemoveReply(dataMap);
-//        } else if (reply->url().toString().contains(editUrl)) {
-//            qDebug() << Q_FUNC_INFO << "Folder(s) edited";
-//            emit folderEditReply(data);
+        } else if (reply->url().toString().contains(editUrl)) {
+            qDebug() << Q_FUNC_INFO << "Folder(s) edited";
+            for (int i = 0; i < dataList.count(); ++i) {
+                emit folderEditReply(dataList.value(i).toMap());
+            }
         } else {
             qDebug() << Q_FUNC_INFO << "Unrecognized reply received:" << response;
         }

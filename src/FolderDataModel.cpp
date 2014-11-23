@@ -41,14 +41,8 @@ void FolderDataModel::onFolderEdited(QVariantMap folder) {
             }
             folderDB.replace(i, localFolder);
 
-            if (folderDB.value(i).toMap().value("archived").toLongLong(NULL) == 0) {
-                emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-                qDebug() << Q_FUNC_INFO << "Folder edited in FolderDataModel:" << folder;
-            } else {
-                //If the folder has been archived, remove it from the datamodel
-                folderDB.removeAt(i);
-                qDebug() << Q_FUNC_INFO << "Folder removed from FolderDataModel:" << folder;
-            }
+            emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+            qDebug() << Q_FUNC_INFO << "Folder edited in FolderDataModel:" << folder;
             return;
         }
     }

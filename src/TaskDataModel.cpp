@@ -57,7 +57,7 @@ void TaskDataModel::onTaskEdited(QVariantMap task) {
 
             if (taskDB.value(i).toMap().value("completed").toLongLong(NULL) == 0) {
                 sortTasksByDueDate();
-                emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+//                emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
                 qDebug() << Q_FUNC_INFO << "Task edited in TaskDataModel:" << task;
             } else {
                 taskDB.removeAt(i);

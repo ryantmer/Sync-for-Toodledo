@@ -38,17 +38,21 @@ Page {
                     titleRequired.visible = true;
                     return;
                 }
+                if (folderName.text.length > 32) {
+                    nameTooLong.visible = true;
+                    return;
+                }
                 
                 if (edit) {
                     var folderData = {"id": data.id,
                                 "name": folderName.text,
-                                "private": folderPrivate.checked,
-                                "archived": folderArchived.checked};
+                                "private": folderPrivate.checked + 0,
+                                "archived": folderArchived.checked + 0,
+                                "ord": data.ord};
                     app.editFolder(data, folderData);
                 } else {
                     var folderData = {"name": folderName.text,
-                                "private": folderPrivate.checked,
-                                "archived": folderArchived.checked};
+                                "private": folderPrivate.checked + 0};
                     app.addFolder(folderData);
                 }
                 mainNavPane.pop();
@@ -74,6 +78,12 @@ Page {
             Label {
                 id: titleRequired
                 text: "Required"
+                textStyle.color: Color.Red
+                visible: false
+            }
+            Label {
+                id: nameTooLong
+                text: "Max 32 characters"
                 textStyle.color: Color.Red
                 visible: false
             }
