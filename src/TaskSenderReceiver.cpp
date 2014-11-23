@@ -134,9 +134,20 @@ void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
         return;
     }
 
+    QVariantMap first = data.first().toMap();
+    if (first.contains("errorCode")) {
+        qDebug() << Q_FUNC_INFO << "Toodledo error" <<
+                first.value("errorCode").toInt(NULL) << ":" <<
+                first.value("errorDesc").toString();
+        emit toast("Toodledo Error " + first.value("errorCode").toString() +
+                    " : " + first.value("errorDesc").toString());
+        return;
+    }
+
     if (reply->error() == QNetworkReply::NoError) {
         if (reply->url().toString().contains(getUrl)) {
             qDebug() << Q_FUNC_INFO << "Task(s) received";
+            //First item is a summary item, discard it
             if (data.first().toMap().contains("num") && data.first().toMap().contains("total")) {
                 data.pop_front();
             }
@@ -166,19 +177,8 @@ void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
             qDebug() << Q_FUNC_INFO << "Unrecognized reply received:" << data;
         }
     } else {
-        //ToodleDo will come back with various error codes if there's a problem
-        QVariantMap errorMap = jda.loadFromBuffer(response).value<QVariantMap>();
-        if (jda.hasError()) {
-            qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-            qDebug() << Q_FUNC_INFO << response;
-            return;
-        }
-
-        qDebug() << Q_FUNC_INFO << "ToodleDo error" <<
-                errorMap.value("errorCode").toInt(NULL) << ":" <<
-                errorMap.value("errorDesc").toString();
-        emit toast("Toodledo Error " + errorMap.value("errorCode").toString() +
-                    " : " + errorMap.value("errorDesc").toString());
+        qDebug() << Q_FUNC_INFO << "Network error";
+        emit toast("Network error!");
     }
     reply->deleteLater();
 }
