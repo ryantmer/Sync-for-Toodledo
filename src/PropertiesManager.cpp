@@ -18,7 +18,7 @@ PropertiesManager *PropertiesManager::getInstance() {
 }
 
 PropertiesManager::PropertiesManager(QObject *parent) : QObject (parent) {
-    QSettings settings("ryantmer", "ToodleDo10");
+    QSettings settings("ryantmer", "SyncForToodledo");
 
     this->accessToken = settings.value("accessToken", "").toString();
     this->accessTokenExpiry = settings.value("accessTokenExpiry", 0).toUInt(NULL);
@@ -38,7 +38,7 @@ void PropertiesManager::updateAccessToken(QString accessToken, qlonglong expires
     this->tokenScope = tokenScope;
     this->tokenType = tokenType;
 
-    QSettings settings("ryantmer", "ToodleDo10");
+    QSettings settings("ryantmer", "SyncForToodledo");
     settings.setValue("accessToken", this->accessToken);
     settings.setValue("accessTokenExpiry", this->accessTokenExpiry);
     settings.setValue("refreshToken", this->refreshToken);
@@ -55,7 +55,7 @@ void PropertiesManager::clearTokens() {
     this->tokenScope = "";
     this->tokenType = "";
 
-    QSettings settings("ryantmer", "ToodleDo10");
+    QSettings settings("ryantmer", "SyncForToodledo");
     settings.setValue("accessToken", this->accessToken);
     settings.setValue("accessTokenExpiry", this->accessTokenExpiry);
     settings.setValue("refreshToken", this->refreshToken);
@@ -64,36 +64,16 @@ void PropertiesManager::clearTokens() {
     settings.setValue("tokenType", this->tokenType);
 }
 
-//Not implemented in UI
-bool PropertiesManager::showCompletedTasks() {
-    QSettings settings("ryantmer", "ToodleDo10");
-    QVariant v = settings.value("showCompletedTasks", false);
-    return v.toBool();
+//Delay after which a task is removed from UI after being checked
+int PropertiesManager::completedDelay() {
+    QSettings settings("ryantmer", "SyncForToodledo");
+    return settings.value("completedDelay", 3000).toInt(NULL);
 }
-void PropertiesManager::setShowCompletedTasks(bool show) {
-    QSettings settings("ryantmer", "ToodleDo10");
-    QVariant v = settings.value("showCompletedTasks", false);
-    bool b = v.toBool();
-    if (b != show) {
-        settings.setValue("showCompletedTasks", show);
-        qDebug() << "PropertiesManager::showCompletedTasks changed to" << show;
-        emit showCompletedTasksChanged(show);
-    }
-}
-
-//Not implemented in UI
-bool PropertiesManager::advancedMode() {
-    QSettings settings("ryantmer", "ToodleDo10");
-    QVariant v = settings.value("advancedMode", false);
-    return v.toBool();
-}
-void PropertiesManager::setAdvancedMode(bool advanced) {
-    QSettings settings("ryantmer", "ToodleDo10");
-    QVariant v = settings.value("advancedMode", false);
-    bool b = v.toBool();
-    if (b != advanced) {
-        settings.setValue("advancedMode", advanced);
-        qDebug() << "PropertiesManager::advancedMode changed to" << advanced;
-        emit advancedModeChanged(advanced);
+void PropertiesManager::setCompletedDelay(int delay) {
+    QSettings settings("ryantmer", "SyncForToodledo");
+    int d = settings.value("completedDelay", 3000).toInt(NULL);
+    if (d != delay) {
+        settings.setValue("completedDelay", delay);
+        qDebug() << Q_FUNC_INFO << "Changed completedDelay to" << delay;
     }
 }

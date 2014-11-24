@@ -4,18 +4,15 @@
 class PropertiesManager : public QObject {
     Q_OBJECT
 public:
-    Q_PROPERTY(bool showCompletedTasks READ showCompletedTasks WRITE setShowCompletedTasks NOTIFY showCompletedTasksChanged);
-    Q_PROPERTY(bool advancedMode READ advancedMode WRITE setAdvancedMode NOTIFY advancedModeChanged);
+    Q_PROPERTY(int completedDelay READ completedDelay WRITE setCompletedDelay NOTIFY completedDelayChanged);
 
     static PropertiesManager *getInstance();
     PropertiesManager(QObject *parent = 0);
     virtual ~PropertiesManager();
     void saveProperties();
 
-    bool showCompletedTasks();
-    void setShowCompletedTasks(bool show);
-    bool advancedMode();
-    void setAdvancedMode(bool advanced);
+    int completedDelay();
+    void setCompletedDelay(int delay);
 
     void updateAccessToken(QString accessToken, qlonglong expiresIn, QString refreshToken, QString tokenScope, QString tokenType);
     void clearTokens();
@@ -28,8 +25,7 @@ public:
     QString tokenType;
 
 signals:
-    void advancedModeChanged(bool advanced);
-    void showCompletedTasksChanged(bool show);
+    void completedDelayChanged(int delay);
     void toast(QString message);
 
 private:
