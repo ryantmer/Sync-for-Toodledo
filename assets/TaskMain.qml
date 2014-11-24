@@ -85,7 +85,7 @@ NavigationPane {
                             StandardListItem {
                                 title: ListItemData.title
                                 status: taskItemContainer.ListItem.view.dueDateString(ListItemData.duedate);
-                                description: ListItemData.note;
+                                description: taskItemContainer.ListItem.view.descriptionString(ListItemData.note);
                                 textFormat: TextFormat.Auto
                                 
                                 contextActions: [
@@ -121,6 +121,16 @@ NavigationPane {
                                     "</b></body></html>";
                     } else {
                         return app.unixTimeToDateTime(dueDate).toDateString();
+                    }
+                }
+                
+                function descriptionString(note) {
+                    if (note.indexOf("\n") > -1) {
+                        //Note is multi-line, take first line as description
+                        return note.substring(0, note.indexOf("\n"));
+                    } else {
+                        //Note is a single line
+                        return note;
                     }
                 }
             }
