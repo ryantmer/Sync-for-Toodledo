@@ -56,9 +56,6 @@ void FolderSenderReceiver::onFolderEdited(QVariantMap oldData, QVariantMap newDa
     QUrl url(editUrl);
     QNetworkRequest req(url);
 
-    qDebug() << oldData;
-    qDebug() << newData;
-
     if (oldData == newData) {
         //If nothing has changed, don't need to upload anything
         return;
@@ -76,7 +73,6 @@ void FolderSenderReceiver::onFolderEdited(QVariantMap oldData, QVariantMap newDa
 
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-    qDebug() << data.encodedQuery();
     _networkAccessManager->post(req, data.encodedQuery());
 }
 
@@ -95,8 +91,6 @@ void FolderSenderReceiver::onFolderRemoved(QVariantMap folder) {
 
 void FolderSenderReceiver::onReplyReceived(QNetworkReply *reply) {
     QString response = reply->readAll();
-
-    qDebug() << response;
 
     if (reply->error() == QNetworkReply::NoError) {
         /* Reply handling here looks waaaaay too complicated, but it's because
