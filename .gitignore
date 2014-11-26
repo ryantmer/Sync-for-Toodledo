@@ -40,3 +40,4 @@ Icon
 # Build directories
 arm/
 x86/
+src/LoginManager.cpp
