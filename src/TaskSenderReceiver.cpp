@@ -23,7 +23,9 @@ void TaskSenderReceiver::fetchAllTasks() {
     QUrl url(getUrl);
     url.addQueryItem("access_token", _propMan->accessToken);
     url.addQueryItem("comp", 0); //only get incomplete tasks
-    url.addEncodedQueryItem("fields", "duedate,note,folder"); //id, title, modified, completed come automatically
+    //some fields (id, title, modified, completed) come automatically
+    url.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,"
+            "duedatemod,startdate,starttime,remind,repeat,status,length");
 
     QNetworkRequest req(url);
     _networkAccessManager->get(req);
