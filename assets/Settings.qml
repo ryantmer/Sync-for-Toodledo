@@ -44,7 +44,7 @@ Sheet {
                 horizontalAlignment: HorizontalAlignment.Fill
                 Label {
                     text: "Log out current user"
-                    textStyle.fontSize: FontSize.Large
+                    textStyle.fontSize: FontSize.XLarge
                     verticalAlignment: VerticalAlignment.Center
                     horizontalAlignment: HorizontalAlignment.Left
                 }
