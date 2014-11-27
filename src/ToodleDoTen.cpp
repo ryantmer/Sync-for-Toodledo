@@ -181,6 +181,16 @@ uint ToodledoTen::dateTimeToUnixTime(QDateTime dateTime) {
     return dateTime.toTime_t();
 }
 
+QDateTime ToodledoTen::unixTimeToDateTimeNoOffset(uint unixTime) {
+    //Calculate offset in timestamp, and remove it
+    QDateTime dt1 = QDateTime::currentDateTime();
+    QDateTime dt2 = dt1.toUTC();
+    dt1.setTimeSpec(Qt::UTC);
+    int offset = dt2.secsTo(dt1);
+
+    return QDateTime::fromTime_t(unixTime - offset);
+}
+
 void ToodledoTen::refreshTasks() {
     if (_networkManager->isConnected()) {
         if (_loginManager->isLoggedIn()) {

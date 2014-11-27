@@ -47,10 +47,10 @@ Page {
             starToggle.checked = data.star;
             tagsField.text = data.tag;
             priorityDropDown.setSelectedIndex(data.priority + 1);
-            duetimePicker.value = app.unixTimeToDateTime(data.duetime);
+            duetimePicker.value = app.unixTimeToDateTimeNoOffset(data.duetime);
             duedatemodDropDown.setSelectedIndex(data.duedatemod);
             startdatePicker.value = app.unixTimeToDateTime(data.startdate);
-            starttimePicker.value = app.unixTimeToDateTime(data.starttime);
+            starttimePicker.value = app.unixTimeToDateTimeNoOffset(data.starttime);
             
             for (index = 0; index < remindDropDown.options.length; index++) {
                 if (data.remind == remindDropDown.options[index].value) {
