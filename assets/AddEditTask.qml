@@ -22,58 +22,72 @@ Page {
         
         //If we're editing a task, rather than adding a new one
         if (edit) {
-            //Pre-select the task's folder in the list
             var index;
+            
+            //Populate the fields of the form as required
+            titleField.text = data.title;
+            tagField.text = data.tag;
             for (index = 0; index < folders.length; index++) {
                 if (data.folder == folderDropDown.options[index].value) {
                     break;
                 }
             }
             folderDropDown.setSelectedIndex(index);
-            
-            //Populate the fields of the form as required
-            completedCheckbox.checked = data.completed;
-            titleField.text = data.title;
             if (data.duedate == 0) {
-                noDueDateCheckbox.checked = true;
+                duedateCheckbox.checked = true;
                 duedatePicker.enabled = false;
             } else {
-                noDueDateCheckbox.checked = false;
+                duedateCheckbox.checked = false;
                 duedatePicker.enabled = true;
                 duedatePicker.value = app.unixTimeToDateTime(data.duedate);
             }
-            noteArea.text = data.note;
-            
-            starToggle.checked = data.star;
-            tagsField.text = data.tag;
-            priorityDropDown.setSelectedIndex(data.priority + 1);
-            duetimePicker.value = app.unixTimeToDateTimeNoOffset(data.duetime);
             duedatemodDropDown.setSelectedIndex(data.duedatemod);
-            startdatePicker.value = app.unixTimeToDateTime(data.startdate);
-            starttimePicker.value = app.unixTimeToDateTimeNoOffset(data.starttime);
-            
+            if (data.startdate != 0) {
+                startdatePicker.value = app.unixTimeToDateTime(data.startdate);
+                startdateCheckbox.checked = false;
+            } else {
+                startdateCheckbox.checked = true;
+            }
+            if (data.duetime != 0) {
+                duetimePicker.value = app.unixTimeToDateTimeNoOffset(data.duetime);
+                duetimeCheckbox.checked = false;
+            } else {
+                duetimeCheckbox.checked = true;
+            }
+            if (data.starttime != 0) {
+                starttimePicker.value = app.unixTimeToDateTimeNoOffset(data.starttime);
+                starttimeCheckbox.checked = false;
+            } else {
+                starttimeCheckbox.checked = true;
+            }
             for (index = 0; index < remindDropDown.options.length; index++) {
                 if (data.remind == remindDropDown.options[index].value) {
                     break;
                 }
             }
             remindDropDown.setSelectedIndex(index);
-            
             for (index = 0; index < repeatDropDown.options.length; index++) {
                 if (data.repeat == repeatDropDown.options[index].value) {
                     break;
                 }
             }
             repeatDropDown.setSelectedIndex(index);
-            
             for (index = 0; index < statusDropDown.options.length; index++) {
                 if (data.status == statusDropDown.options[index].value) {
                     break;
                 }
             }
             statusDropDown.setSelectedIndex(index);
-            
-            lengthPicker.value = new Date(0, 0, 0, 0, data.length);
+            if (data.length != 0) {
+                lengthPicker.value = new Date(0, 0, 0, 0, data.length);
+                lengthCheckbox.checked = false;
+            } else {
+                lengthCheckbox.checked = true;
+            }
+            priorityDropDown.setSelectedIndex(data.priority + 1);
+            starToggle.checked = data.star;
+            completedCheckbox.checked = data.completed;
+            noteArea.text = data.note;
             
             //Set title/icon for Add/Save button
             addSaveButton.title = "Save"
@@ -104,28 +118,32 @@ Page {
                     titleRequiredLabel.visible = true;
                     return;
                 }
+                
                 if (completedCheckbox.checked) {
                     c = Math.floor((new Date()).getTime() / 1000);
                 }
-                if (!noDueDateCheckbox.checked) {
+                
+                if (!duedateCheckbox.checked) {
                     d = app.dateTimeToUnixTime(duedatePicker.value);
                 }
                 
                 if (edit) {
                     //Editing a pre-existing task
-                    var taskData = {"id": data.id,
-                                "completed": c,
-                                "title": titleField.text,
-                                "duedate": d,
-                                "folder": folderDropDown.selectedValue,
-                                "note": noteArea.text};
+                    var taskData = data;
+                    taskData["id"] = data.id;
+                    taskData["completed"] = c;
+                    taskData["title"] = titleField.text;
+                    taskData["duedate"] = d;
+                    taskData["folder"] = folderDropDown.selectedValue;
+                    taskData["note"] = noteArea.text;
                     app.editTask(data, taskData);
                 } else {
                     //Adding a new task
-                    var taskData = {"title": titleField.text,
-                                "duedate": d,
-                                "note": noteArea.text,
-                                "folder": folderDropDown.selectedValue};
+                    var taskData = {};
+                    taskData["title"] = titleField.text;
+                    taskData["duedate"] = d;
+                    taskData["note"] = noteArea.text;
+                    taskData["folder"] = folderDropDown.selectedValue;
                     app.addTask(taskData);
                 }
                 
@@ -156,19 +174,22 @@ Page {
                 bottomMargin: 30
                 visible: edit  //only show if we're editing a task, not adding a new one
             }
+            
             //title
-            Label {
-                id: titleRequiredLabel
-                text: "Required"
-                textStyle.color: Color.Red
-                visible: false
+            Container {
+                Label {
+                    id: titleRequiredLabel
+                    text: "Required"
+                    textStyle.color: Color.Red
+                    visible: false
+                }
+                TextField {
+                    id: titleField
+                    hintText: "Task Name"
+                    horizontalAlignment: HorizontalAlignment.Fill
+                }
             }
-            TextField {
-                id: titleField
-                hintText: "Task Name"
-                horizontalAlignment: HorizontalAlignment.Fill
-                bottomMargin: 30
-            }
+            
             //note
             TextArea {
                 id: noteArea
@@ -176,23 +197,30 @@ Page {
                 horizontalAlignment: HorizontalAlignment.Fill
                 bottomMargin: 30
             }
+            
             //duedate
-            DateTimePicker {
-                id: duedatePicker
-                horizontalAlignment: HorizontalAlignment.Fill
-                mode: DateTimePickerMode.Date
-                expanded: false
-                title: "Due Date"
-                bottomMargin: 30                
-            }
-            CheckBox {
-                id: noDueDateCheckbox
-                text: "No Due Date"
+            Container {
                 bottomMargin: 30
-                onCheckedChanged: {
-                    duedatePicker.enabled = !checked;
+                layout: StackLayout {
+                    orientation: LayoutOrientation.LeftToRight
+                }
+                DateTimePicker {
+                    id: duedatePicker
+                    horizontalAlignment: HorizontalAlignment.Fill
+                    mode: DateTimePickerMode.Date
+                    expanded: false
+                    title: "Due Date"
+                }
+                CheckBox {
+                    id: duedateCheckbox
+                    text: "None"
+                    verticalAlignment: VerticalAlignment.Center
+                    onCheckedChanged: {
+                        duedatePicker.enabled = !checked;
+                    }
                 }
             }
+            
             //folder
             DropDown {
                 id: folderDropDown
@@ -231,28 +259,6 @@ Page {
                 id: advancedContainer
                 visible: false
                 
-                //star
-                Container {
-                    bottomMargin: 30
-                    layout: StackLayout {
-                        orientation: LayoutOrientation.LeftToRight
-                    }
-                    Label {
-                        text: "Star"
-                        textStyle.fontSize: FontSize.XLarge
-                        verticalAlignment: VerticalAlignment.Center
-                        layoutProperties: StackLayoutProperties {
-                            spaceQuota: 1
-                        }
-                    }
-                    ToggleButton {
-                        id: starToggle
-                        verticalAlignment: VerticalAlignment.Center
-                        layoutProperties: StackLayoutProperties {
-                            spaceQuota: 1
-                        }
-                    }
-                }
                 //tag
                 Container {
                     bottomMargin: 30
@@ -268,91 +274,148 @@ Page {
                         }
                     }
                     TextField {
-                        id: tagsField
+                        id: tagField
                         hintText: "Comma-separated tags for this task"
                         layoutProperties: StackLayoutProperties {
                             spaceQuota: 3
                         }
                     }
                 }
-                //priority
-                DropDown {
-                    id: priorityDropDown
-                    title: "Priority"
-                    bottomMargin: 30
-                    options: [
-                        Option {
-                            text: "Negative"
-                            value: -1
-                        },
-                        Option {
-                            text: "Low"
-                            value: 0
-                        },
-                        Option {
-                            text: "Medium"
-                            value: 1
-                        },
-                        Option {
-                            text: "High"
-                            value: 2
-                        },
-                        Option {
-                            text: "Top"
-                            value: 3
-                        }
-                    ]
-                }
-                //duetime
-                DateTimePicker {
-                    id: duetimePicker
-                    horizontalAlignment: HorizontalAlignment.Fill
-                    mode: DateTimePickerMode.Time
-                    expanded: false
-                    title: "Due Time"
-                    bottomMargin: 30
-                }
+                
                 //duedatemod
-                DropDown {
-                    id: duedatemodDropDown
-                    options: [
-                        Option {
-                            text: "Due By"
-                            value: 0
-                            selected: true
-                        },
-                        Option {
-                            text: "Due On"
-                            value: 1
-                        },
-                        Option {
-                            text: "Due After"
-                            value: 2
-                        },
-                        Option {
-                            text: "Optional"
-                            value: 3
+                Container {
+                    bottomMargin: 30
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    Label {
+                        text: "Due"
+                        textStyle.fontSize: FontSize.XLarge
+                        verticalAlignment: VerticalAlignment.Center
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 1
                         }
-                    ]
+                    }
+                    DropDown {
+                        id: duedatemodDropDown
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 3
+                        }
+                        options: [
+                            Option {
+                                text: "By Due Date"
+                                value: 0
+                                selected: true
+                            },
+                            Option {
+                                text: "On Due Date"
+                                value: 1
+                            },
+                            Option {
+                                text: "After Due Date"
+                                value: 2
+                            },
+                            Option {
+                                text: "Optional"
+                                value: 3
+                            }
+                        ]
+                    }
+                    
                 }
+                
+                //duetime
+                Container {
+                    bottomMargin: 30
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    DateTimePicker {
+                        id: duetimePicker
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        mode: DateTimePickerMode.Time
+                        expanded: false
+                        title: "Due Time"
+                    }
+                    CheckBox {
+                        id: duetimeCheckbox
+                        text: "None"
+                        verticalAlignment: VerticalAlignment.Center
+                        onCheckedChanged: {
+                            duetimePicker.enabled = !checked;
+                        }
+                    }
+                }
+                
                 //startdate
-                DateTimePicker {
-                    id: startdatePicker
-                    horizontalAlignment: HorizontalAlignment.Fill
-                    mode: DateTimePickerMode.Date
-                    expanded: false
-                    title: "Start Date"
+                Container {
                     bottomMargin: 30
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    DateTimePicker {
+                        id: startdatePicker
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        mode: DateTimePickerMode.Date
+                        expanded: false
+                        title: "Start Date"
+                    }
+                    CheckBox {
+                        id: startdateCheckbox
+                        text: "None"
+                        verticalAlignment: VerticalAlignment.Center
+                        onCheckedChanged: {
+                            startdatePicker.enabled = !checked;
+                        }
+                    }
                 }
+                
                 //starttime
-                DateTimePicker {
-                    id: starttimePicker
-                    horizontalAlignment: HorizontalAlignment.Fill
-                    mode: DateTimePickerMode.Time
-                    expanded: false
-                    title: "Start Time"
+                Container {
                     bottomMargin: 30
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    DateTimePicker {
+                        id: starttimePicker
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        mode: DateTimePickerMode.Time
+                        expanded: false
+                        title: "Start Time"
+                    }
+                    CheckBox {
+                        id: starttimeCheckbox
+                        text: "None"
+                        verticalAlignment: VerticalAlignment.Center
+                        onCheckedChanged: {
+                            starttimePicker.enabled = !checked;
+                        }
+                    }
                 }
+                
+                //length
+                Container {
+                    bottomMargin: 30
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    DateTimePicker {
+                        id: lengthPicker
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        mode: DateTimePickerMode.Timer
+                        expanded: false
+                        title: "Task Length"
+                    }
+                    CheckBox {
+                        id: lengthCheckbox
+                        text: "None"
+                        verticalAlignment: VerticalAlignment.Center
+                        onCheckedChanged: {
+                            lengthPicker.enabled = !checked;
+                        }
+                    }
+                }
+                
                 //remind
                 DropDown {
                     id: remindDropDown
@@ -433,6 +496,7 @@ Page {
                         }
                     ]
                 }
+                
                 //repeat
                 DropDown {
                     id: repeatDropDown
@@ -477,6 +541,7 @@ Page {
                         }
                     ]
                 }
+                
                 //status
                 DropDown {
                     id: statusDropDown
@@ -529,14 +594,57 @@ Page {
                         }
                     ]
                 }
-                //length
-                DateTimePicker {
-                    id: lengthPicker
-                    horizontalAlignment: HorizontalAlignment.Fill
-                    mode: DateTimePickerMode.Timer
-                    expanded: false
-                    title: "Task Length"
+                
+                //priority
+                DropDown {
+                    id: priorityDropDown
+                    title: "Priority"
                     bottomMargin: 30
+                    options: [
+                        Option {
+                            text: "-1 Negative"
+                            value: -1
+                        },
+                        Option {
+                            text: "0 Low"
+                            value: 0
+                        },
+                        Option {
+                            text: "1 Medium"
+                            value: 1
+                        },
+                        Option {
+                            text: "2 High"
+                            value: 2
+                        },
+                        Option {
+                            text: "3 Top"
+                            value: 3
+                        }
+                    ]
+                }
+                
+                //star
+                Container {
+                    bottomMargin: 30
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    Label {
+                        text: "Star"
+                        textStyle.fontSize: FontSize.XLarge
+                        verticalAlignment: VerticalAlignment.Center
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 1
+                        }
+                    }
+                    ToggleButton {
+                        id: starToggle
+                        verticalAlignment: VerticalAlignment.Center
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 1
+                        }
+                    }
                 }
             }
         }
