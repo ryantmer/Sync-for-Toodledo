@@ -7,6 +7,7 @@ Page {
     property variant data;
     property bool edit;
     
+    //Called after creating the page to populate fields as required from the passed data
     function setup() {
         var folders = app.getFolderList();
         
@@ -92,6 +93,12 @@ Page {
             //Set title/icon for Add/Save button
             addSaveButton.title = "Save"
             addSaveButton.imageSource = "asset:///images/ic_save.png"
+        } else {
+            //If adding a new task, set up default values for everything
+            duetimeCheckbox.checked = true;
+            startdateCheckbox.checked = true;
+            starttimeCheckbox.checked = true;
+            lengthCheckbox.checked = true;
         }
     }
     
@@ -111,39 +118,50 @@ Page {
             imageSource: "asset:///images/ic_add.png" //Changed in setup if editing a task
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
-                var c = 0;
-                var d = 0;
-                
                 if (!titleField.text) {
                     titleRequiredLabel.visible = true;
                     return;
                 }
                 
-                if (completedCheckbox.checked) {
-                    c = Math.floor((new Date()).getTime() / 1000);
+                var taskData = {}
+                if (edit) {
+                    //Editing a pre-existing task
+                    taskData = data;
+                    taskData["completed"] = completedCheckbox.checked ?
+                                Math.floor((new Date()).getTime() / 1000) : 0;
                 }
                 
-                if (!duedateCheckbox.checked) {
-                    d = app.dateTimeToUnixTime(duedatePicker.value);
+                taskData["title"] = titleField.text;
+                taskData["note"] = noteArea.text;
+                taskData["duedate"] = duedateCheckbox.checked ? 
+                            0: app.dateTimeToUnixTime(duedatePicker.value);
+                taskData["folder"] = folderDropDown.selectedValue;
+                
+                if (advancedOptionsToggle.checked) {
+                    taskData["tag"] = tagField.text;
+                    taskData["duedatemod"] = duedatemodDropDown.selectedValue;
+                    taskData["duetime"] = duetimeCheckbox.checked ?
+                                0 : app.dateTimeToUnixTime(duetimePicker.value);
+                    taskData["startdate"] = startdateCheckbox.checked ?
+                                0 : app.dateTimeToUnixTime(startdatePicker.value);
+                    taskData["starttime"] = starttimeCheckbox.checked ?
+                                0 : app.dateTimeToUnixTime(starttimePicker.value);
+                    taskData["length"] = lengthCheckbox.checked ?
+                                0 : app.dateTimeToUnixTime(lengthPicker.value);
+                    taskData["remind"] = remindDropDown.selectedValue;
+                    taskData["repeat"] = repeatDropDown.selectedValue;
+                    taskData["status"] = statusDropDown.selectedValue;
+                    taskData["priority"] = priorityDropDown.selectedValue;
+                    taskData["star"] = starToggle.checked + 0;
+                }
+                
+                for (var param in taskData) {
+                    console.log("taskData." + param + " = " + taskData[param]);
                 }
                 
                 if (edit) {
-                    //Editing a pre-existing task
-                    var taskData = data;
-                    taskData["id"] = data.id;
-                    taskData["completed"] = c;
-                    taskData["title"] = titleField.text;
-                    taskData["duedate"] = d;
-                    taskData["folder"] = folderDropDown.selectedValue;
-                    taskData["note"] = noteArea.text;
                     app.editTask(data, taskData);
                 } else {
-                    //Adding a new task
-                    var taskData = {};
-                    taskData["title"] = titleField.text;
-                    taskData["duedate"] = d;
-                    taskData["note"] = noteArea.text;
-                    taskData["folder"] = folderDropDown.selectedValue;
                     app.addTask(taskData);
                 }
                 

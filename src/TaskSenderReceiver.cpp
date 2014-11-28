@@ -38,26 +38,33 @@ void TaskSenderReceiver::onTaskAdded(QVariantMap task) {
     QUrl url(addUrl);
     QNetworkRequest req(url);
 
-    //Build task data string from user's input
-    QString encodedData = QString("[{");
-    if (task["title"].toString() != "") {
-        encodedData.append("\"title\":\"" + task["title"].toString() + "\"");
-    } else {
+    if (task["title"].toString() == "") {
         //Can't add a task without a title
         //This should never be hit, as QML doesn't allow adding without a title
         qDebug() << Q_FUNC_INFO << "Can't add task without title! (you shouldn't ever see this)";
         return;
     }
-    if (task["duedate"].toLongLong(NULL) > 0) {
-        encodedData.append(",\"duedate\":" + task["duedate"].toString());
-    }
-    if (task["note"].toString() != "") {
-        encodedData.append(",\"note\":\"" + task["note"].toString() + "\"");
-    }
-    if (task["folder"].toLongLong(NULL) > 0) {
-        encodedData.append(",\"folder\":" + task["folder"].toString());
+
+    //Build task data string from user's input
+    QString encodedData = QString("[{");
+    QString returnFields = "folder,tag,startdate,duedate,duedatemod,starttime,"
+                "duetime,remind,repeat,status,star,priority,length,note";
+    QVariantMap::iterator i;
+    for (i = task.begin(); i != task.end(); ++i) {
+        bool isOk;
+        int value = task[i.key()].toInt(&isOk);
+        Q_UNUSED(value);
+        if (isOk) {
+            //number values
+            encodedData.append(",\"" + i.key() + "\":" + task[i.key()].toString());
+        } else {
+            //string values (extra quotation marks needed)
+            encodedData.append(",\"" + i.key() + "\":\"" + task[i.key()].toString() + "\"");
+        }
     }
     encodedData.append("}]");
+    encodedData.remove(2, 1);  //Remove initial comma YES THIS IS MESSY I KNOW STOP YELLING.
+    qDebug() << Q_FUNC_INFO << encodedData;
     //Required for ToodleDo's API to replace some stuff
     encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
     encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
@@ -65,7 +72,7 @@ void TaskSenderReceiver::onTaskAdded(QVariantMap task) {
     QUrl data;
     data.addQueryItem("access_token", _propMan->accessToken);
     data.addEncodedQueryItem("tasks", encodedData.toAscii());
-    data.addQueryItem("fields", "duedate,note,folder");
+    data.addQueryItem("fields", returnFields);
 
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
@@ -82,30 +89,34 @@ void TaskSenderReceiver::onTaskEdited(QVariantMap oldData, QVariantMap newData) 
     }
 
     //Build data string to only include fields that actually changed
-    QString encodedData = QString("[{\"id\":" + newData["id"].toString());
-    if (oldData["completed"] != newData["completed"]) {
-        encodedData.append(",\"completed\":" + newData["completed"].toString());
-    }
-    if (oldData["title"] != newData["title"]) {
-        encodedData.append(",\"title\":\"" + newData["title"].toString() + "\"");
-    }
-    if (oldData["duedate"] != newData["duedate"]) {
-        encodedData.append(",\"duedate\":" + newData["duedate"].toString());
-    }
-    if (oldData["note"] != newData["note"]) {
-        encodedData.append(",\"note\":\"" + newData["note"].toString() + "\"");
-    }
-    if (oldData["folder"] != newData["folder"]) {
-        encodedData.append(",\"folder\":" + newData["folder"].toString());
+    QString encodedData = QString("[{");
+    encodedData.append("\"id\":" + oldData["id"].toString());
+    QString returnFields = "folder,tag,startdate,duedate,duedatemod,starttime,"
+                "duetime,remind,repeat,status,star,priority,length,note";
+    QVariantMap::iterator i;
+    for (i = newData.begin(); i != newData.end(); ++i) {
+        if (newData[i.key()] != oldData[i.key()]) {
+            bool isOk;
+            int value = newData[i.key()].toInt(&isOk);
+            Q_UNUSED(value);
+            if (isOk) {
+                //number values
+                encodedData.append(",\"" + i.key() + "\":" + newData[i.key()].toString());
+            } else {
+                //string values (extra quotation marks needed)
+                encodedData.append(",\"" + i.key() + "\":\"" + newData[i.key()].toString() + "\"");
+            }
+        }
     }
     encodedData.append("}]");
+    qDebug() << Q_FUNC_INFO << encodedData;
     encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
     encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
 
     QUrl data;
     data.addQueryItem("access_token", _propMan->accessToken);
     data.addEncodedQueryItem("tasks", encodedData.toAscii());
-    data.addQueryItem("fields", "duedate,note,folder");
+    data.addQueryItem("fields", returnFields);
 
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
@@ -127,6 +138,8 @@ void TaskSenderReceiver::onTaskRemoved(QVariantMap task) {
 
 void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
     QString response = reply->readAll();
+
+    qDebug() << Q_FUNC_INFO << response;
 
     JsonDataAccess jda;
     QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
