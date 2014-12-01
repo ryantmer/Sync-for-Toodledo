@@ -30,6 +30,5 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     qInstallMsgHandler(messageOutput);
     Application app(argc, argv);
     ToodledoTen toodleDoTen;
-    qDebug() << QT_VERSION_STR;
     return Application::exec();
 }

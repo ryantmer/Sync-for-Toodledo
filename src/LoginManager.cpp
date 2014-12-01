@@ -12,6 +12,7 @@
 #include <QMutex>
 #include <QDateTime>
 #include <bb/data/JsonDataAccess>
+#include <bb/PackageInfo>
 #include "LoginManager.hpp"
 #include "PropertiesManager.hpp"
 
@@ -103,8 +104,8 @@ void LoginManager::refreshRefreshToken(QString authCode) {
     QUrl data;
     data.addQueryItem("grant_type", "authorization_code");
     data.addQueryItem("code", authCode);
-    //TODO: update version number
-    data.addQueryItem("version", "7");
+    bb::PackageInfo packageInfo;
+    data.addQueryItem("version", packageInfo.version());
     QString auth = QString("Basic " + credentials.toAscii().toBase64());
 
     req.setRawHeader(QByteArray("Authorization"), auth.toAscii());
@@ -137,12 +138,12 @@ void LoginManager::onLoggedOut() {
 }
 
 void LoginManager::onRefreshTokenExpired() {
-    qDebug() << Q_FUNC_INFO << "Refresh token expired (30 days)";
+    qWarning() << Q_FUNC_INFO << "Refresh token expired (30 days)";
 }
 
 void LoginManager::onAccessTokenExpired() {
     //Automatically refresh access token using refresh token
-    qDebug() << Q_FUNC_INFO << "Access token expired (2 hours)";
+    qWarning() << Q_FUNC_INFO << "Access token expired (2 hours)";
     refreshAccessToken();
 }
 
@@ -152,8 +153,8 @@ void LoginManager::onTokenRequestFinished(QNetworkReply *reply) {
     bb::data::JsonDataAccess jda;
     QVariantMap data = jda.loadFromBuffer(response).value<QVariantMap>();
     if (jda.hasError()) {
-        qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-        qDebug() << Q_FUNC_INFO << response;
+        qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+        qWarning() << Q_FUNC_INFO << response;
         return;
     }
 
@@ -178,12 +179,12 @@ void LoginManager::onTokenRequestFinished(QNetworkReply *reply) {
         //ToodleDo will come back with various error codes if there's a problem
         QVariantMap errorMap = jda.loadFromBuffer(response).value<QVariantMap>();
         if (jda.hasError()) {
-            qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-            qDebug() << Q_FUNC_INFO << response;
+            qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+            qWarning() << Q_FUNC_INFO << response;
             return;
         }
 
-        qDebug() << Q_FUNC_INFO << "ToodleDo error" <<
+        qWarning() << Q_FUNC_INFO << "ToodleDo error" <<
                 errorMap.value("errorCode").toInt(NULL) << ":" <<
                 errorMap.value("errorDesc").toString();
     }
