@@ -40,7 +40,7 @@ void FolderSenderReceiver::onFolderAdded(QVariantMap folder) {
     } else {
         //Can't add a folder without a name
         //This should never be hit, as QML doesn't allow adding without a name
-        qDebug() << Q_FUNC_INFO << "Can't add folder without name! (you shouldn't ever see this)";
+        qCritical() << Q_FUNC_INFO << "Can't add folder without name! (you shouldn't ever see this)";
         return;
     }
     if (folder["private"].toInt(NULL) == 1) {
@@ -101,20 +101,20 @@ void FolderSenderReceiver::onReplyReceived(QNetworkReply *reply) {
         JsonDataAccess jda;
         QVariantList dataList = jda.loadFromBuffer(response).value<QVariantList>();
         if (jda.hasError()) {
-            qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-            qDebug() << Q_FUNC_INFO << response;
+            qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+            qWarning() << Q_FUNC_INFO << response;
             return;
         }
 
         QVariantMap dataMap = jda.loadFromBuffer(response).value<QVariantMap>();
         if (jda.hasError()) {
-            qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-            qDebug() << Q_FUNC_INFO << response;
+            qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+            qWarning() << Q_FUNC_INFO << response;
             return;
         }
 
         if (dataMap.contains("errorDesc")) {
-            qDebug() << Q_FUNC_INFO << "Toodledo error" <<
+            qWarning() << Q_FUNC_INFO << "Toodledo error" <<
                         dataMap.value("errorCode").toInt(NULL) << ":" <<
                         dataMap.value("errorDesc").toString();
             emit toast("Toodledo Error " + dataMap.value("errorCode").toString() +
@@ -141,10 +141,10 @@ void FolderSenderReceiver::onReplyReceived(QNetworkReply *reply) {
                 emit folderEditReply(dataList.value(i).toMap());
             }
         } else {
-            qDebug() << Q_FUNC_INFO << "Unrecognized reply received:" << response;
+            qWarning() << Q_FUNC_INFO << "Unrecognized reply received:" << response;
         }
     } else {
-        qDebug() << Q_FUNC_INFO << response;
+        qWarning() << Q_FUNC_INFO << response;
         emit toast("Network error!");
     }
     reply->deleteLater();

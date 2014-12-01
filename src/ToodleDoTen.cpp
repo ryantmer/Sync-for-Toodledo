@@ -210,10 +210,10 @@ void ToodledoTen::refreshTasks() {
             _taskDataModel->clear();
             _taskSenderReceiver->fetchAllTasks();
         } else {
-            qDebug() << Q_FUNC_INFO << "LoginManager indicated not logged in";
+            qWarning() << Q_FUNC_INFO << "LoginManager indicated not logged in";
         }
     } else {
-        qDebug() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
+        qWarning() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
         showToast("No network connection!");
     }
 }
@@ -224,10 +224,10 @@ void ToodledoTen::refreshFolders() {
             _folderDataModel->clear();
             _folderSenderReceiver->fetchAllFolders();
         } else {
-            qDebug() << Q_FUNC_INFO << "LoginManager indicated not logged in";
+            qWarning() << Q_FUNC_INFO << "LoginManager indicated not logged in";
         }
     } else {
-        qDebug() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
+        qWarning() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
     }
 }
 
@@ -281,7 +281,7 @@ void ToodledoTen::onNetworkStateChanged(bool connected) {
         refreshFolders();
         refreshTasks();
     } else {
-        qDebug() << Q_FUNC_INFO << "Network connection lost";
+        qWarning() << Q_FUNC_INFO << "Network connection lost";
         showToast("Network connection lost");
     }
 }
@@ -296,7 +296,7 @@ void ToodledoTen::onWebViewUrlChanged(QUrl url) {
             //Remove webview from nav pane
             _root->pop();
         } else {
-            qDebug() << Q_FUNC_INFO << "State didn't match";
+            qWarning() << Q_FUNC_INFO << "State didn't match";
         }
     }
 }

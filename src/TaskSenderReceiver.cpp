@@ -41,7 +41,7 @@ void TaskSenderReceiver::onTaskAdded(QVariantMap task) {
     if (task["title"].toString() == "") {
         //Can't add a task without a title
         //This should never be hit, as QML doesn't allow adding without a title
-        qDebug() << Q_FUNC_INFO << "Can't add task without title! (you shouldn't ever see this)";
+        qCritical() << Q_FUNC_INFO << "Can't add task without title! (you shouldn't ever see this)";
         return;
     }
 
@@ -144,14 +144,14 @@ void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
     JsonDataAccess jda;
     QVariantList data = jda.loadFromBuffer(response).value<QVariantList>();
     if (jda.hasError()) {
-        qDebug() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-        qDebug() << Q_FUNC_INFO << response;
+        qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+        qWarning() << Q_FUNC_INFO << response;
         return;
     }
 
     QVariantMap first = data.first().toMap();
     if (first.contains("errorCode")) {
-        qDebug() << Q_FUNC_INFO << "Toodledo error" <<
+        qWarning() << Q_FUNC_INFO << "Toodledo error" <<
                 first.value("errorCode").toInt(NULL) << ":" <<
                 first.value("errorDesc").toString();
         emit toast("Toodledo Error " + first.value("errorCode").toString() +
@@ -189,10 +189,10 @@ void TaskSenderReceiver::onReplyReceived(QNetworkReply *reply) {
             }
             emit toast("Task updated");
         } else {
-            qDebug() << Q_FUNC_INFO << "Unrecognized reply received:" << data;
+            qWarning() << Q_FUNC_INFO << "Unrecognized reply received:" << data;
         }
     } else {
-        qDebug() << Q_FUNC_INFO << "Network error";
+        qWarning() << Q_FUNC_INFO << "Network error";
         emit toast("Network error!");
     }
     reply->deleteLater();
