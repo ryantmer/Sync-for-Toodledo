@@ -42,6 +42,13 @@ Sheet {
                     horizontalAlignment: HorizontalAlignment.Center
                     bottomMargin: 30
                 }
+                Label {
+                    text: "Version " + app.getVersionNumber()
+                    textStyle.fontSize: FontSize.Small
+                    verticalAlignment: VerticalAlignment.Center
+                    horizontalAlignment: HorizontalAlignment.Center
+                    bottomMargin: 30
+                }
                 Button {
                     text: "Contact / Help!"
                     verticalAlignment: VerticalAlignment.Center

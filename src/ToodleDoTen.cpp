@@ -8,6 +8,7 @@
 #include <bb/cascades/Label>
 #include <bb/system/SystemToast>
 #include <bb/system/SystemUiPosition>
+#include <bb/PackageInfo>
 
 using namespace bb::cascades;
 using namespace bb::system;
@@ -202,6 +203,11 @@ uint ToodledoTen::dateTimeToUnixTimeNoOffset(QDateTime dateTime) {
 
 uint ToodledoTen::getLengthValue(QDateTime dateTime) {
     return dateTime.time().hour() * 60 + dateTime.time().minute();
+}
+
+QString ToodledoTen::getVersionNumber() {
+    bb::PackageInfo pi;
+    return pi.version();
 }
 
 void ToodledoTen::refreshTasks() {
