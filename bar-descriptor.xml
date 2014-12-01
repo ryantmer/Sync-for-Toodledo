@@ -52,7 +52,7 @@
     <!-- A string value of the format <0-999>.<0-999>.<0-999> that represents application version which can be used to check for application upgrade.
          Values can also be 1-part or 2-part. It is not necessary to have a 3-part value.
          An updated version of application must have a versionNumber value higher than the previous version. Required. -->
-    <versionNumber>1.4.1</versionNumber>
+    <versionNumber>1.4.2</versionNumber>
 
     <!-- Fourth digit segment of the package version. First three segments are taken from the
          <versionNumber> element.  Must be an integer from 0 to 2^16-1 -->
@@ -72,6 +72,7 @@
        <image>logo110.png</image>
        <image>logo90.png</image>
        <image>logo96.png</image>
+       <image>logo144.png</image>
     </icon>
     <splashScreens>
        <image>splash-screen-768x1280.png</image>
@@ -79,10 +80,12 @@
        <image>splash-screen-720x1280.png</image>
        <image>splash-screen-1280x768.png</image>
        <image>splash-screen-1280x720.png</image>
+       <image>splash-screen-540x960.png</image>
+       <image>splash-screen-1440x1440.png</image>
     </splashScreens>
     <authorId>gYAAgCgfEw589DBHUpqjdpiUd8g</authorId>
     <author>ryantmer</author>
-    <buildId>9</buildId>
+    <buildId>10</buildId>
 
     <!--  Unique author ID assigned by signing authority. Required if using debug tokens. -->
     <!-- <authorId>ABC1234YjsnUk235h</authorId> -->
@@ -109,6 +112,9 @@
     <asset path="logo96.png">logo96.png</asset>
     <asset path="logo90.png">logo90.png</asset>
     <asset path="logo480.png">logo480.png</asset>
+    <asset path="logo144.png">logo144.png</asset>
+    <asset path="splash-screen-540x960.png">splash-screen-540x960.png</asset>
+    <asset path="splash-screen-1440x1440.png">splash-screen-1440x1440.png</asset>
 
     <!-- Request permission to execute native code.  Required for native applications. -->
     <permission system="true">run_native</permission>
