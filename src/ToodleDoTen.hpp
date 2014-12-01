@@ -35,6 +35,8 @@ public:
     Q_INVOKABLE QDateTime unixTimeToDateTime(uint unixTime);
     Q_INVOKABLE uint dateTimeToUnixTime(QDateTime dateTime);
     Q_INVOKABLE QDateTime unixTimeToDateTimeNoOffset(uint unixTime);
+    Q_INVOKABLE uint dateTimeToUnixTimeNoOffset(QDateTime dateTime);
+    Q_INVOKABLE uint getLengthValue(QDateTime dateTime);
     Q_INVOKABLE void refreshTasks();
     Q_INVOKABLE void refreshFolders();
     Q_INVOKABLE void addTask(QVariantMap data);

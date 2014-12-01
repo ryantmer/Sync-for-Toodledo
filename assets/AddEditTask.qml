@@ -141,13 +141,13 @@ Page {
                     taskData["tag"] = tagField.text;
                     taskData["duedatemod"] = duedatemodDropDown.selectedValue;
                     taskData["duetime"] = duetimeCheckbox.checked ?
-                                0 : app.dateTimeToUnixTime(duetimePicker.value);
+                                0 : app.dateTimeToUnixTimeNoOffset(duetimePicker.value);
                     taskData["startdate"] = startdateCheckbox.checked ?
                                 0 : app.dateTimeToUnixTime(startdatePicker.value);
                     taskData["starttime"] = starttimeCheckbox.checked ?
-                                0 : app.dateTimeToUnixTime(starttimePicker.value);
+                                0 : app.dateTimeToUnixTimeNoOffset(starttimePicker.value);
                     taskData["length"] = lengthCheckbox.checked ?
-                                0 : app.dateTimeToUnixTime(lengthPicker.value);
+                                0 : app.getLengthValue(lengthPicker.value);
                     taskData["remind"] = remindDropDown.selectedValue;
                     taskData["repeat"] = repeatDropDown.selectedValue;
                     taskData["status"] = statusDropDown.selectedValue;
@@ -155,9 +155,9 @@ Page {
                     taskData["star"] = starToggle.checked + 0;
                 }
                 
-                for (var param in taskData) {
-                    console.log("taskData." + param + " = " + taskData[param]);
-                }
+//                for (var param in taskData) {
+//                    console.log("taskData." + param + " = " + taskData[param]);
+//                }
                 
                 if (edit) {
                     app.editTask(data, taskData);
