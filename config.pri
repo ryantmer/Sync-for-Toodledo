@@ -55,23 +55,21 @@ config_pri_assets {
 config_pri_source_group1 {
     SOURCES += \
         $$quote($$BASEDIR/src/FolderDataModel.cpp) \
-        $$quote($$BASEDIR/src/FolderSenderReceiver.cpp) \
         $$quote($$BASEDIR/src/LoginManager.cpp) \
         $$quote($$BASEDIR/src/NetworkManager.cpp) \
         $$quote($$BASEDIR/src/PropertiesManager.cpp) \
+        $$quote($$BASEDIR/src/SenderReceiver.cpp) \
         $$quote($$BASEDIR/src/TaskDataModel.cpp) \
-        $$quote($$BASEDIR/src/TaskSenderReceiver.cpp) \
         $$quote($$BASEDIR/src/ToodleDoTen.cpp) \
         $$quote($$BASEDIR/src/main.cpp)
 
     HEADERS += \
         $$quote($$BASEDIR/src/FolderDataModel.hpp) \
-        $$quote($$BASEDIR/src/FolderSenderReceiver.hpp) \
         $$quote($$BASEDIR/src/LoginManager.hpp) \
         $$quote($$BASEDIR/src/NetworkManager.hpp) \
         $$quote($$BASEDIR/src/PropertiesManager.hpp) \
+        $$quote($$BASEDIR/src/SenderReceiver.hpp) \
         $$quote($$BASEDIR/src/TaskDataModel.hpp) \
-        $$quote($$BASEDIR/src/TaskSenderReceiver.hpp) \
         $$quote($$BASEDIR/src/ToodleDoTen.hpp)
 }
 

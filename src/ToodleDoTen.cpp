@@ -20,8 +20,8 @@ ToodledoTen::ToodledoTen() : QObject() {
     _propertiesManager = PropertiesManager::getInstance();
     _loginManager = LoginManager::getInstance();
     _networkManager = NetworkManager::getInstance();
-    _taskSenderReceiver = new TaskSenderReceiver(this);
-    _folderSenderReceiver = new FolderSenderReceiver(this);
+    _taskSenderReceiver = new SenderReceiver(this);
+    _folderSenderReceiver = new SenderReceiver(this);
     _taskDataModel = new TaskDataModel(this);
     _folderDataModel = new FolderDataModel(this);
 

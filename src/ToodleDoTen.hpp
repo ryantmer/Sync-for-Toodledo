@@ -14,8 +14,7 @@
 #include "TaskDataModel.hpp"
 #include "FolderDataModel.hpp"
 #include "NetworkManager.hpp"
-#include "TaskSenderReceiver.hpp"
-#include "FolderSenderReceiver.hpp"
+#include "SenderReceiver.hpp"
 #include "LoginManager.hpp"
 
 using namespace bb::cascades;
@@ -69,8 +68,8 @@ public slots:
 private:
     TaskDataModel *_taskDataModel;
     FolderDataModel *_folderDataModel;
-    TaskSenderReceiver *_taskSenderReceiver;
-    FolderSenderReceiver *_folderSenderReceiver;
+    SenderReceiver *_taskSenderReceiver;
+    SenderReceiver *_folderSenderReceiver;
     NetworkManager *_networkManager;
     PropertiesManager *_propertiesManager;
     LoginManager *_loginManager;
