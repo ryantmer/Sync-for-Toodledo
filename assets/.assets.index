@@ -1,8 +1,9 @@
 1
-13
+14
 About.qml
 AddEditFolder.qml
 AddEditTask.qml
+CompletedTasks.qml
 Cover.qml
 FolderMain.qml
 images/ic_add.png

@@ -21,14 +21,6 @@ NavigationPane {
                 onTriggered: {
                     aboutSheetDefinition.createObject().open();
                 }
-            },
-            ActionItem {
-                title: "Folders"
-                imageSource: "asset:///images/ic_settings.png"
-                onTriggered: {
-                    var page = manageFoldersDefinition.createObject();
-                    mainNavPane.push(page);
-                }
             }
         ]
     }
@@ -41,6 +33,7 @@ NavigationPane {
         
         Container {
             accessibility.name: "Main task list page container"
+            
             ListView {
                 id: taskListView
                 accessibility.name: "Main task list"
@@ -155,6 +148,23 @@ NavigationPane {
                     page.setup();
                     mainNavPane.push(page);
                 }
+            },
+            ActionItem {
+                title: "Manage Folders"
+                ActionBar.placement: ActionBarPlacement.InOverflow
+                imageSource: "asset:///images/ic_settings.png"
+                onTriggered: {
+                    var page = manageFoldersDefinition.createObject();
+                    mainNavPane.push(page);
+                }
+            },
+            ActionItem {
+                title: "Completed Tasks"
+                ActionBar.placement: ActionBarPlacement.InOverflow
+                onTriggered: {
+                    var page = completedTasksDefinition.createObject();
+                    mainNavPane.push(page);
+                }
             }
         ]
     }
@@ -167,6 +177,10 @@ NavigationPane {
         ComponentDefinition {
             id: manageFoldersDefinition
             content: FolderMain {}
+        },
+        ComponentDefinition {
+            id: completedTasksDefinition
+            content: CompletedTasks {}
         },
         ComponentDefinition {
             id: settingsSheetDefinition
