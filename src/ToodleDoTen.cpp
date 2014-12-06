@@ -14,16 +14,15 @@ using namespace bb::cascades;
 using namespace bb::system;
 
 ToodledoTen::ToodledoTen() : QObject() {
-    qmlRegisterType<TaskDataModel>("TaskUtilities", 1, 0, "TaskDataModel");
-    qmlRegisterType<FolderDataModel>("FolderUtilities", 1, 0, "FolderDataModel");
+    qmlRegisterType<CustomDataModel>("DataModelUtil", 1, 0, "CustomDataModel");
 
     _propertiesManager = PropertiesManager::getInstance();
     _loginManager = LoginManager::getInstance();
     _networkManager = NetworkManager::getInstance();
     _taskSenderReceiver = new SenderReceiver(this);
     _folderSenderReceiver = new SenderReceiver(this);
-    _taskDataModel = new TaskDataModel(this);
-    _folderDataModel = new FolderDataModel(this);
+    _taskDataModel = new CustomDataModel(this);
+    _folderDataModel = new CustomDataModel(this);
 
     //Create root QML document from main.qml and expose certain variables to QML
     QmlDocument *qml = QmlDocument::create("asset:///TaskMain.qml").parent(this);
@@ -156,11 +155,11 @@ ToodledoTen::ToodledoTen() : QObject() {
 }
 ToodledoTen::~ToodledoTen() {};
 
-TaskDataModel *ToodledoTen::taskDataModel() {
+CustomDataModel *ToodledoTen::taskDataModel() {
     return _taskDataModel;
 }
 
-FolderDataModel *ToodledoTen::folderDataModel() {
+CustomDataModel *ToodledoTen::folderDataModel() {
     return _folderDataModel;
 }
 

@@ -1,18 +1,19 @@
-#ifndef TASKDATAMODEL_HPP_
-#define TASKDATAMODEL_HPP_
+#ifndef CUSTOMDATAMODEL_HPP_
+#define CUSTOMDATAMODEL_HPP_
 
 #include <QObject>
 #include <bb/cascades/DataModel>
 
-class TaskDataModel : public bb::cascades::DataModel {
+class CustomDataModel : public bb::cascades::DataModel {
     Q_OBJECT
 
 public:
-    TaskDataModel(QObject *parent = 0);
-    virtual ~TaskDataModel();
+    CustomDataModel(QObject *parent = 0);
+    virtual ~CustomDataModel();
 
-    QVariant firstEntry();
     void clear();
+    QVariant firstEntry();
+    QVariantList getFolderList();
 
     //Required by bb::cascades::DataModel
     Q_INVOKABLE virtual int childCount(const QVariantList &indexPath);
@@ -21,8 +22,9 @@ public:
     Q_INVOKABLE virtual QVariant data(const QVariantList &indexPath);
 
 private:
-    QVariantList taskDB;
+    QVariantList _internalDB;
     void sortTasksByDueDate();
+    void sortFoldersByOrd();
 
 signals:
     void toast(QString message);
@@ -31,7 +33,10 @@ public slots:
     void onTaskEdited(QVariantMap task);
     void onTaskAdded(QVariantMap task);
     void onTaskRemoved(QVariantMap task);
+    void onFolderEdited(QVariantMap folder);
+    void onFolderAdded(QVariantMap folder);
+    void onFolderRemoved(QVariantMap folder);
     void onLoggedOut();
 };
 
-#endif /* TASKDATAMODEL_HPP_ */
+#endif /* CUSTOMDATAMODEL_HPP_ */

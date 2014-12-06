@@ -11,8 +11,7 @@
 #include <bb/cascades/ScrollView>
 
 #include "PropertiesManager.hpp"
-#include "TaskDataModel.hpp"
-#include "FolderDataModel.hpp"
+#include "CustomDataModel.hpp"
 #include "NetworkManager.hpp"
 #include "SenderReceiver.hpp"
 #include "LoginManager.hpp"
@@ -23,13 +22,13 @@ class ToodledoTen : public QObject {
     Q_OBJECT
 
 public:
-    Q_PROPERTY(TaskDataModel *taskDataModel READ taskDataModel CONSTANT);
-    Q_PROPERTY(FolderDataModel *folderDataModel READ folderDataModel CONSTANT);
+    Q_PROPERTY(CustomDataModel *taskDataModel READ taskDataModel CONSTANT);
+    Q_PROPERTY(CustomDataModel *folderDataModel READ folderDataModel CONSTANT);
 
     ToodledoTen();
     virtual ~ToodledoTen();
-    TaskDataModel *taskDataModel();
-    FolderDataModel *folderDataModel();
+    CustomDataModel *taskDataModel();
+    CustomDataModel *folderDataModel();
 
     Q_INVOKABLE QDateTime unixTimeToDateTime(uint unixTime);
     Q_INVOKABLE uint dateTimeToUnixTime(QDateTime dateTime);
@@ -66,8 +65,8 @@ public slots:
     void onToast(QString message);
 
 private:
-    TaskDataModel *_taskDataModel;
-    FolderDataModel *_folderDataModel;
+    CustomDataModel *_taskDataModel;
+    CustomDataModel *_folderDataModel;
     SenderReceiver *_taskSenderReceiver;
     SenderReceiver *_folderSenderReceiver;
     NetworkManager *_networkManager;

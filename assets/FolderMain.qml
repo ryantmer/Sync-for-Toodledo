@@ -18,7 +18,7 @@ Page {
             
             listItemComponents: [
                 ListItemComponent {
-                    type: "folder"
+                    type: "item"
                     Container {
                         id: folderItemContainer
                         accessibility.name: "List item component container"
