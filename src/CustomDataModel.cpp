@@ -28,7 +28,7 @@ QVariantList CustomDataModel::getInternalList() {
     return _internalDB;
 }
 
-bool compareTasksByDueDate(QVariant &a, QVariant &b) {
+bool compareTasks(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
     QVariantMap second = b.toMap();
 
@@ -45,7 +45,7 @@ bool compareTasksByDueDate(QVariant &a, QVariant &b) {
     }
 }
 
-bool compareFoldersByOrd(QVariant &a, QVariant &b) {
+bool compareFolders(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
     QVariantMap second = b.toMap();
 
@@ -55,10 +55,10 @@ bool compareFoldersByOrd(QVariant &a, QVariant &b) {
 void CustomDataModel::sort() {
     switch (_dataType) {
         case Task:
-            qSort(_internalDB.begin(), _internalDB.end(), compareTasksByDueDate);
+            qSort(_internalDB.begin(), _internalDB.end(), compareTasks);
             break;
         case Folder:
-            qSort(_internalDB.begin(), _internalDB.end(), compareFoldersByOrd);
+            qSort(_internalDB.begin(), _internalDB.end(), compareFolders);
             break;
     }
 }

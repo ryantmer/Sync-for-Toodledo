@@ -1,4 +1,6 @@
 import bb.cascades 1.2
+import bb.data 1.0
+import bb.system 1.2
 
 Page {
     accessibility.name: "Main folder list page"
@@ -31,6 +33,23 @@ Page {
                                 ActionSet {
                                     DeleteActionItem {
                                         onTriggered: {
+                                            deleteConfirmDialog.show();
+                                        }
+                                    }
+                                }
+                            ]
+                            
+                            attachedObjects: [
+                                SystemDialog {
+                                    id: deleteConfirmDialog
+                                    title: "Delete Folder"
+                                    body: "Are you sure you want to delete this folder?"
+                                    confirmButton.label: "Delete"
+                                    confirmButton.enabled: true
+                                    cancelButton.label: "Cancel"
+                                    cancelButton.enabled: true
+                                    onFinished: {
+                                        if (result == SystemUiResult.ConfirmButtonSelection) {
                                             var folderData = {"id": ListItemData.id}
                                             app.removeFolder(folderData);
                                         }
