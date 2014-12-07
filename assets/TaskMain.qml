@@ -85,6 +85,23 @@ NavigationPane {
                                     ActionSet {
                                         DeleteActionItem {
                                             onTriggered: {
+                                                deleteConfirmDialog.show();
+                                            }
+                                        }
+                                    }
+                                ]
+                                
+                                attachedObjects: [
+                                    SystemDialog {
+                                        id: deleteConfirmDialog
+                                        title: "Delete Task"
+                                        body: "Are you sure you want to delete this task?"
+                                        confirmButton.label: "Delete"
+                                        confirmButton.enabled: true
+                                        cancelButton.label: "Cancel"
+                                        cancelButton.enabled: true
+                                        onFinished: {
+                                            if (result == SystemUiResult.ConfirmButtonSelection) {
                                                 var taskData = {"id": ListItemData.id}
                                                 app.removeTask(taskData);
                                             }
