@@ -20,7 +20,9 @@ ToodledoTen::ToodledoTen() : QObject() {
     _loginManager = LoginManager::getInstance();
     _networkManager = NetworkManager::getInstance();
     _taskSenderReceiver = new SenderReceiver(this);
+    _taskSenderReceiver->setDataType(SenderReceiver::Task);
     _folderSenderReceiver = new SenderReceiver(this);
+    _folderSenderReceiver->setDataType(SenderReceiver::Folder);
     _taskDataModel = new CustomDataModel(this);
     _taskDataModel->setDataType(CustomDataModel::Task);
     _folderDataModel = new CustomDataModel(this);
@@ -133,24 +135,24 @@ ToodledoTen::ToodledoTen() : QObject() {
 
     //TSR listeners
     isOk = connect(this, SIGNAL(taskAdded(QVariantMap)),
-            _taskSenderReceiver, SLOT(onTaskAdded(QVariantMap)));
+            _taskSenderReceiver, SLOT(onAdd(QVariantMap)));
     Q_ASSERT(isOk);
     isOk = connect(this, SIGNAL(taskEdited(QVariantMap, QVariantMap)),
-            _taskSenderReceiver, SLOT(onTaskEdited(QVariantMap, QVariantMap)));
+            _taskSenderReceiver, SLOT(onEdit(QVariantMap, QVariantMap)));
     Q_ASSERT(isOk);
     isOk = connect(this, SIGNAL(taskRemoved(QVariantMap)),
-            _taskSenderReceiver, SLOT(onTaskRemoved(QVariantMap)));
+            _taskSenderReceiver, SLOT(onRemove(QVariantMap)));
     Q_ASSERT(isOk);
 
     //FSR listeners
     isOk = connect(this, SIGNAL(folderAdded(QVariantMap)),
-            _folderSenderReceiver, SLOT(onFolderAdded(QVariantMap)));
+            _folderSenderReceiver, SLOT(onAdd(QVariantMap)));
     Q_ASSERT(isOk);
     isOk = connect(this, SIGNAL(folderEdited(QVariantMap, QVariantMap)),
-            _folderSenderReceiver, SLOT(onFolderEdited(QVariantMap, QVariantMap)));
+            _folderSenderReceiver, SLOT(onEdit(QVariantMap, QVariantMap)));
     Q_ASSERT(isOk);
     isOk = connect(this, SIGNAL(folderRemoved(QVariantMap)),
-            _folderSenderReceiver, SLOT(onFolderRemoved(QVariantMap)));
+            _folderSenderReceiver, SLOT(onRemove(QVariantMap)));
     Q_ASSERT(isOk);
 
     Q_UNUSED(isOk);
@@ -215,7 +217,7 @@ void ToodledoTen::refreshTasks() {
     if (_networkManager->isConnected()) {
         if (_loginManager->isLoggedIn()) {
             _taskDataModel->clear();
-            _taskSenderReceiver->fetchAllTasks();
+            _taskSenderReceiver->fetchAll();
         } else {
             qWarning() << Q_FUNC_INFO << "LoginManager indicated not logged in";
         }
@@ -229,7 +231,7 @@ void ToodledoTen::refreshFolders() {
     if (_networkManager->isConnected()) {
         if (_loginManager->isLoggedIn()) {
             _folderDataModel->clear();
-            _folderSenderReceiver->fetchAllFolders();
+            _folderSenderReceiver->fetchAll();
         } else {
             qWarning() << Q_FUNC_INFO << "LoginManager indicated not logged in";
         }

@@ -23,20 +23,27 @@ SenderReceiver::SenderReceiver(QObject *parent) : QObject(parent) {
     Q_UNUSED(isOk);
 }
 
-void SenderReceiver::fetchAllTasks() {
-    QUrl url(taskGetUrl);
-    url.addQueryItem("access_token", _propMan->accessToken);
-    url.addQueryItem("comp", 0); //only get incomplete tasks
-    //some fields (id, title, modified, completed) come automatically
-    url.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,"
-            "duedatemod,startdate,starttime,remind,repeat,status,length");
+SenderReceiver::~SenderReceiver() {}
 
-    QNetworkRequest req(url);
-    _networkAccessManager->get(req);
+void SenderReceiver::setDataType(DataType dataType) {
+    _dataType = dataType;
 }
 
-void SenderReceiver::fetchAllFolders() {
-    QUrl url(folderGetUrl);
+void SenderReceiver::fetchAll() {
+    QUrl url;
+    switch (_dataType) {
+        case Task:
+            url.setUrl(taskGetUrl);
+            url.addQueryItem("comp", 0); //only get incomplete tasks
+            //some fields (id, title, modified, completed) come automatically
+            url.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,"
+                    "duedatemod,startdate,starttime,remind,repeat,status,length");
+            break;
+        case Folder:
+            url.setUrl(folderGetUrl);
+            break;
+    }
+
     url.addQueryItem("access_token", _propMan->accessToken);
 
     QNetworkRequest req(url);
@@ -46,166 +53,132 @@ void SenderReceiver::fetchAllFolders() {
 /*
  * Slots
  */
-void SenderReceiver::onTaskAdded(QVariantMap task) {
-    QUrl url(taskAddUrl);
-    QNetworkRequest req(url);
+void SenderReceiver::onAdd(QVariantMap data) {
+    QUrl url;
+    QUrl urlData;
+    QVariantMap::iterator iter;
 
-    if (task["title"].toString() == "") {
-        //Can't add a task without a title
-        //This should never be hit, as QML doesn't allow adding without a title
-        qCritical() << Q_FUNC_INFO << "Can't add task without title! (you shouldn't ever see this)";
-        return;
-    }
-
-    //Build task data string from user's input
-    QString encodedData = QString("[{");
-    QString returnFields = "folder,tag,startdate,duedate,duedatemod,starttime,"
-                "duetime,remind,repeat,status,star,priority,length,note";
-    QVariantMap::iterator i;
-    for (i = task.begin(); i != task.end(); ++i) {
-        bool isOk;
-        int value = task[i.key()].toInt(&isOk);
-        Q_UNUSED(value);
-        if (isOk) {
-            //number values
-            encodedData.append(",\"" + i.key() + "\":" + task[i.key()].toString());
-        } else {
-            //string values (extra quotation marks needed)
-            encodedData.append(",\"" + i.key() + "\":\"" + task[i.key()].toString() + "\"");
-        }
-    }
-    encodedData.append("}]");
-    encodedData.remove(2, 1);  //Remove initial comma YES THIS IS MESSY I KNOW STOP YELLING.
-    qDebug() << Q_FUNC_INFO << encodedData;
-    //Required for ToodleDo's API to replace some stuff
-    encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
-    encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
-
-    QUrl data;
-    data.addQueryItem("access_token", _propMan->accessToken);
-    data.addEncodedQueryItem("tasks", encodedData.toAscii());
-    data.addQueryItem("fields", returnFields);
-
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    _networkAccessManager->post(req, data.encodedQuery());
-}
-
-void SenderReceiver::onTaskEdited(QVariantMap oldData, QVariantMap newData) {
-    QUrl url(taskEditUrl);
-    QNetworkRequest req(url);
-
-    if (oldData == newData) {
-        //If nothing has changed, don't need to upload anything
-        return;
-    }
-
-    //Build data string to only include fields that actually changed
-    QString encodedData = QString("[{");
-    encodedData.append("\"id\":" + oldData["id"].toString());
-    QString returnFields = "folder,tag,startdate,duedate,duedatemod,starttime,"
-                "duetime,remind,repeat,status,star,priority,length,note";
-    QVariantMap::iterator i;
-    for (i = newData.begin(); i != newData.end(); ++i) {
-        if (newData[i.key()] != oldData[i.key()]) {
-            bool isOk;
-            int value = newData[i.key()].toInt(&isOk);
-            Q_UNUSED(value);
-            if (isOk) {
-                //number values
-                encodedData.append(",\"" + i.key() + "\":" + newData[i.key()].toString());
-            } else {
-                //string values (extra quotation marks needed)
-                encodedData.append(",\"" + i.key() + "\":\"" + newData[i.key()].toString() + "\"");
+    switch (_dataType) {
+        case Task: {
+            url.setUrl(taskAddUrl);
+            //Build task data string from user's input
+            QString encodedData = QString("[{");
+            QString returnFields = "folder,tag,startdate,duedate,duedatemod,starttime,"
+                        "duetime,remind,repeat,status,star,priority,length,note";
+            for (iter = data.begin(); iter != data.end(); ++iter) {
+                bool isOk;
+                int value = data[iter.key()].toInt(&isOk);
+                Q_UNUSED(value);
+                if (isOk) {
+                    //number values
+                    encodedData.append(",\"" + iter.key() + "\":" + iter.value().toString());
+                } else {
+                    //string values (extra quotation marks needed)
+                    encodedData.append(",\"" + iter.key() + "\":\"" + iter.value().toString() + "\"");
+                }
             }
+            encodedData.append("}]");
+            encodedData.remove(2, 1);  //Remove initial comma YES THIS IS MESSY I KNOW STOP YELLING.
+            qDebug() << Q_FUNC_INFO << encodedData;
+            //Required for ToodleDo's API to replace some stuff
+            encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
+            encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
+
+            urlData.addEncodedQueryItem("tasks", encodedData.toAscii());
+            urlData.addQueryItem("fields", returnFields);
+            break;
+        }
+        case Folder: {
+            url.setUrl(folderAddUrl);
+            for (iter = data.begin(); iter != data.end(); ++iter) {
+                urlData.addQueryItem(iter.key(), data[iter.key()].toString());
+            }
+            break;
         }
     }
-    encodedData.append("}]");
-    qDebug() << Q_FUNC_INFO << encodedData;
-    encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
-    encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
 
-    QUrl data;
-    data.addQueryItem("access_token", _propMan->accessToken);
-    data.addEncodedQueryItem("tasks", encodedData.toAscii());
-    data.addQueryItem("fields", returnFields);
-
+    urlData.addQueryItem("access_token", _propMan->accessToken);
+    QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    _networkAccessManager->post(req, data.encodedQuery());
+    _networkAccessManager->post(req, urlData.encodedQuery());
 }
 
-void SenderReceiver::onTaskRemoved(QVariantMap task) {
-    QUrl url(taskRemoveUrl);
-    QNetworkRequest req(url);
-
-    QUrl data;
-    data.addQueryItem("access_token", _propMan->accessToken);
-    data.addQueryItem("tasks", "[\"" + task["id"].toString() + "\"]");
-
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    _networkAccessManager->post(req, data.encodedQuery());
-}
-
-void SenderReceiver::onFolderAdded(QVariantMap folder) {
-    QUrl url(folderAddUrl);
-    QNetworkRequest req(url);
-
-    QUrl data;
-    data.addQueryItem("access_token", _propMan->accessToken);
-    if (folder["name"].toString() != "") {
-        data.addQueryItem("name", folder["name"].toString());
-    } else {
-        //Can't add a folder without a name
-        //This should never be hit, as QML doesn't allow adding without a name
-        qCritical() << Q_FUNC_INFO << "Can't add folder without name! (you shouldn't ever see this)";
-        return;
-    }
-    if (folder["private"].toInt(NULL) == 1) {
-        data.addQueryItem("private", folder["private"].toString());
-    }
-
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    _networkAccessManager->post(req, data.encodedQuery());
-}
-
-void SenderReceiver::onFolderEdited(QVariantMap oldData, QVariantMap newData) {
-    QUrl url(folderEditUrl);
-    QNetworkRequest req(url);
-
+void SenderReceiver::onEdit(QVariantMap oldData, QVariantMap newData) {
     if (oldData == newData) {
         //If nothing has changed, don't need to upload anything
         return;
     }
 
-    QUrl data;
-    data.addQueryItem("access_token", _propMan->accessToken);
-    data.addQueryItem("id", newData["id"].toString());
-    QVariantMap::iterator i;
-    for (i = newData.begin(); i != newData.end(); ++i) {
-        if (oldData[i.key()] != newData[i.key()]) {
-            data.addQueryItem(i.key(), newData[i.key()].toString());
+    QUrl url;
+    QUrl urlData;
+    QVariantMap::iterator iter;
+
+    switch (_dataType) {
+        case Task: {
+            url.setUrl(taskEditUrl);
+            QString encodedData = QString("[{");
+            encodedData.append("\"id\":" + oldData["id"].toString());
+            QString returnFields = "folder,tag,startdate,duedate,duedatemod,starttime,"
+                        "duetime,remind,repeat,status,star,priority,length,note";
+            for (iter = newData.begin(); iter != newData.end(); ++iter) {
+                if (newData[iter.key()] != oldData[iter.key()]) {
+                    bool isOk;
+                    int value = newData[iter.key()].toInt(&isOk);
+                    Q_UNUSED(value);
+                    if (isOk) {
+                        //number values
+                        encodedData.append(",\"" + iter.key() + "\":" + iter.value().toString());
+                    } else {
+                        //string values (extra quotation marks needed)
+                        encodedData.append(",\"" + iter.key() + "\":\"" + iter.value().toString() + "\"");
+                    }
+                }
+            }
+            encodedData.append("}]");
+            encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
+            encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
+            urlData.addEncodedQueryItem("tasks", encodedData.toAscii());
+            urlData.addQueryItem("fields", returnFields);
+            break;
+        }
+        case Folder: {
+            url.setUrl(folderEditUrl);
+            urlData.addQueryItem("id", newData["id"].toString());
+            for (iter = newData.begin(); iter != newData.end(); ++iter) {
+                if (oldData[iter.key()] != newData[iter.key()]) {
+                    urlData.addQueryItem(iter.key(), iter.value().toString());
+                }
+            }
+            break;
         }
     }
 
+    urlData.addQueryItem("access_token", _propMan->accessToken);
+    QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    _networkAccessManager->post(req, data.encodedQuery());
+    _networkAccessManager->post(req, urlData.encodedQuery());
 }
 
-void SenderReceiver::onFolderRemoved(QVariantMap folder) {
-    QUrl url(folderRemoveUrl);
+void SenderReceiver::onRemove(QVariantMap data) {
+    QUrl url;
+    QUrl urlData;
+
+    switch (_dataType) {
+        case Task:
+            url.setUrl(taskRemoveUrl);
+            urlData.addQueryItem("tasks", "[\"" + data["id"].toString() + "\"]");
+            break;
+        case Folder:
+            url.setUrl(folderRemoveUrl);
+            urlData.addQueryItem("id", data["id"].toString());
+            break;
+    }
+
+    urlData.addQueryItem("access_token", _propMan->accessToken);
     QNetworkRequest req(url);
-
-    QUrl data;
-    data.addQueryItem("access_token", _propMan->accessToken);
-    data.addQueryItem("id", folder["id"].toString());
-
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    _networkAccessManager->post(req, urlData.encodedQuery());
 
-    _networkAccessManager->post(req, data.encodedQuery());
 }
 
 void SenderReceiver::onReplyReceived(QNetworkReply *reply) {
@@ -241,7 +214,8 @@ void SenderReceiver::onReplyReceived(QNetworkReply *reply) {
             return;
         }
 
-        if (reply->url().toString().contains(taskGetUrl)) {
+        QString replyUrl = reply->url().toString(QUrl::RemoveQuery);
+        if (replyUrl == taskGetUrl) {
             qDebug() << Q_FUNC_INFO << "Task(s) received";
             //First item is a summary item, discard it
             if (dataList.first().toMap().contains("num") && dataList.first().toMap().contains("total")) {
@@ -251,38 +225,35 @@ void SenderReceiver::onReplyReceived(QNetworkReply *reply) {
                 emit taskGetReply(dataList.value(i).toMap());
             }
             emit toast("Tasks received");
-        } else if (reply->url().toString().contains(taskAddUrl)) {
+        } else if (replyUrl == taskAddUrl) {
             qDebug() << Q_FUNC_INFO << "New task(s) added";
             for (int i = 0; i < dataList.count(); ++i) {
                 emit taskAddReply(dataList.value(i).toMap());
             }
-            emit toast("Task added");
-        } else if (reply->url().toString().contains(taskRemoveUrl)) {
+        } else if (replyUrl == taskRemoveUrl) {
             qDebug() << Q_FUNC_INFO << "Task(s) removed";
             for (int i = 0; i < dataList.count(); ++i) {
                 emit taskRemoveReply(dataList.value(i).toMap());
             }
-            emit toast("Task deleted");
-        } else if (reply->url().toString().contains(taskEditUrl)) {
+        } else if (replyUrl == taskEditUrl) {
             qDebug() << Q_FUNC_INFO << "Task(s) updated";
             for (int i = 0; i < dataList.count(); ++i) {
                 emit taskEditReply(dataList.value(i).toMap());
             }
-            emit toast("Task updated");
-        } else if (reply->url().toString().contains(folderGetUrl)) {
+        } else if (replyUrl == folderGetUrl) {
             qDebug() << Q_FUNC_INFO << "Folder(s) received";
             for (int i = 0; i < dataList.count(); ++i) {
                 emit folderGetReply(dataList.value(i).toMap());
             }
-        } else if (reply->url().toString().contains(folderAddUrl)) {
+        } else if (replyUrl == folderAddUrl) {
             qDebug() << Q_FUNC_INFO << "New folder(s) added";
             for (int i = 0; i < dataList.count(); ++ i) {
                 emit folderAddReply(dataList.value(i).toMap());
             }
-        } else if (reply->url().toString().contains(folderRemoveUrl)) {
+        } else if (replyUrl == folderRemoveUrl) {
             qDebug() << Q_FUNC_INFO << "Folder(s) removed";
             emit folderRemoveReply(dataMap);
-        } else if (reply->url().toString().contains(folderEditUrl)) {
+        } else if (replyUrl == folderEditUrl) {
             qDebug() << Q_FUNC_INFO << "Folder(s) edited";
             for (int i = 0; i < dataList.count(); ++i) {
                 emit folderEditReply(dataList.value(i).toMap());

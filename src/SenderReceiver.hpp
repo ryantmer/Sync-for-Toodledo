@@ -8,9 +8,16 @@ class SenderReceiver : public QObject {
     Q_OBJECT
 
 public:
+    enum DataType {
+        Task,
+        Folder
+    };
+
     SenderReceiver(QObject *parent = 0);
-    void fetchAllTasks();
-    void fetchAllFolders();
+    virtual ~SenderReceiver();
+
+    void setDataType(DataType dataType);
+    void fetchAll();
 
     static const QString taskGetUrl;
     static const QString taskEditUrl;
@@ -33,15 +40,13 @@ signals:
     void toast(QString message);
 
 public slots:
-    void onTaskAdded(QVariantMap data);
-    void onTaskEdited(QVariantMap oldData, QVariantMap newData);
-    void onTaskRemoved(QVariantMap data);
-    void onFolderAdded(QVariantMap data);
-    void onFolderEdited(QVariantMap oldData, QVariantMap newData);
-    void onFolderRemoved(QVariantMap data);
+    void onAdd(QVariantMap data);
+    void onEdit(QVariantMap oldData, QVariantMap newData);
+    void onRemove(QVariantMap data);
     void onReplyReceived(QNetworkReply *reply);
 
 private:
+    DataType _dataType;
     QNetworkAccessManager *_networkAccessManager;
     PropertiesManager *_propMan;
 };
