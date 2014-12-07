@@ -67,8 +67,10 @@ public slots:
 private:
     CustomDataModel *_taskDataModel;
     CustomDataModel *_folderDataModel;
+    CustomDataModel *_completedTaskDataModel;
     SenderReceiver *_taskSenderReceiver;
     SenderReceiver *_folderSenderReceiver;
+    SenderReceiver *_completedTaskSenderReceiver;
     NetworkManager *_networkManager;
     PropertiesManager *_propertiesManager;
     LoginManager *_loginManager;
@@ -76,7 +78,6 @@ private:
     NavigationPane *_root;
     Container *_coverRoot;
     Page *_loginPage;
-    ScrollView *_loginScrollView;
     WebView *_loginWebView;
 };
 

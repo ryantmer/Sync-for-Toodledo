@@ -19,14 +19,22 @@ ToodledoTen::ToodledoTen() : QObject() {
     _propertiesManager = PropertiesManager::getInstance();
     _loginManager = LoginManager::getInstance();
     _networkManager = NetworkManager::getInstance();
+
     _taskSenderReceiver = new SenderReceiver(this);
     _taskSenderReceiver->setDataType(SenderReceiver::Task);
-    _folderSenderReceiver = new SenderReceiver(this);
-    _folderSenderReceiver->setDataType(SenderReceiver::Folder);
     _taskDataModel = new CustomDataModel(this);
     _taskDataModel->setDataType(CustomDataModel::Task);
+
+    _folderSenderReceiver = new SenderReceiver(this);
+    _folderSenderReceiver->setDataType(SenderReceiver::Folder);
     _folderDataModel = new CustomDataModel(this);
     _folderDataModel->setDataType(CustomDataModel::Folder);
+
+    _completedTaskSenderReceiver = new SenderReceiver(this);
+    _completedTaskSenderReceiver->setDataType(SenderReceiver::CompletedTask);
+    _completedTaskDataModel = new CustomDataModel(this);
+    _completedTaskDataModel->setDataType(CustomDataModel::CompletedTask);
+
 
     //Create root QML document from main.qml and expose certain variables to QML
     QmlDocument *qml = QmlDocument::create("asset:///TaskMain.qml").parent(this);

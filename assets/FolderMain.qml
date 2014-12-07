@@ -86,6 +86,14 @@ Page {
     
     actions: [
         ActionItem {
+            title: "Refresh"
+            ActionBar.placement: ActionBarPlacement.OnBar
+            imageSource: "asset:///images/ic_reload.png"
+            onTriggered: {
+                app.refreshFolders();
+            }
+        },
+        ActionItem {
             title: "Add Folder"
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_add.png"

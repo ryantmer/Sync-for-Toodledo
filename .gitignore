@@ -39,5 +39,5 @@ Icon
 
 # Build directories
 arm/
+arm-p/
 x86/
-src/LoginManager.cpp

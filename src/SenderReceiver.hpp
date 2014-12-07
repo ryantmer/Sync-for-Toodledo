@@ -9,8 +9,13 @@ class SenderReceiver : public QObject {
 
 public:
     enum DataType {
+        UndefinedType,
         Task,
-        Folder
+        Folder,
+        CompletedTask,
+        Context,
+        Goal,
+        Location
     };
 
     SenderReceiver(QObject *parent = 0);

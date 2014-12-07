@@ -9,8 +9,13 @@ class CustomDataModel : public bb::cascades::DataModel {
 
 public:
     enum DataType {
+        UndefinedType,
         Task,
-        Folder
+        Folder,
+        CompletedTask,
+        Context,
+        Goal,
+        Location
     };
 
     CustomDataModel(QObject *parent = 0);

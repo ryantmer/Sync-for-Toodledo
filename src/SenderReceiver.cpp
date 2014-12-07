@@ -21,6 +21,7 @@ SenderReceiver::SenderReceiver(QObject *parent) : QObject(parent) {
             this, SLOT(onReplyReceived(QNetworkReply*)));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
+    _dataType = UndefinedType;
 }
 
 SenderReceiver::~SenderReceiver() {}
@@ -41,6 +42,12 @@ void SenderReceiver::fetchAll() {
             break;
         case Folder:
             url.setUrl(folderGetUrl);
+            break;
+        case CompletedTask:
+        case Context:
+        case Goal:
+        case Location:
+        default:
             break;
     }
 
@@ -88,13 +95,18 @@ void SenderReceiver::onAdd(QVariantMap data) {
             urlData.addQueryItem("fields", returnFields);
             break;
         }
-        case Folder: {
+        case Folder:
             url.setUrl(folderAddUrl);
             for (iter = data.begin(); iter != data.end(); ++iter) {
                 urlData.addQueryItem(iter.key(), data[iter.key()].toString());
             }
             break;
-        }
+        case CompletedTask:
+        case Context:
+        case Goal:
+        case Location:
+        default:
+            break;
     }
 
     urlData.addQueryItem("access_token", _propMan->accessToken);
@@ -141,7 +153,7 @@ void SenderReceiver::onEdit(QVariantMap oldData, QVariantMap newData) {
             urlData.addQueryItem("fields", returnFields);
             break;
         }
-        case Folder: {
+        case Folder:
             url.setUrl(folderEditUrl);
             urlData.addQueryItem("id", newData["id"].toString());
             for (iter = newData.begin(); iter != newData.end(); ++iter) {
@@ -150,7 +162,12 @@ void SenderReceiver::onEdit(QVariantMap oldData, QVariantMap newData) {
                 }
             }
             break;
-        }
+        case CompletedTask:
+        case Context:
+        case Goal:
+        case Location:
+        default:
+            break;
     }
 
     urlData.addQueryItem("access_token", _propMan->accessToken);
@@ -171,6 +188,12 @@ void SenderReceiver::onRemove(QVariantMap data) {
         case Folder:
             url.setUrl(folderRemoveUrl);
             urlData.addQueryItem("id", data["id"].toString());
+            break;
+        case CompletedTask:
+        case Context:
+        case Goal:
+        case Location:
+        default:
             break;
     }
 

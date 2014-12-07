@@ -4,7 +4,9 @@
 using namespace bb::cascades;
 using namespace bb::data;
 
-CustomDataModel::CustomDataModel(QObject *parent) : DataModel(parent) {}
+CustomDataModel::CustomDataModel(QObject *parent) : DataModel(parent) {
+    _dataType = UndefinedType;
+}
 
 CustomDataModel::~CustomDataModel() {}
 
@@ -60,6 +62,12 @@ void CustomDataModel::sort() {
         case Folder:
             qSort(_internalDB.begin(), _internalDB.end(), compareFolders);
             break;
+        case CompletedTask:
+        case Context:
+        case Goal:
+        case Location:
+        default:
+            break;
     }
 }
 
@@ -85,9 +93,14 @@ void CustomDataModel::onEdit(QVariantMap data) {
             }
             _internalDB.replace(i, amalgamatedData);
 
-            //Special case for a task that is completed; remove from CDM
             if (_dataType == Task) {
+                //Special case for a task that is completed; remove from CDM
                 if (_internalDB.value(i).toMap().value("completed").toLongLong(NULL) != 0) {
+                    _internalDB.removeAt(i);
+                }
+            } else if (_dataType == CompletedTask) {
+                //Special case for a completed task that is set to not complete; remove from CDM
+                if (_internalDB.value(i).toMap().value("completed").toLongLong(NULL) == 0) {
                     _internalDB.removeAt(i);
                 }
             }
@@ -111,6 +124,12 @@ void CustomDataModel::onRemove(QVariantMap data) {
             break;
         case Folder:
             removeId = data.value("deleted").toLongLong(NULL);
+            break;
+        case CompletedTask:
+        case Context:
+        case Goal:
+        case Location:
+        default:
             break;
     }
 
