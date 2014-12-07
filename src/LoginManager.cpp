@@ -18,7 +18,7 @@
 
 const QString LoginManager::authorizeUrl = QString("https://api.toodledo.com/3/account/authorize.php");
 const QString LoginManager::tokenUrl = QString("https://api.toodledo.com/3/account/token.php");
-const QString LoginManager::credentials = QString("");
+const QString LoginManager::_credentials = QString("");
 
 LoginManager *LoginManager::getInstance() {
     static LoginManager *singleton = NULL;
@@ -34,17 +34,17 @@ LoginManager *LoginManager::getInstance() {
 }
 
 LoginManager::LoginManager(QObject *parent) : QObject(parent) {
-    loggedIn = false;
+    _loggedIn = false;
     _networkAccessManager = new QNetworkAccessManager(this);
     _propMan = PropertiesManager::getInstance();
 
     //Timer that fires when access token expires (2 hours)
-    accessTokenTimer = new QTimer(this);
-    accessTokenTimer->setSingleShot(true);
+    _accessTokenTimer = new QTimer(this);
+    _accessTokenTimer->setSingleShot(true);
 
     if (QDateTime::currentDateTimeUtc().toTime_t() < _propMan->accessTokenExpiry) {
-        loggedIn = true;
-        accessTokenTimer->start(
+        _loggedIn = true;
+        _accessTokenTimer->start(
                 (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
     }
     //No timer for refresh token, which expires every 30 days.
@@ -60,7 +60,7 @@ LoginManager::LoginManager(QObject *parent) : QObject(parent) {
     isOk = connect(this, SIGNAL(accessTokenExpired()),
             this, SLOT(onAccessTokenExpired()));
     Q_ASSERT(isOk);
-    isOk = connect(accessTokenTimer, SIGNAL(timeout()),
+    isOk = connect(_accessTokenTimer, SIGNAL(timeout()),
             this, SLOT(onAccessTokenExpired()));
     Q_ASSERT(isOk);
     Q_UNUSED(isOk);
@@ -76,7 +76,7 @@ bool LoginManager::isLoggedIn() {
             emit accessTokenExpired();
         }
     }
-    return this->loggedIn;
+    return _loggedIn;
 }
 
 QUrl LoginManager::getAuthorizeUrl() {
@@ -90,10 +90,10 @@ QUrl LoginManager::getAuthorizeUrl() {
 }
 
 QString LoginManager::getState() {
-    if (this->_appState.isNull()) {
-        this->_appState = QUuid::createUuid().toString().remove("{").remove("}");
+    if (_appState.isNull()) {
+        _appState = QUuid::createUuid().toString().remove("{").remove("}");
     }
-    return this->_appState;
+    return _appState;
 }
 
 void LoginManager::refreshRefreshToken(QString authCode) {
@@ -106,7 +106,7 @@ void LoginManager::refreshRefreshToken(QString authCode) {
     data.addQueryItem("code", authCode);
     bb::PackageInfo packageInfo;
     data.addQueryItem("version", packageInfo.version());
-    QString auth = QString("Basic " + credentials.toAscii().toBase64());
+    QString auth = QString("Basic " + _credentials.toAscii().toBase64());
 
     req.setRawHeader(QByteArray("Authorization"), auth.toAscii());
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -124,16 +124,16 @@ void LoginManager::refreshAccessToken() {
     data.addQueryItem("refresh_token", PropertiesManager::getInstance()->refreshToken);
     data.addQueryItem("version", QString::number(1));
 
-    QString auth = QString("Basic " + credentials.toAscii().toBase64());
+    QString auth = QString("Basic " + _credentials.toAscii().toBase64());
     req.setRawHeader("Authorization", auth.toAscii());
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
     _networkAccessManager->post(req, data.encodedQuery());
 }
 
-void LoginManager::onLoggedOut() {
-    this->loggedIn = false;
-    this->_propMan->clearTokens();
+void LoginManager::onLogOut() {
+    _loggedIn = false;
+    _propMan->clearTokens();
     emit toast("Logged out");
 }
 
@@ -161,18 +161,18 @@ void LoginManager::onTokenRequestFinished(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError) {
         if (reply->url().toString().contains(tokenUrl)) {
             qDebug() << Q_FUNC_INFO << "New tokens received";
-            this->_propMan->updateAccessToken(data.value("access_token").toString(),
+            _propMan->updateAccessToken(data.value("access_token").toString(),
                     data.value("expires_in").toLongLong(NULL),
                     data.value("refresh_token").toString(),
                     data.value("scope").toString(),
                     data.value("token_type").toString());
-            this->loggedIn = true;
+            _loggedIn = true;
             emit accessTokenRefreshed();
             emit refreshTokenRefreshed();
 
-            qDebug() << Q_FUNC_INFO << "New refresh token:" << this->_propMan->refreshToken;
+            qDebug() << Q_FUNC_INFO << "New refresh token:" << _propMan->refreshToken;
             //Restart timeout on access token
-            accessTokenTimer->start(
+            _accessTokenTimer->start(
                     (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
         }
     } else {

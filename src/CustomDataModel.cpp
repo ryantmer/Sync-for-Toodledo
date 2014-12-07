@@ -53,110 +53,80 @@ bool compareFoldersByOrd(QVariant &a, QVariant &b) {
 }
 
 void CustomDataModel::sort() {
-    if (_dataType == Folder) {
-        qSort(_internalDB.begin(), _internalDB.end(), compareFoldersByOrd);
-    } else if (_dataType == Task) {
-        qSort(_internalDB.begin(), _internalDB.end(), compareTasksByDueDate);
+    switch (_dataType) {
+        case Task:
+            qSort(_internalDB.begin(), _internalDB.end(), compareTasksByDueDate);
+            break;
+        case Folder:
+            qSort(_internalDB.begin(), _internalDB.end(), compareFoldersByOrd);
+            break;
     }
 }
 
 /*
  * Slots
  */
-void CustomDataModel::onTaskEdited(QVariantMap task) {
-    //Find task in datamodel, if it exists
-    for (int i = 0; i < _internalDB.count(); ++i) {
-        if (_internalDB.value(i).toMap().value("id").toLongLong(NULL) == task.value("id").toLongLong(NULL)) {
-            //Replace values in local task with new values, by key
-            QVariantMap localTask = _internalDB.value(i).toMap();
-            for (QVariantMap::const_iterator iter = task.begin(); iter != task.end(); ++iter) {
-                localTask.insert(iter.key(), iter.value());
-            }
-            _internalDB.replace(i, localTask);
+void CustomDataModel::onAdd(QVariantMap data) {
+    _internalDB.append(data);
+    sort();
+    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+    qDebug() << Q_FUNC_INFO << "New data added to CustomDataModel:" << data;
+}
 
-            if (_internalDB.value(i).toMap().value("completed").toLongLong(NULL) == 0) {
-                sort();
-//                emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-                qDebug() << Q_FUNC_INFO << "Task edited in CustomDataModel:" << task;
-            } else {
-                _internalDB.removeAt(i);
-                sort();
-                emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-                qDebug() << Q_FUNC_INFO << "Task removed from CustomDataModel:" << task;
+void CustomDataModel::onEdit(QVariantMap data) {
+    qlonglong removeId = data.value("id").toLongLong(NULL);
+    for (int i = 0; i < _internalDB.count(); ++i) {
+        qlonglong currentId = _internalDB.value(i).toMap().value("id").toLongLong(NULL);
+        if (currentId == removeId) {
+            //Create a new QVM, overwriting pre-existing values, and inserting new ones if required
+            QVariantMap amalgamatedData = _internalDB.value(i).toMap();
+            for (QVariantMap::const_iterator iter = data.begin(); iter != data.end(); ++iter) {
+                amalgamatedData.insert(iter.key(), iter.value());
             }
+            _internalDB.replace(i, amalgamatedData);
+
+            //Special case for a task that is completed; remove from CDM
+            if (_dataType == Task) {
+                if (_internalDB.value(i).toMap().value("completed").toLongLong(NULL) != 0) {
+                    _internalDB.removeAt(i);
+                }
+            }
+
+            sort();
+            emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+            qDebug() << Q_FUNC_INFO << "Data edited in CustomDataModel:" << data;
             return;
         }
     }
 
-    //If not found in datamodel, then add as a new task
-    onTaskAdded(task);
+    //If not found in datamodel, add as new item
+    onAdd(data);
 }
 
-void CustomDataModel::onTaskAdded(QVariantMap task) {
-    //Just add task to end of list and re-sort list
-    _internalDB.append(task);
+void CustomDataModel::onRemove(QVariantMap data) {
+    qlonglong removeId;
+    switch (_dataType) {
+        case Task:
+            removeId = data.value("id").toLongLong(NULL);
+            break;
+        case Folder:
+            removeId = data.value("deleted").toLongLong(NULL);
+            break;
+    }
 
-    sort();
-    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-    qDebug() << Q_FUNC_INFO << "New task added to CustomDataModel:" << task;
-}
-
-void CustomDataModel::onTaskRemoved(QVariantMap task) {
     for (int i = 0; i < _internalDB.count(); ++i) {
-        if (_internalDB.value(i).toMap().value("id").toLongLong(NULL) == task.value("id").toLongLong(NULL)) {
+        qlonglong currentId = _internalDB.value(i).toMap().value("id").toLongLong(NULL);
+        if (currentId == removeId) {
             _internalDB.removeAt(i);
             sort();
             emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-            qDebug() << Q_FUNC_INFO << "Task removed from CustomDataModel:" << task;
-            return;
+            qDebug() << Q_FUNC_INFO << "Data removed from CustomDataModel:" << data;
+            break;
         }
     }
 }
 
-void CustomDataModel::onFolderEdited(QVariantMap folder) {
-    //Find folder in datamodel, if it exists
-    for (int i = 0; i < _internalDB.count(); ++i) {
-        if (_internalDB.value(i).toMap().value("id").toLongLong(NULL) == folder.value("id").toLongLong(NULL)) {
-            //Replace values in local folder with new values, by key
-            QVariantMap localFolder = _internalDB.value(i).toMap();
-            for (QVariantMap::const_iterator iter = folder.begin(); iter != folder.end(); ++iter) {
-                localFolder.insert(iter.key(), iter.value());
-            }
-            _internalDB.replace(i, localFolder);
-
-            emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-            qDebug() << Q_FUNC_INFO << "Folder edited in CustomDataModel:" << folder;
-            return;
-        }
-    }
-
-    //If not found in datamodel, then add as a new folder
-    onFolderAdded(folder);
-}
-
-void CustomDataModel::onFolderAdded(QVariantMap folder) {
-    if (folder.value("archived").toInt(NULL) == 0) {
-        _internalDB.append(folder);
-        emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-        qDebug() << Q_FUNC_INFO << "New folder added to CustomDataModel:" << folder;
-    } else {
-        //Don't add archived folders
-        return;
-    }
-}
-
-void CustomDataModel::onFolderRemoved(QVariantMap folder) {
-    for (int i = 0; i < _internalDB.count(); ++i) {
-        if (_internalDB.value(i).toMap().value("id").toLongLong(NULL) == folder.value("deleted").toLongLong(NULL)) {
-            _internalDB.removeAt(i);
-            emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-            qDebug() << Q_FUNC_INFO << "Folder removed from CustomDataModel:" << folder;
-            return;
-        }
-    }
-}
-
-void CustomDataModel::onLoggedOut() {
+void CustomDataModel::onLogOut() {
     //Clear all stored tasks
     _internalDB = QVariantList();
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);

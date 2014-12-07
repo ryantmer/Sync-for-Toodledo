@@ -25,7 +25,7 @@ NetworkManager *NetworkManager::getInstance() {
 
 NetworkManager::NetworkManager() {
     _netConfigManager = new QNetworkConfigurationManager(this);
-    this->_connected = _netConfigManager->isOnline();
+    _connected = _netConfigManager->isOnline();
 
     bool isOk;
     isOk = connect(_netConfigManager, SIGNAL(onlineStateChanged(bool)),
@@ -36,14 +36,14 @@ NetworkManager::NetworkManager() {
 NetworkManager::~NetworkManager() {}
 
 bool NetworkManager::isConnected() {
-    return this->_connected;
+    return _connected;
 }
 
 void NetworkManager::onOnlineStateChanged(bool online) {
     if (online) {
-        this->_connected = true;
+        _connected = true;
     } else {
-        this->_connected = false;
+        _connected = false;
     }
-    emit networkStateChanged(this->_connected);
+    emit networkStateChanged(_connected);
 }

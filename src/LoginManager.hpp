@@ -27,7 +27,7 @@ public slots:
     void onRefreshTokenExpired();
     void onAccessTokenExpired();
     void onTokenRequestFinished(QNetworkReply *reply);
-    void onLoggedOut();
+    void onLogOut();
 
 signals:
     void accessTokenReceived(QString accessToken);
@@ -38,12 +38,12 @@ signals:
     void toast(QString message);
 
 private:
-    static const QString credentials;
+    static const QString _credentials;
     QNetworkAccessManager *_networkAccessManager;
     PropertiesManager *_propMan;
-    bool loggedIn;
+    bool _loggedIn;
     QString _appState;
-    QTimer *accessTokenTimer;
+    QTimer *_accessTokenTimer;
 };
 
 #endif /* LOGINMANAGER_HPP_ */

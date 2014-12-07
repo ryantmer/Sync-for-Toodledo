@@ -20,48 +20,48 @@ PropertiesManager *PropertiesManager::getInstance() {
 PropertiesManager::PropertiesManager(QObject *parent) : QObject (parent) {
     QSettings settings("ryantmer", "SyncForToodledo");
 
-    this->accessToken = settings.value("accessToken", "").toString();
-    this->accessTokenExpiry = settings.value("accessTokenExpiry", 0).toUInt(NULL);
-    this->refreshToken = settings.value("refreshToken", "").toString();
-    this->refreshTokenExpiry = settings.value("refreshTokenExpiry", 0).toUInt(NULL);
-    this->tokenScope = settings.value("tokenScope", "").toString();
-    this->tokenType = settings.value("tokenType", "").toString();
+    accessToken = settings.value("accessToken", "").toString();
+    accessTokenExpiry = settings.value("accessTokenExpiry", 0).toUInt(NULL);
+    refreshToken = settings.value("refreshToken", "").toString();
+    refreshTokenExpiry = settings.value("refreshTokenExpiry", 0).toUInt(NULL);
+    tokenScope = settings.value("tokenScope", "").toString();
+    tokenType = settings.value("tokenType", "").toString();
 }
 PropertiesManager::~PropertiesManager() {}
 
-void PropertiesManager::updateAccessToken(QString accessToken, qlonglong expiresIn,
-        QString refreshToken, QString tokenScope, QString tokenType) {
-    this->accessToken = accessToken;
-    this->accessTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + expiresIn;
-    this->refreshToken = refreshToken;
-    this->refreshTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + 2592000; //30 days from now
-    this->tokenScope = tokenScope;
-    this->tokenType = tokenType;
+void PropertiesManager::updateAccessToken(QString newAccessToken, qlonglong expiresIn,
+        QString newRefreshToken, QString newTokenScope, QString newTokenType) {
+    accessToken = newAccessToken;
+    accessTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + expiresIn;
+    refreshToken = newRefreshToken;
+    refreshTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + 2592000; //30 days from now
+    tokenScope = newTokenScope;
+    tokenType = newTokenType;
 
     QSettings settings("ryantmer", "SyncForToodledo");
-    settings.setValue("accessToken", this->accessToken);
-    settings.setValue("accessTokenExpiry", this->accessTokenExpiry);
-    settings.setValue("refreshToken", this->refreshToken);
-    settings.setValue("refreshTokenExpiry", this->refreshTokenExpiry);
-    settings.setValue("tokenScope", this->tokenScope);
-    settings.setValue("tokenType", this->tokenType);
+    settings.setValue("accessToken", accessToken);
+    settings.setValue("accessTokenExpiry", accessTokenExpiry);
+    settings.setValue("refreshToken", refreshToken);
+    settings.setValue("refreshTokenExpiry", refreshTokenExpiry);
+    settings.setValue("tokenScope", tokenScope);
+    settings.setValue("tokenType", tokenType);
 }
 
 void PropertiesManager::clearTokens() {
-    this->accessToken = "";
-    this->accessTokenExpiry = 0;
-    this->refreshToken = "";
-    this->refreshTokenExpiry = 0;
-    this->tokenScope = "";
-    this->tokenType = "";
+    accessToken = "";
+    accessTokenExpiry = 0;
+    refreshToken = "";
+    refreshTokenExpiry = 0;
+    tokenScope = "";
+    tokenType = "";
 
     QSettings settings("ryantmer", "SyncForToodledo");
-    settings.setValue("accessToken", this->accessToken);
-    settings.setValue("accessTokenExpiry", this->accessTokenExpiry);
-    settings.setValue("refreshToken", this->refreshToken);
-    settings.setValue("refreshTokenExpiry", this->refreshTokenExpiry);
-    settings.setValue("tokenScope", this->tokenScope);
-    settings.setValue("tokenType", this->tokenType);
+    settings.setValue("accessToken", accessToken);
+    settings.setValue("accessTokenExpiry", accessTokenExpiry);
+    settings.setValue("refreshToken", refreshToken);
+    settings.setValue("refreshTokenExpiry", refreshTokenExpiry);
+    settings.setValue("tokenScope", tokenScope);
+    settings.setValue("tokenType", tokenType);
 }
 
 //Delay after which a task is removed from UI after being checked

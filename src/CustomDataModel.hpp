@@ -36,13 +36,10 @@ signals:
     void toast(QString message);
 
 public slots:
-    void onTaskEdited(QVariantMap task);
-    void onTaskAdded(QVariantMap task);
-    void onTaskRemoved(QVariantMap task);
-    void onFolderEdited(QVariantMap folder);
-    void onFolderAdded(QVariantMap folder);
-    void onFolderRemoved(QVariantMap folder);
-    void onLoggedOut();
+    void onEdit(QVariantMap data);
+    void onAdd(QVariantMap data);
+    void onRemove(QVariantMap data);
+    void onLogOut();
 };
 
 #endif /* CUSTOMDATAMODEL_HPP_ */

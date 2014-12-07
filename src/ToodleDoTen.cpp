@@ -92,43 +92,43 @@ ToodledoTen::ToodledoTen() : QObject() {
 
     //LoginManager listeners
     isOk = connect(this, SIGNAL(loggedOut()),
-            _loginManager, SLOT(onLoggedOut()));
+            _loginManager, SLOT(onLogOut()));
     Q_ASSERT(isOk);
 
-    //TDM listeners
+    //TaskDataModel listeners
     //UI->sender/receiver->datamodel
     isOk = connect(this, SIGNAL(loggedOut()),
-            _taskDataModel, SLOT(onLoggedOut()));
+            _taskDataModel, SLOT(onLogOut()));
     Q_ASSERT(isOk);
     isOk = connect(_taskSenderReceiver, SIGNAL(taskGetReply(QVariantMap)),
-            _taskDataModel, SLOT(onTaskEdited(QVariantMap)));
+            _taskDataModel, SLOT(onEdit(QVariantMap)));
     Q_ASSERT(isOk);
     isOk = connect(_taskSenderReceiver, SIGNAL(taskEditReply(QVariantMap)),
-            _taskDataModel, SLOT(onTaskEdited(QVariantMap)));
+            _taskDataModel, SLOT(onEdit(QVariantMap)));
     Q_ASSERT(isOk);
     isOk = connect(_taskSenderReceiver, SIGNAL(taskAddReply(QVariantMap)),
-            _taskDataModel, SLOT(onTaskAdded(QVariantMap)));
+            _taskDataModel, SLOT(onAdd(QVariantMap)));
     Q_ASSERT(isOk);
     isOk = connect(_taskSenderReceiver, SIGNAL(taskRemoveReply(QVariantMap)),
-            _taskDataModel, SLOT(onTaskRemoved(QVariantMap)));
+            _taskDataModel, SLOT(onRemove(QVariantMap)));
     Q_ASSERT(isOk);
 
-    //FDM listeners
+    //FolderDataModel listeners
     //UI->sender/receiver->datamodel
     isOk = connect(this, SIGNAL(loggedOut()),
-            _folderDataModel, SLOT(onLoggedOut()));
+            _folderDataModel, SLOT(onLogOut()));
     Q_ASSERT(isOk);
     isOk = connect(_folderSenderReceiver, SIGNAL(folderGetReply(QVariantMap)),
-            _folderDataModel, SLOT(onFolderEdited(QVariantMap)));
+            _folderDataModel, SLOT(onEdit(QVariantMap)));
     Q_ASSERT(isOk);
     isOk = connect(_folderSenderReceiver, SIGNAL(folderEditReply(QVariantMap)),
-            _folderDataModel, SLOT(onFolderEdited(QVariantMap)));
+            _folderDataModel, SLOT(onEdit(QVariantMap)));
     Q_ASSERT(isOk);
     isOk = connect(_folderSenderReceiver, SIGNAL(folderAddReply(QVariantMap)),
-            _folderDataModel, SLOT(onFolderAdded(QVariantMap)));
+            _folderDataModel, SLOT(onEdit(QVariantMap)));
     Q_ASSERT(isOk);
     isOk = connect(_folderSenderReceiver, SIGNAL(folderRemoveReply(QVariantMap)),
-            _folderDataModel, SLOT(onFolderRemoved(QVariantMap)));
+            _folderDataModel, SLOT(onRemove(QVariantMap)));
     Q_ASSERT(isOk);
 
     //TSR listeners
