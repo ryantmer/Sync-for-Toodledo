@@ -8,6 +8,10 @@ CustomDataModel::CustomDataModel(QObject *parent) : DataModel(parent) {}
 
 CustomDataModel::~CustomDataModel() {}
 
+void CustomDataModel::setDataType(DataType dataType) {
+    _dataType = dataType;
+}
+
 void CustomDataModel::clear() {
     _internalDB.clear();
 }
@@ -20,7 +24,7 @@ QVariant CustomDataModel::firstEntry() {
     }
 }
 
-QVariantList CustomDataModel::getFolderList() {
+QVariantList CustomDataModel::getInternalList() {
     return _internalDB;
 }
 
@@ -41,10 +45,6 @@ bool compareTasksByDueDate(QVariant &a, QVariant &b) {
     }
 }
 
-void CustomDataModel::sortTasksByDueDate() {
-    qSort(_internalDB.begin(), _internalDB.end(), compareTasksByDueDate);
-}
-
 bool compareFoldersByOrd(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
     QVariantMap second = b.toMap();
@@ -52,8 +52,12 @@ bool compareFoldersByOrd(QVariant &a, QVariant &b) {
     return first.value("ord").toLongLong(NULL) < second.value("ord").toLongLong(NULL);
 }
 
-void CustomDataModel::sortFoldersByOrd() {
-    qSort(_internalDB.begin(), _internalDB.end(), compareFoldersByOrd);
+void CustomDataModel::sort() {
+    if (_dataType == Folder) {
+        qSort(_internalDB.begin(), _internalDB.end(), compareFoldersByOrd);
+    } else if (_dataType == Task) {
+        qSort(_internalDB.begin(), _internalDB.end(), compareTasksByDueDate);
+    }
 }
 
 /*
@@ -71,12 +75,12 @@ void CustomDataModel::onTaskEdited(QVariantMap task) {
             _internalDB.replace(i, localTask);
 
             if (_internalDB.value(i).toMap().value("completed").toLongLong(NULL) == 0) {
-                sortTasksByDueDate();
+                sort();
 //                emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
                 qDebug() << Q_FUNC_INFO << "Task edited in CustomDataModel:" << task;
             } else {
                 _internalDB.removeAt(i);
-                sortTasksByDueDate();
+                sort();
                 emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
                 qDebug() << Q_FUNC_INFO << "Task removed from CustomDataModel:" << task;
             }
@@ -92,7 +96,7 @@ void CustomDataModel::onTaskAdded(QVariantMap task) {
     //Just add task to end of list and re-sort list
     _internalDB.append(task);
 
-    sortTasksByDueDate();
+    sort();
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
     qDebug() << Q_FUNC_INFO << "New task added to CustomDataModel:" << task;
 }
@@ -101,7 +105,7 @@ void CustomDataModel::onTaskRemoved(QVariantMap task) {
     for (int i = 0; i < _internalDB.count(); ++i) {
         if (_internalDB.value(i).toMap().value("id").toLongLong(NULL) == task.value("id").toLongLong(NULL)) {
             _internalDB.removeAt(i);
-            sortTasksByDueDate();
+            sort();
             emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
             qDebug() << Q_FUNC_INFO << "Task removed from CustomDataModel:" << task;
             return;

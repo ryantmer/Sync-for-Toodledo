@@ -13,7 +13,7 @@ Container {
         
         listItemComponents: [
             ListItemComponent {
-                type: "task"
+                type: "item"
                 Container {
                     id: taskItemContainer
                     accessibility.name: "List item component container"

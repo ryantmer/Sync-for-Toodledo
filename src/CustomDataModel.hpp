@@ -8,12 +8,18 @@ class CustomDataModel : public bb::cascades::DataModel {
     Q_OBJECT
 
 public:
+    enum DataType {
+        Task,
+        Folder
+    };
+
     CustomDataModel(QObject *parent = 0);
     virtual ~CustomDataModel();
 
+    void setDataType(DataType dataType);
     void clear();
     QVariant firstEntry();
-    QVariantList getFolderList();
+    QVariantList getInternalList();
 
     //Required by bb::cascades::DataModel
     Q_INVOKABLE virtual int childCount(const QVariantList &indexPath);
@@ -23,8 +29,8 @@ public:
 
 private:
     QVariantList _internalDB;
-    void sortTasksByDueDate();
-    void sortFoldersByOrd();
+    DataType _dataType;
+    void sort();
 
 signals:
     void toast(QString message);

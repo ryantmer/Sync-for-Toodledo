@@ -22,7 +22,9 @@ ToodledoTen::ToodledoTen() : QObject() {
     _taskSenderReceiver = new SenderReceiver(this);
     _folderSenderReceiver = new SenderReceiver(this);
     _taskDataModel = new CustomDataModel(this);
+    _taskDataModel->setDataType(CustomDataModel::Task);
     _folderDataModel = new CustomDataModel(this);
+    _folderDataModel->setDataType(CustomDataModel::Folder);
 
     //Create root QML document from main.qml and expose certain variables to QML
     QmlDocument *qml = QmlDocument::create("asset:///TaskMain.qml").parent(this);
@@ -268,7 +270,7 @@ void ToodledoTen::removeFolder(QVariantMap data) {
 }
 
 QVariantList ToodledoTen::getFolderList() {
-    return _folderDataModel->getFolderList();
+    return _folderDataModel->getInternalList();
 }
 
 void ToodledoTen::logout() {
