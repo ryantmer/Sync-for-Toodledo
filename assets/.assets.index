@@ -5,7 +5,7 @@ AddEditFolder.qml
 AddEditTask.qml
 CompletedTasks.qml
 Cover.qml
-FolderMain.qml
+Folders.qml
 images/ic_add.png
 images/ic_info.png
 images/ic_reload.png
@@ -13,4 +13,4 @@ images/ic_save.png
 images/ic_settings.png
 Login.qml
 Settings.qml
-TaskMain.qml
+Tasks.qml

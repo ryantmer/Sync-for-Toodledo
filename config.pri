@@ -44,7 +44,7 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/Folders.qml) \
         $$quote($$BASEDIR/assets/Login.qml) \
         $$quote($$BASEDIR/assets/Settings.qml) \
-        $$quote($$BASEDIR/assets/TaskMain.qml) \
+        $$quote($$BASEDIR/assets/Tasks.qml) \
         $$quote($$BASEDIR/assets/images/ic_add.png) \
         $$quote($$BASEDIR/assets/images/ic_info.png) \
         $$quote($$BASEDIR/assets/images/ic_reload.png) \
@@ -58,7 +58,6 @@ config_pri_source_group1 {
         $$quote($$BASEDIR/src/LoginManager.cpp) \
         $$quote($$BASEDIR/src/NetworkManager.cpp) \
         $$quote($$BASEDIR/src/PropertiesManager.cpp) \
-        $$quote($$BASEDIR/src/SenderReceiver.cpp) \
         $$quote($$BASEDIR/src/ToodleDoTen.cpp) \
         $$quote($$BASEDIR/src/main.cpp)
 
@@ -67,7 +66,6 @@ config_pri_source_group1 {
         $$quote($$BASEDIR/src/LoginManager.hpp) \
         $$quote($$BASEDIR/src/NetworkManager.hpp) \
         $$quote($$BASEDIR/src/PropertiesManager.hpp) \
-        $$quote($$BASEDIR/src/SenderReceiver.hpp) \
         $$quote($$BASEDIR/src/ToodleDoTen.hpp)
 }
 

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <bb/cascades/DataModel>
+#include "PropertiesManager.hpp"
 
 class CustomDataModel : public bb::cascades::DataModel {
     Q_OBJECT
@@ -22,9 +23,16 @@ public:
     virtual ~CustomDataModel();
 
     void setDataType(DataType dataType);
+    void populateDataModel();
     void clear();
-    QVariant firstEntry();
     QVariantList getInternalList();
+
+    static const QString getUrl;
+    static const QString editUrl;
+    static const QString addUrl;
+    static const QString removeUrl;
+    static const QString tasks;
+    static const QString folders;
 
     //Required by bb::cascades::DataModel
     Q_INVOKABLE virtual int childCount(const QVariantList &indexPath);
@@ -33,18 +41,27 @@ public:
     Q_INVOKABLE virtual QVariant data(const QVariantList &indexPath);
 
 private:
+    void sort();
+    void addItem(QVariantMap data);
+    void editItem(QVariantMap data);
+    void removeItem(QVariantMap data);
+
     QVariantList _internalDB;
     DataType _dataType;
-    void sort();
+    QNetworkAccessManager *_networkAccessManager;
+    PropertiesManager *_propMan;
 
 signals:
     void toast(QString message);
 
 public slots:
-    void onEdit(QVariantMap data);
+    //Signal for these four comes from UI
     void onAdd(QVariantMap data);
+    void onEdit(QVariantMap oldData, QVariantMap newData);
     void onRemove(QVariantMap data);
     void onLogOut();
+    //Signal from network access manager
+    void onReplyReceived(QNetworkReply *reply);
 };
 
 #endif /* CUSTOMDATAMODEL_HPP_ */
