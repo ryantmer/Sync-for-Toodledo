@@ -68,9 +68,15 @@ private:
     CustomDataModel *_taskDataModel;
     CustomDataModel *_folderDataModel;
     CustomDataModel *_completedTaskDataModel;
+    CustomDataModel *_contextDataModel;
+    CustomDataModel *_goalDataModel;
+    CustomDataModel *_locationDataModel;
     SenderReceiver *_taskSenderReceiver;
     SenderReceiver *_folderSenderReceiver;
     SenderReceiver *_completedTaskSenderReceiver;
+    SenderReceiver *_contextSenderReceiver;
+    SenderReceiver *_goalSenderReceiver;
+    SenderReceiver *_locationSenderReceiver;
     NetworkManager *_networkManager;
     PropertiesManager *_propertiesManager;
     LoginManager *_loginManager;

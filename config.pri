@@ -41,7 +41,7 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/AddEditTask.qml) \
         $$quote($$BASEDIR/assets/CompletedTasks.qml) \
         $$quote($$BASEDIR/assets/Cover.qml) \
-        $$quote($$BASEDIR/assets/FolderMain.qml) \
+        $$quote($$BASEDIR/assets/Folders.qml) \
         $$quote($$BASEDIR/assets/Login.qml) \
         $$quote($$BASEDIR/assets/Settings.qml) \
         $$quote($$BASEDIR/assets/TaskMain.qml) \

@@ -35,6 +35,20 @@ ToodledoTen::ToodledoTen() : QObject() {
     _completedTaskDataModel = new CustomDataModel(this);
     _completedTaskDataModel->setDataType(CustomDataModel::CompletedTask);
 
+    _contextSenderReceiver = new SenderReceiver(this);
+    _contextSenderReceiver->setDataType(SenderReceiver::Context);
+    _contextDataModel = new CustomDataModel(this);
+    _contextDataModel->setDataType(CustomDataModel::Context);
+
+    _goalSenderReceiver = new SenderReceiver(this);
+    _goalSenderReceiver->setDataType(SenderReceiver::Goal);
+    _goalDataModel = new CustomDataModel(this);
+    _goalDataModel->setDataType(CustomDataModel::Goal);
+
+    _locationSenderReceiver = new SenderReceiver(this);
+    _locationSenderReceiver->setDataType(SenderReceiver::Location);
+    _locationDataModel = new CustomDataModel(this);
+    _locationDataModel->setDataType(CustomDataModel::Location);
 
     //Create root QML document from main.qml and expose certain variables to QML
     QmlDocument *qml = QmlDocument::create("asset:///TaskMain.qml").parent(this);

@@ -193,7 +193,7 @@ NavigationPane {
         },
         ComponentDefinition {
             id: manageFoldersDefinition
-            content: FolderMain {}
+            content: Folders {}
         },
         ComponentDefinition {
             id: completedTasksDefinition
