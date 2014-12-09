@@ -213,6 +213,7 @@ void ToodledoTen::logout() {
  */
 void ToodledoTen::onNetworkStateChanged(bool connected) {
     if (connected) {
+        qDebug() << Q_FUNC_INFO << "Network connection established";
         _taskDataModel->refresh();
         _folderDataModel->refresh();
         _completedTaskDataModel->refresh();
@@ -246,6 +247,11 @@ void ToodledoTen::onAccessTokenRefreshed() {
     //When a new access token is received, refresh
     _taskDataModel->refresh();
     _folderDataModel->refresh();
+    _completedTaskDataModel->refresh();
+    //TODO: Implement these
+//        _contextDataModel->refresh();
+//        _goalDataModel->refresh();
+//        _locationDataModel->refresh();
 }
 
 void ToodledoTen::onRefreshTokenExpired() {

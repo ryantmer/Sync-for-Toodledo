@@ -40,6 +40,7 @@ bool NetworkManager::isConnected() {
 }
 
 void NetworkManager::onOnlineStateChanged(bool online) {
+    qDebug() << Q_FUNC_INFO << "Network state changed. Online:" << online;
     if (online) {
         _connected = true;
     } else {
