@@ -50,18 +50,29 @@ void CustomDataModel::refresh() {
 void CustomDataModel::populateDataModel() {
     //Gets data from API based on _dataType.
     QUrl url;
+    QUrl urlData;
+
     switch (_dataType) {
         case Task:
             url.setUrl(getUrl.arg(tasks));
-            url.addQueryItem("comp", 0); //incomplete tasks
+            urlData.addQueryItem("comp", QString::number(0)); //incomplete tasks
             //fields id, title, modified, completed come automatically
-            url.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,"
+            urlData.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,"
                     "duedatemod,startdate,starttime,remind,repeat,status,length");
             break;
         case Folder:
             url.setUrl(getUrl.arg(folders));
             break;
         case CompletedTask:
+            url.setUrl(getUrl.arg(tasks));
+            //only get tasks modified in last 24 hours
+            urlData.addQueryItem("before", QString::number(QDateTime::currentDateTimeUtc().toTime_t()));
+            urlData.addQueryItem("after", QString::number(QDateTime::currentDateTimeUtc().toTime_t() - 86400));
+            urlData.addQueryItem("comp", QString::number(1));
+            urlData.addQueryItem("start", QString::number(0));
+            urlData.addQueryItem("num", QString::number(50));
+            urlData.addQueryItem("fields", "note");
+            break;
         case Context:
         case Goal:
         case Location:
@@ -69,9 +80,12 @@ void CustomDataModel::populateDataModel() {
             break;
     }
 
-    url.addQueryItem("access_token", _propMan->accessToken);
+    urlData.addQueryItem("access_token", _propMan->accessToken);
+    qDebug() << Q_FUNC_INFO << url;
+    qDebug() << Q_FUNC_INFO << urlData;
     QNetworkRequest req(url);
-    _networkAccessManager->get(req);
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    _networkAccessManager->post(req, urlData.encodedQuery());
 }
 
 void CustomDataModel::clear() {
@@ -112,6 +126,17 @@ bool compareFolders(QVariant &a, QVariant &b) {
     }
 }
 
+bool compareCompletedTasks(QVariant &a, QVariant &b) {
+    QVariantMap first = a.toMap();
+    QVariantMap second = b.toMap();
+
+    if (first.value("completed").toLongLong(NULL) == second.value("completed").toLongLong(NULL)) {
+        return first.value("modified").toLongLong(NULL) > second.value("modified").toLongLong(NULL);
+    } else {
+        return first.value("completed").toLongLong(NULL) > second.value("completed").toLongLong(NULL);
+    }
+}
+
 void CustomDataModel::sort() {
     switch (_dataType) {
         case Task:
@@ -121,6 +146,8 @@ void CustomDataModel::sort() {
             qSort(_internalDB.begin(), _internalDB.end(), compareFolders);
             break;
         case CompletedTask:
+            qSort(_internalDB.begin(), _internalDB.end(), compareCompletedTasks);
+            break;
         case Context:
         case Goal:
         case Location:
@@ -209,7 +236,8 @@ void CustomDataModel::add(QVariantMap data) {
     QVariantMap::iterator iter;
 
     switch (_dataType) {
-        case Task: {
+        case Task:
+        case CompletedTask: {
             url.setUrl(addUrl.arg(tasks));
             //Build task data string from user's input
             QString encodedData = QString("[{");
@@ -244,7 +272,6 @@ void CustomDataModel::add(QVariantMap data) {
                 urlData.addQueryItem(iter.key(), data[iter.key()].toString());
             }
             break;
-        case CompletedTask:
         case Context:
         case Goal:
         case Location:
@@ -253,6 +280,8 @@ void CustomDataModel::add(QVariantMap data) {
     }
 
     urlData.addQueryItem("access_token", _propMan->accessToken);
+    qDebug() << Q_FUNC_INFO << url;
+    qDebug() << Q_FUNC_INFO << urlData;
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     _networkAccessManager->post(req, urlData.encodedQuery());
@@ -269,7 +298,8 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
     QVariantMap::iterator iter;
 
     switch (_dataType) {
-        case Task: {
+        case Task:
+        case CompletedTask: {
             url.setUrl(editUrl.arg(tasks));
             QString encodedData = QString("[{");
             encodedData.append("\"id\":" + oldData["id"].toString());
@@ -305,7 +335,6 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
                 }
             }
             break;
-        case CompletedTask:
         case Context:
         case Goal:
         case Location:
@@ -314,6 +343,8 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
     }
 
     urlData.addQueryItem("access_token", _propMan->accessToken);
+    qDebug() << Q_FUNC_INFO << url;
+    qDebug() << Q_FUNC_INFO << urlData;
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     _networkAccessManager->post(req, urlData.encodedQuery());

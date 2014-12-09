@@ -24,6 +24,14 @@ ToodledoTen::ToodledoTen() : QObject() {
     _taskDataModel->setDataType(CustomDataModel::Task);
     _folderDataModel = new CustomDataModel(this);
     _folderDataModel->setDataType(CustomDataModel::Folder);
+    _completedTaskDataModel = new CustomDataModel(this);
+    _completedTaskDataModel->setDataType(CustomDataModel::CompletedTask);
+    _contextDataModel = new CustomDataModel(this);
+    _contextDataModel->setDataType(CustomDataModel::Context);
+    _locationDataModel = new CustomDataModel(this);
+    _locationDataModel->setDataType(CustomDataModel::Location);
+    _goalDataModel = new CustomDataModel(this);
+    _goalDataModel->setDataType(CustomDataModel::Goal);
 
     //Create root QML document from main.qml and expose certain variables to QML
     QmlDocument *qml = QmlDocument::create("asset:///Tasks.qml").parent(this);
@@ -82,10 +90,40 @@ ToodledoTen::ToodledoTen() : QObject() {
     isOk = connect(_folderDataModel, SIGNAL(toast(QString)),
             this, SLOT(onToast(QString)));
     Q_ASSERT(isOk);
+    isOk = connect(_completedTaskDataModel, SIGNAL(toast(QString)),
+            this, SLOT(onToast(QString)));
+    Q_ASSERT(isOk);
+    isOk = connect(_contextDataModel, SIGNAL(toast(QString)),
+            this, SLOT(onToast(QString)));
+    Q_ASSERT(isOk);
+    isOk = connect(_goalDataModel, SIGNAL(toast(QString)),
+            this, SLOT(onToast(QString)));
+    Q_ASSERT(isOk);
+    isOk = connect(_locationDataModel, SIGNAL(toast(QString)),
+            this, SLOT(onToast(QString)));
+    Q_ASSERT(isOk);
 
-    //LoginManager listeners
+    //Logout signal
     isOk = connect(this, SIGNAL(loggedOut()),
             _loginManager, SLOT(onLogOut()));
+    Q_ASSERT(isOk);
+    isOk = connect(this, SIGNAL(loggedOut()),
+            _taskDataModel, SLOT(onLogOut()));
+    Q_ASSERT(isOk);
+    isOk = connect(this, SIGNAL(loggedOut()),
+            _folderDataModel, SLOT(onLogOut()));
+    Q_ASSERT(isOk);
+    isOk = connect(this, SIGNAL(loggedOut()),
+            _completedTaskDataModel, SLOT(onLogOut()));
+    Q_ASSERT(isOk);
+    isOk = connect(this, SIGNAL(loggedOut()),
+            _contextDataModel, SLOT(onLogOut()));
+    Q_ASSERT(isOk);
+    isOk = connect(this, SIGNAL(loggedOut()),
+            _goalDataModel, SLOT(onLogOut()));
+    Q_ASSERT(isOk);
+    isOk = connect(this, SIGNAL(loggedOut()),
+            _locationDataModel, SLOT(onLogOut()));
     Q_ASSERT(isOk);
 
     Q_UNUSED(isOk);
@@ -99,6 +137,22 @@ CustomDataModel *ToodledoTen::taskDataModel() {
 
 CustomDataModel *ToodledoTen::folderDataModel() {
     return _folderDataModel;
+}
+
+CustomDataModel *ToodledoTen::completedTaskDataModel() {
+    return _completedTaskDataModel;
+}
+
+CustomDataModel *ToodledoTen::contextDataModel() {
+    return _contextDataModel;
+}
+
+CustomDataModel *ToodledoTen::goalDataModel() {
+    return _goalDataModel;
+}
+
+CustomDataModel *ToodledoTen::locationDataModel() {
+    return _locationDataModel;
 }
 
 void ToodledoTen::showToast(QString message) {
@@ -161,6 +215,11 @@ void ToodledoTen::onNetworkStateChanged(bool connected) {
     if (connected) {
         _taskDataModel->refresh();
         _folderDataModel->refresh();
+        _completedTaskDataModel->refresh();
+        //TODO: Implement these
+//        _contextDataModel->refresh();
+//        _goalDataModel->refresh();
+//        _locationDataModel->refresh();
     } else {
         qWarning() << Q_FUNC_INFO << "Network connection lost";
         showToast("Network connection lost");

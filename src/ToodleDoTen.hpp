@@ -23,11 +23,19 @@ class ToodledoTen : public QObject {
 public:
     Q_PROPERTY(CustomDataModel *taskDataModel READ taskDataModel CONSTANT);
     Q_PROPERTY(CustomDataModel *folderDataModel READ folderDataModel CONSTANT);
+    Q_PROPERTY(CustomDataModel *completedTaskDataModel READ completedTaskDataModel CONSTANT);
+    Q_PROPERTY(CustomDataModel *contextDataModel READ contextDataModel CONSTANT);
+    Q_PROPERTY(CustomDataModel *goalDataModel READ goalDataModel CONSTANT);
+    Q_PROPERTY(CustomDataModel *locationDataModel READ locationDataModel CONSTANT);
 
     ToodledoTen();
     virtual ~ToodledoTen();
     CustomDataModel *taskDataModel();
     CustomDataModel *folderDataModel();
+    CustomDataModel *completedTaskDataModel();
+    CustomDataModel *contextDataModel();
+    CustomDataModel *goalDataModel();
+    CustomDataModel *locationDataModel();
 
     Q_INVOKABLE QDateTime unixTimeToDateTime(uint unixTime);
     Q_INVOKABLE uint dateTimeToUnixTime(QDateTime dateTime);
@@ -52,6 +60,10 @@ public slots:
 private:
     CustomDataModel *_taskDataModel;
     CustomDataModel *_folderDataModel;
+    CustomDataModel *_completedTaskDataModel;
+    CustomDataModel *_contextDataModel;
+    CustomDataModel *_goalDataModel;
+    CustomDataModel *_locationDataModel;
     NetworkManager *_networkManager;
     PropertiesManager *_propertiesManager;
     LoginManager *_loginManager;

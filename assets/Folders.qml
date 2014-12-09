@@ -5,7 +5,7 @@ import bb.system 1.2
 Page {
     accessibility.name: "Main folder list page"
     titleBar: TitleBar {
-        title: "Manage folders"
+        title: "Sync for Toodledo - Folders"
     }
     
     Container {
