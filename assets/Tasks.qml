@@ -63,13 +63,13 @@ NavigationPane {
                                                 "completed": ListItemData.completed};
                                         var newData = {"id": parseInt(ListItemData.id),
                                                     "completed": Math.floor((new Date()).getTime() / 1000)};
-                                        app.editTask(oldData, newData);
+                                        app.taskDataModel.edit(oldData, newData);
                                     } else {
                                         var oldData = {"id": parseInt(ListItemData.id),
                                             "completed": ListItemData.completed};
                                         var newData = {"id": parseInt(ListItemData.id),
                                             "completed": 0};
-                                        app.editTask(oldData, newData);
+                                        app.taskDataModel.edit(oldData, newData);
                                     }
                                 }
                                 accessibility.name: "completed"
@@ -103,7 +103,7 @@ NavigationPane {
                                         onFinished: {
                                             if (result == SystemUiResult.ConfirmButtonSelection) {
                                                 var taskData = {"id": ListItemData.id}
-                                                app.removeTask(taskData);
+                                                app.taskDataModel.remove(taskData);
                                             }
                                         }
                                     }
@@ -152,7 +152,7 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    app.refreshTasks();
+                    app.taskDataModel.refresh();
                 }
             },
             ActionItem {

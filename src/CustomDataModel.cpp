@@ -16,6 +16,8 @@ CustomDataModel::CustomDataModel(QObject *parent) : DataModel(parent) {
 
     _networkAccessManager = new QNetworkAccessManager(this);
     _propMan = PropertiesManager::getInstance();
+    _netMan = NetworkManager::getInstance();
+    _loginMan = LoginManager::getInstance();
 
     //Connect signals
     bool isOk;
@@ -29,6 +31,20 @@ CustomDataModel::~CustomDataModel() {}
 
 void CustomDataModel::setDataType(DataType dataType) {
     _dataType = dataType;
+}
+
+void CustomDataModel::refresh() {
+    if (_netMan->isConnected()) {
+        if (_loginMan->isLoggedIn()) {
+            clear();
+            populateDataModel();
+        } else {
+            qWarning() << Q_FUNC_INFO << "LoginManager indicated not logged in";
+        }
+    } else {
+        qWarning() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
+        emit toast("No network connection!");
+    }
 }
 
 void CustomDataModel::populateDataModel() {
@@ -113,14 +129,14 @@ void CustomDataModel::sort() {
     }
 }
 
-void CustomDataModel::addItem(QVariantMap data) {
+void CustomDataModel::addToDataModel(QVariantMap data) {
     _internalDB.append(data);
     sort();
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
     qDebug() << Q_FUNC_INFO << "New data added to CustomDataModel:" << data;
 }
 
-void CustomDataModel::editItem(QVariantMap data) {
+void CustomDataModel::editInDataModel(QVariantMap data) {
     qlonglong editId = data.value("id").toLongLong(NULL);
     for (int i = 0; i < _internalDB.count(); ++i) {
         qlonglong currentId = _internalDB.value(i).toMap().value("id").toLongLong(NULL);
@@ -152,10 +168,10 @@ void CustomDataModel::editItem(QVariantMap data) {
     }
 
     //If not found in datamodel, add as new item
-    addItem(data);
+    addToDataModel(data);
 }
 
-void CustomDataModel::removeItem(QVariantMap data) {
+void CustomDataModel::removeFromDataModel(QVariantMap data) {
     qDebug() << Q_FUNC_INFO << data;
     qlonglong removeId;
     switch (_dataType) {
@@ -187,10 +203,7 @@ void CustomDataModel::removeItem(QVariantMap data) {
     }
 }
 
-/*
- * Slots
- */
-void CustomDataModel::onAdd(QVariantMap data) {
+void CustomDataModel::add(QVariantMap data) {
     QUrl url;
     QUrl urlData;
     QVariantMap::iterator iter;
@@ -245,7 +258,7 @@ void CustomDataModel::onAdd(QVariantMap data) {
     _networkAccessManager->post(req, urlData.encodedQuery());
 }
 
-void CustomDataModel::onEdit(QVariantMap oldData, QVariantMap newData) {
+void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
     if (oldData == newData) {
         //If nothing has changed, don't need to upload anything
         return;
@@ -306,7 +319,7 @@ void CustomDataModel::onEdit(QVariantMap oldData, QVariantMap newData) {
     _networkAccessManager->post(req, urlData.encodedQuery());
 }
 
-void CustomDataModel::onRemove(QVariantMap data) {
+void CustomDataModel::remove(QVariantMap data) {
     QUrl url;
     QUrl urlData;
 
@@ -335,6 +348,9 @@ void CustomDataModel::onRemove(QVariantMap data) {
     _networkAccessManager->post(req, urlData.encodedQuery());
 }
 
+/*
+ * Slots
+ */
 void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
     QString response = reply->readAll();
 
@@ -357,25 +373,25 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
                 dataList.pop_front();
             }
             for (int i = 0; i < dataList.count(); ++i) {
-                addItem(dataList.value(i).toMap());
+                addToDataModel(dataList.value(i).toMap());
             }
         }
         else if (replyUrl == addUrl.arg(tasks) || replyUrl == addUrl.arg(folders)) {
             qDebug() << Q_FUNC_INFO << "Add URL data received";
             for (int i = 0; i < dataList.count(); ++i) {
-                addItem(dataList.value(i).toMap());
+                addToDataModel(dataList.value(i).toMap());
             }
         }
         else if (replyUrl == editUrl.arg(tasks) || replyUrl == editUrl.arg(folders)) {
             qDebug() << Q_FUNC_INFO << "Edit URL data received";
             for (int i = 0; i < dataList.count(); ++i) {
-                editItem(dataList.value(i).toMap());
+                editInDataModel(dataList.value(i).toMap());
             }
         }
         else if (replyUrl == removeUrl.arg(tasks)) {
             qDebug() << Q_FUNC_INFO << "Remove URL data received";
             for (int i = 0; i < dataList.count(); ++i) {
-                removeItem(dataList.value(i).toMap());
+                removeFromDataModel(dataList.value(i).toMap());
             }
         } else if (replyUrl == removeUrl.arg(folders)) {
             //Folder remove reply comes as a single map, not list of maps
@@ -394,7 +410,7 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
                             " : " + dataMap.value("errorDesc").toString());
                 return;
             }
-            removeItem(dataMap);
+            removeFromDataModel(dataMap);
         }
         else {
             qWarning() << Q_FUNC_INFO << "Unrecognized reply received:" << response;

@@ -49,11 +49,11 @@ Page {
                                 "private": folderPrivate.checked + 0,
                                 "archived": folderArchived.checked + 0,
                                 "ord": data.ord};
-                    app.editFolder(data, folderData);
+                    app.folderDataModel.edit(data, folderData);
                 } else {
                     var folderData = {"name": folderName.text,
                                 "private": folderPrivate.checked + 0};
-                    app.addFolder(folderData);
+                    app.folderDataModel.add(folderData);
                 }
                 mainNavPane.pop();
             }

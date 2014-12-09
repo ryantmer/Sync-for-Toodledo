@@ -51,7 +51,7 @@ Page {
                                     onFinished: {
                                         if (result == SystemUiResult.ConfirmButtonSelection) {
                                             var folderData = {"id": ListItemData.id}
-                                            app.removeFolder(folderData);
+                                            app.folderDataModel.remove(folderData);
                                         }
                                     }
                                 }
@@ -90,7 +90,7 @@ Page {
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_reload.png"
             onTriggered: {
-                app.refreshFolders();
+                app.folderDataModel.refresh();
             }
         },
         ActionItem {

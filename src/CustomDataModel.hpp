@@ -4,6 +4,8 @@
 #include <QObject>
 #include <bb/cascades/DataModel>
 #include "PropertiesManager.hpp"
+#include "NetworkManager.hpp"
+#include "LoginManager.hpp"
 
 class CustomDataModel : public bb::cascades::DataModel {
     Q_OBJECT
@@ -21,11 +23,14 @@ public:
 
     CustomDataModel(QObject *parent = 0);
     virtual ~CustomDataModel();
-
     void setDataType(DataType dataType);
-    void populateDataModel();
-    void clear();
-    QVariantList getInternalList();
+
+    //Called by the UI through QML; initiate network stuff
+    Q_INVOKABLE void refresh();
+    Q_INVOKABLE void add(QVariantMap data);
+    Q_INVOKABLE void edit(QVariantMap oldData, QVariantMap newData);
+    Q_INVOKABLE void remove(QVariantMap data);
+    Q_INVOKABLE QVariantList getInternalList();
 
     static const QString getUrl;
     static const QString editUrl;
@@ -42,23 +47,25 @@ public:
 
 private:
     void sort();
-    void addItem(QVariantMap data);
-    void editItem(QVariantMap data);
-    void removeItem(QVariantMap data);
+    void populateDataModel();
+    void clear();
+    //Called by onReplyReceived, as requireed
+    void addToDataModel(QVariantMap data);
+    void editInDataModel(QVariantMap data);
+    void removeFromDataModel(QVariantMap data);
 
     QVariantList _internalDB;
     DataType _dataType;
     QNetworkAccessManager *_networkAccessManager;
     PropertiesManager *_propMan;
+    NetworkManager *_netMan;
+    LoginManager *_loginMan;
 
 signals:
     void toast(QString message);
 
 public slots:
-    //Signal for these four comes from UI
-    void onAdd(QVariantMap data);
-    void onEdit(QVariantMap oldData, QVariantMap newData);
-    void onRemove(QVariantMap data);
+    //Signal from UI
     void onLogOut();
     //Signal from network access manager
     void onReplyReceived(QNetworkReply *reply);

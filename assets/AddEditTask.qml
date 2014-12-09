@@ -9,7 +9,7 @@ Page {
     
     //Called after creating the page to populate fields as required from the passed data
     function setup() {
-        var folders = app.getFolderList();
+        var folders = app.folderDataModel.getInternalList();
         
         //Populate options in folder dropdown
         for (var x = 0; x < folders.length; x++) {
@@ -160,9 +160,9 @@ Page {
 //                }
                 
                 if (edit) {
-                    app.editTask(data, taskData);
+                    app.taskDataModel.edit(data, taskData);
                 } else {
-                    app.addTask(taskData);
+                    app.taskDataModel.add(taskData);
                 }
                 
                 mainNavPane.pop();

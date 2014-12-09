@@ -88,28 +88,9 @@ ToodledoTen::ToodledoTen() : QObject() {
             _loginManager, SLOT(onLogOut()));
     Q_ASSERT(isOk);
 
-    //CustomDataModel listeners
-    isOk = connect(this, SIGNAL(taskAdded(QVariantMap)),
-            _taskDataModel, SLOT(onAdd(QVariantMap)));
-    Q_ASSERT(isOk);
-    isOk = connect(this, SIGNAL(taskEdited(QVariantMap, QVariantMap)),
-            _taskDataModel, SLOT(onEdit(QVariantMap, QVariantMap)));
-    Q_ASSERT(isOk);
-    isOk = connect(this, SIGNAL(taskRemoved(QVariantMap)),
-            _taskDataModel, SLOT(onRemove(QVariantMap)));
-    Q_ASSERT(isOk);
-    isOk = connect(this, SIGNAL(folderAdded(QVariantMap)),
-            _folderDataModel, SLOT(onAdd(QVariantMap)));
-    Q_ASSERT(isOk);
-    isOk = connect(this, SIGNAL(folderEdited(QVariantMap, QVariantMap)),
-            _folderDataModel, SLOT(onEdit(QVariantMap, QVariantMap)));
-    Q_ASSERT(isOk);
-    isOk = connect(this, SIGNAL(folderRemoved(QVariantMap)),
-            _folderDataModel, SLOT(onRemove(QVariantMap)));
-    Q_ASSERT(isOk);
-
     Q_UNUSED(isOk);
 }
+
 ToodledoTen::~ToodledoTen() {};
 
 CustomDataModel *ToodledoTen::taskDataModel() {
@@ -166,65 +147,6 @@ QString ToodledoTen::getVersionNumber() {
     return pi.version();
 }
 
-void ToodledoTen::refreshTasks() {
-    if (_networkManager->isConnected()) {
-        if (_loginManager->isLoggedIn()) {
-            _taskDataModel->clear();
-            _taskDataModel->populateDataModel();
-        } else {
-            qWarning() << Q_FUNC_INFO << "LoginManager indicated not logged in";
-        }
-    } else {
-        qWarning() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
-        showToast("No network connection!");
-    }
-}
-
-void ToodledoTen::refreshFolders() {
-    if (_networkManager->isConnected()) {
-        if (_loginManager->isLoggedIn()) {
-            _folderDataModel->clear();
-            _folderDataModel->populateDataModel();
-        } else {
-            qWarning() << Q_FUNC_INFO << "LoginManager indicated not logged in";
-        }
-    } else {
-        qWarning() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
-    }
-}
-
-void ToodledoTen::addTask(QVariantMap data) {
-    emit taskAdded(data);
-}
-
-void ToodledoTen::editTask(QVariantMap oldData, QVariantMap newData) {
-    if (oldData != newData) {
-        emit taskEdited(oldData, newData);
-    }
-}
-
-void ToodledoTen::removeTask(QVariantMap data) {
-    emit taskRemoved(data);
-}
-
-void ToodledoTen::addFolder(QVariantMap data) {
-    emit folderAdded(data);
-}
-
-void ToodledoTen::editFolder(QVariantMap oldData, QVariantMap newData) {
-    if (oldData != newData) {
-        emit folderEdited(oldData, newData);
-    }
-}
-
-void ToodledoTen::removeFolder(QVariantMap data) {
-    emit folderRemoved(data);
-}
-
-QVariantList ToodledoTen::getFolderList() {
-    return _folderDataModel->getInternalList();
-}
-
 void ToodledoTen::logout() {
     emit loggedOut();
 }
@@ -237,8 +159,8 @@ void ToodledoTen::logout() {
  */
 void ToodledoTen::onNetworkStateChanged(bool connected) {
     if (connected) {
-        refreshFolders();
-        refreshTasks();
+        _taskDataModel->refresh();
+        _folderDataModel->refresh();
     } else {
         qWarning() << Q_FUNC_INFO << "Network connection lost";
         showToast("Network connection lost");
@@ -263,8 +185,8 @@ void ToodledoTen::onWebViewUrlChanged(QUrl url) {
 void ToodledoTen::onAccessTokenRefreshed() {
     //access token is automatically refreshed when it expires using refresh token
     //When a new access token is received, refresh
-    refreshTasks();
-    refreshFolders();
+    _taskDataModel->refresh();
+    _folderDataModel->refresh();
 }
 
 void ToodledoTen::onRefreshTokenExpired() {
