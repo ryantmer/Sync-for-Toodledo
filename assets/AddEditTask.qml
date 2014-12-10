@@ -8,9 +8,8 @@ Page {
     
     //Called after creating the page to populate fields as required from the passed data
     function setup() {
-        var folders = app.folderDataModel.getInternalList();
-        
         //Populate options in folder dropdown
+        var folders = app.folderDataModel.getInternalList();
         for (var x = 0; x < folders.length; x++) {
             if (folders[x].archived == 0) {
                 var opt = option.createObject();
@@ -20,19 +19,45 @@ Page {
             }
         }
         
+        //Populate options in context dropdown
+        var contexts = app.contextDataModel.getInternalList();
+        for (var x = 0; x < contexts.length; x++) {
+            var opt = option.createObject()
+            opt.text = contexts[x].name;
+            opt.value = contexts[x].id;
+            contextDropDown.add(opt);
+        }
+        
+        //Populate options in goals dropdown
+        var goals = app.goalDataModel.getInternalList();
+        for (var x = 0; x < goals.length; x++) {
+            if (goals[x].archived == 0) {
+                var opt = option.createObject();
+                opt.text = goals[x].name;
+                opt.value = goals[x].id;
+                goalDropDown.add(opt);
+            }
+        }
+        
+        //Populate options in locations dropdown
+        var locations = app.locationDataModel.getInternalList();
+        for (var x = 0; x < locations.length; x++) {
+            if (locations[x].archived == 0) {
+                var opt = option.createObject();
+                opt.text = locations[x].name;
+                opt.value = locations[x].id;
+                locationDropDown.add(opt);
+            }
+        }
+        
         //If we're editing a task, rather than adding a new one
         if (edit) {
             var index;
             
             //Populate the fields of the form as required
+            completedCheckbox.checked = data.completed;
             titleField.text = data.title;
-            tagField.text = data.tag;
-            for (index = 0; index < folders.length; index++) {
-                if (data.folder == folderDropDown.options[index].value) {
-                    break;
-                }
-            }
-            folderDropDown.setSelectedIndex(index);
+            noteArea.text = data.note;
             if (data.duedate == 0) {
                 duedateCheckbox.checked = true;
                 duedatePicker.enabled = false;
@@ -41,24 +66,55 @@ Page {
                 duedatePicker.enabled = true;
                 duedatePicker.value = app.unixTimeToDateTime(data.duedate);
             }
-            duedatemodDropDown.setSelectedIndex(data.duedatemod);
-            if (data.startdate != 0) {
-                startdatePicker.value = app.unixTimeToDateTime(data.startdate);
-                startdateCheckbox.checked = false;
-            } else {
-                startdateCheckbox.checked = true;
+            for (index = 0; index < folders.length; index++) {
+                if (data.folder == folderDropDown.options[index].value) {
+                    break;
+                }
             }
+            folderDropDown.setSelectedIndex(index);
+            for (index = 0; index < contexts.length; index++) {
+                if (data.context == contextDropDown.options[index].value) {
+                    break;
+                }
+            }
+            contextDropDown.setSelectedIndex(index);
+            for (index = 0; index < goals.length; index++) {
+                if (data.goal == goalDropDown.options[index].value) {
+                    break;
+                }
+            }
+            goalDropDown.setSelectedIndex(index);
+            for (index = 0; index < locations.length; index++) {
+                if (data.location == locationDropDown.options[index].value) {
+                    break;
+                }
+            }
+            locationDropDown.setSelectedIndex(index);
+            tagField.text = data.tag;
+            duedatemodDropDown.setSelectedIndex(data.duedatemod);
             if (data.duetime != 0) {
                 duetimePicker.value = app.unixTimeToDateTimeNoOffset(data.duetime);
                 duetimeCheckbox.checked = false;
             } else {
                 duetimeCheckbox.checked = true;
             }
+            if (data.startdate != 0) {
+                startdatePicker.value = app.unixTimeToDateTime(data.startdate);
+                startdateCheckbox.checked = false;
+            } else {
+                startdateCheckbox.checked = true;
+            }
             if (data.starttime != 0) {
                 starttimePicker.value = app.unixTimeToDateTimeNoOffset(data.starttime);
                 starttimeCheckbox.checked = false;
             } else {
                 starttimeCheckbox.checked = true;
+            }
+            if (data.length != 0) {
+                lengthPicker.value = new Date(0, 0, 0, 0, data.length);
+                lengthCheckbox.checked = false;
+            } else {
+                lengthCheckbox.checked = true;
             }
             for (index = 0; index < remindDropDown.options.length; index++) {
                 if (data.remind == remindDropDown.options[index].value) {
@@ -78,16 +134,8 @@ Page {
                 }
             }
             statusDropDown.setSelectedIndex(index);
-            if (data.length != 0) {
-                lengthPicker.value = new Date(0, 0, 0, 0, data.length);
-                lengthCheckbox.checked = false;
-            } else {
-                lengthCheckbox.checked = true;
-            }
             priorityDropDown.setSelectedIndex(data.priority + 1);
             starToggle.checked = data.star;
-            completedCheckbox.checked = data.completed;
-            noteArea.text = data.note;
             
             //Set title/icon for Add/Save button
             addSaveButton.title = "Save"
@@ -137,6 +185,9 @@ Page {
                 newData["folder"] = folderDropDown.selectedValue;
                 
                 if (advancedOptionsToggle.checked) {
+                    newData["context"] = contextDropDown.selectedValue;
+                    newData["goal"] = goalDropDown.selectedValue;
+                    newData["location"] = locationDropDown.selectedValue;
                     newData["tag"] = tagField.text;
                     newData["duedatemod"] = duedatemodDropDown.selectedValue;
                     newData["duetime"] = duetimeCheckbox.checked ?
@@ -273,6 +324,45 @@ Page {
             Container {
                 id: advancedContainer
                 visible: false
+                
+                //context
+                DropDown {
+                    id: contextDropDown
+                    title: "Context"
+                    bottomMargin: 30
+                    options: [
+                        Option {
+                            text: "None"
+                            value: 0
+                        }
+                    ]
+                }
+                
+                //goal
+                DropDown {
+                    id: goalDropDown
+                    title: "Goal"
+                    bottomMargin: 30
+                    options: [
+                        Option {
+                            text: "None"
+                            value: 0
+                        }
+                    ]
+                }
+                
+                //location
+                DropDown {
+                    id: locationDropDown
+                    title: "Location"
+                    bottomMargin: 30
+                    options: [
+                        Option {
+                            text: "None"
+                            value: 0
+                        }
+                    ]
+                }
                 
                 //tag
                 Container {

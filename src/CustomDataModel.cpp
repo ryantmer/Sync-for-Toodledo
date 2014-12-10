@@ -61,7 +61,7 @@ void CustomDataModel::populateDataModel() {
             urlData.addQueryItem("comp", QString::number(0)); //incomplete tasks
             //fields id, title, modified, completed come automatically
             urlData.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,"
-                    "duedatemod,startdate,starttime,remind,repeat,status,length");
+                    "duedatemod,startdate,starttime,remind,repeat,status,length,context,goal,location");
             break;
         case Folder:
             url.setUrl(getUrl.arg(folders));
