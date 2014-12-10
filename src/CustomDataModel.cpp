@@ -72,14 +72,14 @@ void CustomDataModel::populateDataModel() {
             urlData.addQueryItem("before", QString::number(QDateTime::currentDateTimeUtc().toTime_t()));
             urlData.addQueryItem("after", QString::number(QDateTime::currentDateTimeUtc().toTime_t() - 86400));
             urlData.addQueryItem("comp", QString::number(1));
-            urlData.addQueryItem("start", QString::number(0));
-            urlData.addQueryItem("num", QString::number(50));
             urlData.addQueryItem("fields", "note");
             break;
         case Context:
             url.setUrl(getUrl.arg(contexts));
             break;
         case Goal:
+            url.setUrl(getUrl.arg(goals));
+            break;
         case Location:
         default:
             break;
@@ -149,6 +149,13 @@ bool compareContexts(QVariant &a, QVariant &b) {
     return first.value("private").toLongLong(NULL) <= second.value("private").toLongLong(NULL);
 }
 
+bool compareGoals(QVariant &a, QVariant &b) {
+    QVariantMap first = a.toMap();
+    QVariantMap second = b.toMap();
+
+    return first.value("level").toLongLong(NULL) <= second.value("level").toLongLong(NULL);
+}
+
 void CustomDataModel::sort() {
     switch (_dataType) {
         case Task:
@@ -164,6 +171,8 @@ void CustomDataModel::sort() {
             qSort(_internalDB.begin(), _internalDB.end(), compareContexts);
             break;
         case Goal:
+            qSort(_internalDB.begin(), _internalDB.end(), compareGoals);
+            break;
         case Location:
         default:
             break;
@@ -222,9 +231,9 @@ void CustomDataModel::removeFromDataModel(QVariantMap data) {
             break;
         case Folder:
         case Context:
+        case Goal:
             removeId = data.value("deleted").toLongLong(NULL);
             break;
-        case Goal:
         case Location:
         default:
             break;
@@ -291,6 +300,11 @@ void CustomDataModel::add(QVariantMap data) {
             }
             break;
         case Goal:
+            url.setUrl(addUrl.arg(goals));
+            for (iter = data.begin(); iter != data.end(); ++iter) {
+                urlData.addQueryItem(iter.key(), data[iter.key()].toString());
+            }
+            break;
         case Location:
         default:
             break;
@@ -360,6 +374,14 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
             }
             break;
         case Goal:
+            url.setUrl(editUrl.arg(goals));
+            urlData.addQueryItem("id", newData["id"].toString());
+            for (iter = newData.begin(); iter != newData.end(); ++iter) {
+                if (oldData[iter.key()] != newData[iter.key()]) {
+                    urlData.addQueryItem(iter.key(), iter.value().toString());
+                }
+            }
+            break;
         case Location:
         default:
             break;
@@ -392,6 +414,9 @@ void CustomDataModel::remove(QVariantMap data) {
             urlData.addQueryItem("id", data["id"].toString());
             break;
         case Goal:
+            url.setUrl(removeUrl.arg(goals));
+            urlData.addQueryItem("id", data["id"].toString());
+            break;
         case Location:
         default:
             break;
@@ -423,39 +448,43 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
         }
 
         QString replyUrl = reply->url().toString(QUrl::RemoveQuery);
+
         if (replyUrl == getUrl.arg(tasks) || replyUrl == getUrl.arg(folders) ||
-                replyUrl == getUrl.arg(contexts)) {
-            qDebug() << Q_FUNC_INFO << "Get URL data received";
+                replyUrl == getUrl.arg(contexts) || replyUrl == getUrl.arg(goals)) {
+            qDebug() << Q_FUNC_INFO << "Get URL data received from" << replyUrl;
             //Discard summary item (only when getting tasks)
-            if (dataList.first().toMap().contains("num") && dataList.first().toMap().contains("total")) {
-                dataList.pop_front();
+            if (dataList.length() > 0) {
+                if (dataList.first().toMap().contains("num") && dataList.first().toMap().contains("total")) {
+                    dataList.pop_front();
+                }
             }
             for (int i = 0; i < dataList.count(); ++i) {
                 addToDataModel(dataList.value(i).toMap());
             }
         }
         else if (replyUrl == addUrl.arg(tasks) || replyUrl == addUrl.arg(folders) ||
-                replyUrl == addUrl.arg(contexts)) {
-            qDebug() << Q_FUNC_INFO << "Add URL data received";
+                replyUrl == addUrl.arg(contexts) || replyUrl == addUrl.arg(goals)) {
+            qDebug() << Q_FUNC_INFO << "Add URL data received from" << replyUrl;
             for (int i = 0; i < dataList.count(); ++i) {
                 addToDataModel(dataList.value(i).toMap());
             }
         }
         else if (replyUrl == editUrl.arg(tasks) || replyUrl == editUrl.arg(folders) ||
-                replyUrl == editUrl.arg(contexts)) {
-            qDebug() << Q_FUNC_INFO << "Edit URL data received";
+                replyUrl == editUrl.arg(contexts) || replyUrl == editUrl.arg(goals)) {
+            qDebug() << Q_FUNC_INFO << "Edit URL data received from" << replyUrl;
             for (int i = 0; i < dataList.count(); ++i) {
                 editInDataModel(dataList.value(i).toMap());
             }
         }
         else if (replyUrl == removeUrl.arg(tasks)) {
-            qDebug() << Q_FUNC_INFO << "Remove URL data received";
+            qDebug() << Q_FUNC_INFO << "Remove URL data received from" << replyUrl;
             for (int i = 0; i < dataList.count(); ++i) {
                 removeFromDataModel(dataList.value(i).toMap());
             }
-        } else if (replyUrl == removeUrl.arg(folders) || replyUrl == removeUrl.arg(contexts)) {
+        } else if (replyUrl == removeUrl.arg(folders) || replyUrl == removeUrl.arg(contexts) ||
+                replyUrl == removeUrl.arg(goals)) {
             //These remove replies come as a single map, not list of maps
-            qDebug() << Q_FUNC_INFO << "Remove URL data received";
+            qDebug() << Q_FUNC_INFO << "Remove URL data received from" << replyUrl;
             QVariantMap dataMap = jda.loadFromBuffer(response).value<QVariantMap>();
             if (jda.hasError()) {
                 qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
@@ -473,7 +502,8 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
             removeFromDataModel(dataMap);
         }
         else {
-            qWarning() << Q_FUNC_INFO << "Unrecognized reply received:" << response;
+            qWarning() << Q_FUNC_INFO << "Unrecognized reply received from" << replyUrl;
+            qWarning() << Q_FUNC_INFO << response;
         }
     } else {
         qWarning() << Q_FUNC_INFO << "Network error";
@@ -496,43 +526,44 @@ void CustomDataModel::onLogOut() {
  * Functions required by DataModel. Not sure if these work.
  */
 int CustomDataModel::childCount(const QVariantList &indexPath) {
+    int retVal = 0;
     if (indexPath.length() == 0) {
-        return _internalDB.length();
+        retVal = _internalDB.length();
     } else if (indexPath.length() == 1) {
         //Only a task's attachment property has children
         QVariantMap map = _internalDB.value(indexPath.value(0).toInt(NULL)).toMap();
         if (map.contains("attachment")) {
-            int count = map["attachment"].toList().length();
-            return count;
+            retVal = map["attachment"].toList().length();
         }
     }
-    return 0;
+    return retVal;
 }
 bool CustomDataModel::hasChildren(const QVariantList &indexPath) {
-    if (indexPath.length() == 0) {
-        return true;
-    } else if (indexPath.length() == 1 && itemType(indexPath) == QString("task")) {
-        return true;
+    bool retVal = false;
+    if (indexPath.length() == 0 && childCount(indexPath) > 0) {
+        retVal = true;
     }
-    return false;
+    return retVal;
 }
 QString CustomDataModel::itemType(const QVariantList &indexPath) {
+    QString retVal = QString::null;
     if (indexPath.length() == 1) {
-        return QString("item");
+        retVal = QString("item");
     }
-    return QString::null;
+    return retVal;
 }
 QVariant CustomDataModel::data(const QVariantList &indexPath) {
+    QVariant retVal = QVariant();
     if (indexPath.length() == 1) {
         QVariantMap map = _internalDB.value(indexPath.value(0).toInt(NULL)).toMap();
-        return QVariant(map);
+        retVal = QVariant(map);
     } else if (indexPath.length() == 2) {
         //Only used to return attachment property of tasks
         QVariantMap map = _internalDB.value(indexPath.value(0).toInt(NULL)).toMap();
         QVariantMap attachments = map["attachments"].toList().value(indexPath.value(1).toInt(NULL)).toMap();
-        return QVariant(attachments);
+        retVal = QVariant(attachments);
     }
-    return QVariant();
+    return retVal;
 }
 /*
  * End of functions required by DataModel

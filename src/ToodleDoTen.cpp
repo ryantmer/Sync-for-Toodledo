@@ -218,8 +218,8 @@ void ToodledoTen::onNetworkStateChanged(bool connected) {
         _folderDataModel->refresh();
         _completedTaskDataModel->refresh();
         _contextDataModel->refresh();
+        _goalDataModel->refresh();
         //TODO: Implement these
-//        _goalDataModel->refresh();
 //        _locationDataModel->refresh();
     } else {
         qWarning() << Q_FUNC_INFO << "Network connection lost";
@@ -249,8 +249,8 @@ void ToodledoTen::onAccessTokenRefreshed() {
     _folderDataModel->refresh();
     _completedTaskDataModel->refresh();
     _contextDataModel->refresh();
+    _goalDataModel->refresh();
     //TODO: Implement these
-//        _goalDataModel->refresh();
 //        _locationDataModel->refresh();
 }
 

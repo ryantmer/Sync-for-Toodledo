@@ -52,7 +52,7 @@ private:
     void sort();
     void populateDataModel();
     void clear();
-    //Called by onReplyReceived, as requireed
+    //Called by onReplyReceived, as required
     void addToDataModel(QVariantMap data);
     void editInDataModel(QVariantMap data);
     void removeFromDataModel(QVariantMap data);

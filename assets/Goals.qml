@@ -23,7 +23,7 @@ Page {
                         StandardListItem {
                             title: ListItemData.name
                             description: itemContainer.ListItem.view.description(ListItemData.note);
-                            status: itemContainer.ListItem.view.status();
+                            status: itemContainer.ListItem.view.status(ListItemData.level);
                             
                             contextActions: [
                                 ActionSet {
@@ -66,8 +66,14 @@ Page {
                 mainNavPane.push(page);
             }
             
-            function status() {
-                
+            function status(level) {
+                if (level == 0) {
+                    return "Lifelong";
+                } else if (level == 1) {
+                    return "Long-term";
+                } else if (level == 2) {
+                    return "Short-term";
+                }
             }
             
             function description(note) {

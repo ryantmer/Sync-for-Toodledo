@@ -48,9 +48,9 @@ Page {
                 newData["name"] = nameField.text;
                 newData["private"] = privateCheckBox.checked + 0;
                 
-                for (var param in newData) {
-                    console.log("newData." + param + " = " + newData[param]);
-                }
+//                for (var param in newData) {
+//                    console.log("newData." + param + " = " + newData[param]);
+//                }
                 
                 if (edit) {
                     app.contextDataModel.edit(data, newData);

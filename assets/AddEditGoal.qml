@@ -11,13 +11,20 @@ Page {
         
         //Populate options in contributes dropdown
         for (var x = 0; x < goals.length; x++) {
-            //don't add archived or short-term goals to dropdown
-            if (goals[x].archived == 0 && goals[x].level != 2) {
-                var opt = option.createObject();
-                opt.text = goals[x].name;
-                opt.value = goals[x].id;
-                contributesDropDown.add(opt);
+            //If editing, don't add current option or higher-level ones to contributesDropDown
+            if (edit) {
+                if (goals[x].id == data.id || goals[x].level >= data.level) {
+                    continue;
+                }
             }
+            //Don't add archived or higher-level goals to dropdown
+            if (goals[x].archived != 0 || goals[x].level >= levelDropDown.selectedValue) {
+                continue;
+            }
+            var opt = option.createObject();
+            opt.text = goals[x].name;
+            opt.value = goals[x].id;
+            contributesDropDown.add(opt);
         }
         
         if (edit) {
@@ -81,9 +88,9 @@ Page {
                 newData["private"] = privateCheckBox.checked + 0;
                 newData["note"] = noteArea.text;
                 
-                for (var param in newData) {
-                    console.log("newData." + param + " = " + newData[param]);
-                }
+//                for (var param in newData) {
+//                    console.log("newData." + param + " = " + newData[param]);
+//                }
                 
                 if (edit) {
                     app.goalDataModel.edit(data, newData);
@@ -134,6 +141,7 @@ Page {
                     Option {
                         text: "Lifetime"
                         value: 0
+                        selected: true //overwritten by setup() if we're editing
                     },
                     Option {
                         text: "Long-term"
@@ -144,8 +152,30 @@ Page {
                         value: 2
                     }
                 ]
-                onSelectedOptionChanged: {
-                    //Update contributesDropDown to only include higher-level options
+                onSelectedValueChanged: {
+                    //Rebuild contributesDropDown options to only include higher-level options
+                    contributesDropDown.removeAll();
+                    var noneOpt = option.createObject();
+                    noneOpt.text = "None";
+                    noneOpt.value = 0;
+                    contributesDropDown.add(noneOpt)
+                    var goals = app.goalDataModel.getInternalList();
+                    for (var x = 0; x < goals.length; x++) {
+                        //If editing, don't add current option or higher-level ones to contributesDropDown
+                        if (edit) {
+                            if (goals[x].id == data.id || goals[x].level >= data.level) {
+                                continue;
+                            }
+                        }
+                        //Don't add archived or higher-level goals to dropdown
+                        if (goals[x].archived != 0 || goals[x].level >= levelDropDown.selectedValue) {
+                            continue;
+                        }
+                        var opt = option.createObject();
+                        opt.text = goals[x].name;
+                        opt.value = goals[x].id;
+                        contributesDropDown.add(opt);
+                    }
                 }
             }
             DropDown {
@@ -169,7 +199,7 @@ Page {
             }
             TextArea {
                 id: noteArea
-                hintText: "Detailed notes about task"
+                hintText: "Detailed notes about goal"
                 horizontalAlignment: HorizontalAlignment.Fill
                 bottomMargin: 30
             }
