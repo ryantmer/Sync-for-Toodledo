@@ -22,7 +22,8 @@ Page {
                         id: itemContainer
                         StandardListItem {
                             title: ListItemData.name
-                            description: itemContainer.ListItem.view.description(ListItemData.note);
+                            description: itemContainer.ListItem.view.description(
+                                        ListItemData.private, ListItemData.archived);
                             status: itemContainer.ListItem.view.status(ListItemData.level);
                             
                             contextActions: [
@@ -76,13 +77,15 @@ Page {
                 }
             }
             
-            function description(note) {
-                if (note.indexOf("\n") > -1) {
-                    //Note is multi-line, take first line as description
-                    return note.substring(0, note.indexOf("\n"));
+            function description(isPrivate, isArchived) {
+                if (isPrivate == 1 && isArchived == 1) {
+                    return "Archived, Private";
+                } else if (isPrivate == 1) {
+                    return "Private, Not Archived";
+                } else if (isArchived == 1) {
+                    return "Archived, Not Private";
                 } else {
-                    //Note is a single line
-                    return note;
+                    return "Not Archived, Not Private";
                 }
             }
         }
