@@ -9,7 +9,7 @@ Page {
     
     Container {
         ListView {
-            id: taskListView
+            id: listView
             layout: StackListLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             
@@ -19,7 +19,7 @@ Page {
                 ListItemComponent {
                     type: "item"
                     Container {
-                        id: taskItemContainer
+                        id: itemContainer
                         layout: StackLayout {
                             orientation: LayoutOrientation.LeftToRight
                         }
@@ -51,7 +51,7 @@ Page {
                         }
                         StandardListItem {
                             title: ListItemData.title
-                            description: taskItemContainer.ListItem.view.completedString(ListItemData.completed);
+                            description: itemContainer.ListItem.view.completedString(ListItemData.completed);
                             textFormat: TextFormat.Auto
                         }
                     }

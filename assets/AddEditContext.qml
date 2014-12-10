@@ -1,16 +1,15 @@
 import bb.cascades 1.2
 
 Page {
-    id: addEditFolderPage
+    id: addEditContextPage
     
     property variant data;
     property bool edit;
     
     function setup() {
         if (edit) {
-            folderName.text = data.name;
-            folderPrivate.checked = data.private;
-            folderArchived.checked = data.archived;
+            contextName.text = data.name;
+            contextPrivate.checked = data.private;
             
             addSaveButton.title = "Save";
             addSaveButton.imageSource = "asset:///images/ic_save.png";
@@ -29,30 +28,28 @@ Page {
     actions: [
         ActionItem {
             id: addSaveButton
-            title: "Add" //Changed to "Save" in setup if editing a folder
-            imageSource: "asset:///images/ic_add.png" //Changed in setup if editing a folder
+            title: "Add" //Changed to "Save" in setup if editing a context
+            imageSource: "asset:///images/ic_add.png" //Changed in setup if editing a context
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
-                if (!folderName.text) {
+                if (!contextName.text) {
                     titleRequired.visible = true;
                     return;
                 }
-                if (folderName.text.length > 32) {
+                if (contextName.text.length > 32) {
                     nameTooLong.visible = true;
                     return;
                 }
                 
                 if (edit) {
-                    var folderData = {"id": data.id,
-                                "name": folderName.text,
-                                "private": folderPrivate.checked + 0,
-                                "archived": folderArchived.checked + 0,
-                                "ord": data.ord};
-                    app.folderDataModel.edit(data, folderData);
+                    var contextData = {"id": data.id,
+                                "name": contextName.text,
+                                "private": contextPrivate.checked + 0};
+                    app.contextDataModel.edit(data, contextData);
                 } else {
-                    var folderData = {"name": folderName.text,
-                                "private": folderPrivate.checked + 0};
-                    app.folderDataModel.add(folderData);
+                    var contextData = {"name": contextName.text,
+                                "private": contextPrivate.checked + 0};
+                    app.contextDataModel.add(contextData);
                 }
                 mainNavPane.pop();
             }
@@ -85,19 +82,13 @@ Page {
                 visible: false
             }
             TextField {
-                id: folderName
+                id: contextName
                 hintText: "Folder Name"
                 horizontalAlignment: HorizontalAlignment.Fill
                 bottomMargin: 30
             }
             CheckBox {
-                id: folderArchived
-                text: "Archived"
-                bottomMargin: 30
-                visible: edit //only show when editing a folder
-            }
-            CheckBox {
-                id: folderPrivate
+                id: contextPrivate
                 text: "Private"
                 bottomMargin: 30
             }

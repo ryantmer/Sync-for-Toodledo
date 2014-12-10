@@ -2,14 +2,12 @@ import bb.cascades 1.2
 
 Sheet {
     id: aboutSheet
-    accessibility.name: "About sheet"
     
     onClosed: {
         destroy();
     }
     
     Page {
-        accessibility.name: "About page"
         
         titleBar: TitleBar {
             dismissAction: ActionItem {
@@ -24,7 +22,6 @@ Sheet {
             
             Container {
                 id: aboutContent
-                accessibility.name: "About page container"
                 layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
                 verticalAlignment: VerticalAlignment.Center
                 horizontalAlignment: HorizontalAlignment.Center

@@ -4,16 +4,16 @@ import bb.system 1.2
 
 Page {
     titleBar: TitleBar {
-        title: "Sync for Toodledo - Folders"
+        title: "Sync for Toodledo - Contexts"
     }
     
     Container {
         ListView {
-            id: listView
+            id: contextListView
             layout: StackListLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             
-            dataModel: app.folderDataModel
+            dataModel: app.contextDataModel
             
             listItemComponents: [
                 ListItemComponent {
@@ -22,8 +22,7 @@ Page {
                         id: itemContainer
                         StandardListItem {
                             title: ListItemData.name
-                            description: itemContainer.ListItem.view.privateOrArchived(
-                                        ListItemData.private, ListItemData.archived)
+                            description: contextItemContainer.ListItem.view.privateString(ListItemData.private)
                             
                             contextActions: [
                                 ActionSet {
@@ -39,15 +38,15 @@ Page {
                                 SystemDialog {
                                     id: deleteConfirmDialog
                                     title: "Delete Folder"
-                                    body: "Are you sure you want to delete this folder?"
+                                    body: "Are you sure you want to delete this context?"
                                     confirmButton.label: "Delete"
                                     confirmButton.enabled: true
                                     cancelButton.label: "Cancel"
                                     cancelButton.enabled: true
                                     onFinished: {
                                         if (result == SystemUiResult.ConfirmButtonSelection) {
-                                            var folderData = {"id": ListItemData.id}
-                                            app.folderDataModel.remove(folderData);
+                                            var contextData = {"id": ListItemData.id}
+                                            app.contextDataModel.remove(contextData);
                                         }
                                     }
                                 }
@@ -58,23 +57,19 @@ Page {
             ]
             
             onTriggered: {
-                var folder = dataModel.data(indexPath);
+                var context = dataModel.data(indexPath);
                 var page = addEditFolderDefinition.createObject();
-                page.data = folder;
+                page.data = context;
                 page.edit = true;
                 page.setup();
                 mainNavPane.push(page);
             }
             
-            function privateOrArchived(isPrivate, isArchived) {
-                if (isPrivate == 1 && isArchived == 1) {
-                    return "Archived, Private";
-                } else if (isPrivate == 1) {
-                    return "Private, Not Archived";
-                } else if (isArchived == 1) {
-                    return "Archived, Not Private";
+            function privateString(isPrivate) {
+                if (isPrivate) {
+                    return "Private";
                 } else {
-                    return "Not Archived, Not Private";
+                    return "Not Private";
                 }
             }
         }
@@ -86,7 +81,7 @@ Page {
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_reload.png"
             onTriggered: {
-                app.folderDataModel.refresh();
+                app.contextDataModel.refresh();
             }
         },
         ActionItem {

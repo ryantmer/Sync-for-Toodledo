@@ -2,7 +2,6 @@ import bb.cascades 1.2
 
 Page {
     id: addEditTaskPage
-    accessibility.name: "Add/edit task page"
     
     property variant data;
     property bool edit;
@@ -171,12 +170,10 @@ Page {
     ]
     
     ScrollView {
-        accessibility.name: "Add/edit task page scrollview"
         scrollViewProperties {
             scrollMode: ScrollMode.Vertical
         }
         Container {
-            accessibility.name: "Add/edit task page container"
             layout: StackLayout {
                 orientation: LayoutOrientation.TopToBottom
             }

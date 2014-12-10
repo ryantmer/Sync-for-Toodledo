@@ -37,9 +37,11 @@ simulator {
 config_pri_assets {
     OTHER_FILES += \
         $$quote($$BASEDIR/assets/About.qml) \
+        $$quote($$BASEDIR/assets/AddEditContext.qml) \
         $$quote($$BASEDIR/assets/AddEditFolder.qml) \
         $$quote($$BASEDIR/assets/AddEditTask.qml) \
         $$quote($$BASEDIR/assets/CompletedTasks.qml) \
+        $$quote($$BASEDIR/assets/Contexts.qml) \
         $$quote($$BASEDIR/assets/Cover.qml) \
         $$quote($$BASEDIR/assets/Folders.qml) \
         $$quote($$BASEDIR/assets/Login.qml) \

@@ -5,7 +5,6 @@ import bb.system 1.2
 NavigationPane {
     id: mainNavPane
     objectName: "mainNavPane"
-    accessibility.name: "Navigation pane for main task list"
     
     Menu.definition: MenuDefinition {
         settingsAction: SettingsActionItem {
@@ -26,17 +25,13 @@ NavigationPane {
     }
     
     Page {
-        accessibility.name: "Main task list page"
         titleBar: TitleBar {
             title: "Sync for Toodledo - All Tasks"
         }
         
         Container {
-            accessibility.name: "Main task list page container"
-            
             ListView {
-                id: taskListView
-                accessibility.name: "Main task list"
+                id: listView
                 layout: StackListLayout {}
                 horizontalAlignment: HorizontalAlignment.Fill
                 
@@ -46,8 +41,7 @@ NavigationPane {
                     ListItemComponent {
                         type: "item"
                         Container {
-                            id: taskItemContainer
-                            accessibility.name: "List item component container"
+                            id: itemContainer
                             layout: StackLayout {
                                 orientation: LayoutOrientation.LeftToRight
                             }
@@ -72,13 +66,11 @@ NavigationPane {
                                         app.taskDataModel.edit(oldData, newData);
                                     }
                                 }
-                                accessibility.name: "completed"
-                                accessibility.description: "Checked when task is completed"
                             }
                             StandardListItem {
                                 title: ListItemData.title
-                                status: taskItemContainer.ListItem.view.dueDateString(ListItemData.duedate);
-                                description: taskItemContainer.ListItem.view.descriptionString(ListItemData.note);
+                                status: itemContainer.ListItem.view.dueDateString(ListItemData.duedate);
+                                description: itemContainer.ListItem.view.descriptionString(ListItemData.note);
                                 textFormat: TextFormat.Auto
                                 
                                 contextActions: [
@@ -167,19 +159,28 @@ NavigationPane {
                 }
             },
             ActionItem {
-                title: "Manage Folders"
-                ActionBar.placement: ActionBarPlacement.InOverflow
-                imageSource: "asset:///images/ic_settings.png"
-                onTriggered: {
-                    var page = manageFoldersDefinition.createObject();
-                    mainNavPane.push(page);
-                }
-            },
-            ActionItem {
                 title: "Completed Tasks"
                 ActionBar.placement: ActionBarPlacement.InOverflow
                 onTriggered: {
                     var page = completedTasksDefinition.createObject();
+                    mainNavPane.push(page);
+                }
+            },
+            ActionItem {
+                title: "Manage Folders"
+                ActionBar.placement: ActionBarPlacement.InOverflow
+                imageSource: "asset:///images/ic_settings.png"
+                onTriggered: {
+                    var page = foldersDefinition.createObject();
+                    mainNavPane.push(page);
+                }
+            },
+            ActionItem {
+                title: "Manage Contexts"
+                ActionBar.placement: ActionBarPlacement.InOverflow
+                imageSource: "asset:///images/ic_settings.png"
+                onTriggered: {
+                    var page = contextsDefinition.createObject();
                     mainNavPane.push(page);
                 }
             }
@@ -192,12 +193,16 @@ NavigationPane {
             content: AddEditTask{}
         },
         ComponentDefinition {
-            id: manageFoldersDefinition
+            id: completedTasksDefinition
+            content: CompletedTasks {}
+        },
+        ComponentDefinition {
+            id: foldersDefinition
             content: Folders {}
         },
         ComponentDefinition {
-            id: completedTasksDefinition
-            content: CompletedTasks {}
+            id: contextsDefinition
+            content: Contexts{}
         },
         ComponentDefinition {
             id: settingsSheetDefinition

@@ -3,14 +3,12 @@ import bb.system 1.2
 
 Sheet {
     id: settingsSheet
-    accessibility.name: "Settings sheet"
     
     onClosed: {
         destroy();
     }
     
     Page {
-        accessibility.name: "Settings page"
         titleBar: TitleBar {
             dismissAction: ActionItem {
                 title: "Cancel"
@@ -26,7 +24,6 @@ Sheet {
             }
         }
         Container {
-            accessibility.name: "Settings page container"
             layout: StackLayout {
                 orientation: LayoutOrientation.TopToBottom
             }

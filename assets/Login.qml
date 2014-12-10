@@ -4,7 +4,6 @@ import bb.system 1.2
 Page {
     id: loginPage;
     objectName: "loginPage"
-    accessibility.name: "Login page"
     
     Container {
         layout: DockLayout {}
@@ -14,12 +13,10 @@ Page {
             objectName: "loginScrollView"
             scrollViewProperties.pinchToZoomEnabled: false
             scrollViewProperties.scrollMode: ScrollMode.Vertical
-            accessibility.name: "Login page ScrollView"
             
             WebView {
                 id: loginWebView
                 objectName: "loginWebView"
-                accessibility.name: "Login page WebView"
                 
                 onLoadProgressChanged: {
                     progressIndicator.value = loadProgress / 100.0;
@@ -36,7 +33,6 @@ Page {
         }
         
         Container {
-            accessibility.name: "Container for progress indicator"
             bottomPadding: 25
             horizontalAlignment: HorizontalAlignment.Center
             verticalAlignment: VerticalAlignment.Bottom
@@ -44,7 +40,6 @@ Page {
             ProgressIndicator {
                 id: progressIndicator
                 opacity: 0
-                accessibility.name: "Progress indicator for loading login page"
             }
         }
     }

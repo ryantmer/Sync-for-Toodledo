@@ -2,10 +2,8 @@ import bb.cascades 1.2
 import bb.data 1.0
 
 Container {
-    accessibility.name: "Cover container"
     ListView {
-        id: coverTaskList
-        accessibility.name: "Cover task list"
+        id: coverListView
         layout: StackListLayout {}
         horizontalAlignment: HorizontalAlignment.Fill
         
@@ -15,11 +13,10 @@ Container {
             ListItemComponent {
                 type: "item"
                 Container {
-                    id: taskItemContainer
-                    accessibility.name: "List item component container"
+                    id: itemContainer
                     StandardListItem {
                         title: ListItemData.title
-                        description: taskItemContainer.ListItem.view.dueDateString(ListItemData.duedate);
+                        description: itemContainer.ListItem.view.dueDateString(ListItemData.duedate);
                     }
                 }
             }
