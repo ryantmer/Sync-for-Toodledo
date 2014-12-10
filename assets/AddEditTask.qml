@@ -122,46 +122,46 @@ Page {
                     return;
                 }
                 
-                var taskData = {}
+                var newData = {}
                 if (edit) {
                     //Editing a pre-existing task
-                    taskData = data;
-                    taskData["completed"] = completedCheckbox.checked ?
+                    newData = data;
+                    newData["completed"] = completedCheckbox.checked ?
                                 Math.floor((new Date()).getTime() / 1000) : 0;
                 }
                 
-                taskData["title"] = titleField.text;
-                taskData["note"] = noteArea.text;
-                taskData["duedate"] = duedateCheckbox.checked ? 
+                newData["title"] = titleField.text;
+                newData["note"] = noteArea.text;
+                newData["duedate"] = duedateCheckbox.checked ? 
                             0: app.dateTimeToUnixTime(duedatePicker.value);
-                taskData["folder"] = folderDropDown.selectedValue;
+                newData["folder"] = folderDropDown.selectedValue;
                 
                 if (advancedOptionsToggle.checked) {
-                    taskData["tag"] = tagField.text;
-                    taskData["duedatemod"] = duedatemodDropDown.selectedValue;
-                    taskData["duetime"] = duetimeCheckbox.checked ?
+                    newData["tag"] = tagField.text;
+                    newData["duedatemod"] = duedatemodDropDown.selectedValue;
+                    newData["duetime"] = duetimeCheckbox.checked ?
                                 0 : app.dateTimeToUnixTimeNoOffset(duetimePicker.value);
-                    taskData["startdate"] = startdateCheckbox.checked ?
+                    newData["startdate"] = startdateCheckbox.checked ?
                                 0 : app.dateTimeToUnixTime(startdatePicker.value);
-                    taskData["starttime"] = starttimeCheckbox.checked ?
+                    newData["starttime"] = starttimeCheckbox.checked ?
                                 0 : app.dateTimeToUnixTimeNoOffset(starttimePicker.value);
-                    taskData["length"] = lengthCheckbox.checked ?
+                    newData["length"] = lengthCheckbox.checked ?
                                 0 : app.getLengthValue(lengthPicker.value);
-                    taskData["remind"] = remindDropDown.selectedValue;
-                    taskData["repeat"] = repeatDropDown.selectedValue;
-                    taskData["status"] = statusDropDown.selectedValue;
-                    taskData["priority"] = priorityDropDown.selectedValue;
-                    taskData["star"] = starToggle.checked + 0;
+                    newData["remind"] = remindDropDown.selectedValue;
+                    newData["repeat"] = repeatDropDown.selectedValue;
+                    newData["status"] = statusDropDown.selectedValue;
+                    newData["priority"] = priorityDropDown.selectedValue;
+                    newData["star"] = starToggle.checked + 0;
                 }
                 
-//                for (var param in taskData) {
-//                    console.log("taskData." + param + " = " + taskData[param]);
+//                for (var param in newData) {
+//                    console.log("newData." + param + " = " + newData[param]);
 //                }
                 
                 if (edit) {
-                    app.taskDataModel.edit(data, taskData);
+                    app.taskDataModel.edit(data, newData);
                 } else {
-                    app.taskDataModel.add(taskData);
+                    app.taskDataModel.add(newData);
                 }
                 
                 mainNavPane.pop();

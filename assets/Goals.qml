@@ -4,7 +4,7 @@ import bb.system 1.2
 
 Page {
     titleBar: TitleBar {
-        title: "Sync for Toodledo - Folders"
+        title: "Sync for Toodledo - Goals"
     }
     
     Container {
@@ -13,7 +13,7 @@ Page {
             layout: StackListLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             
-            dataModel: app.folderDataModel
+            dataModel: app.goalDataModel
             
             listItemComponents: [
                 ListItemComponent {
@@ -22,8 +22,8 @@ Page {
                         id: itemContainer
                         StandardListItem {
                             title: ListItemData.name
-                            description: itemContainer.ListItem.view.description(
-                                        ListItemData.private, ListItemData.archived)
+                            description: itemContainer.ListItem.view.description(ListItemData.note);
+                            status: itemContainer.ListItem.view.status();
                             
                             contextActions: [
                                 ActionSet {
@@ -38,16 +38,16 @@ Page {
                             attachedObjects: [
                                 SystemDialog {
                                     id: deleteConfirmDialog
-                                    title: "Delete Folder"
-                                    body: "Are you sure you want to delete this folder?"
+                                    title: "Delete Goal"
+                                    body: "Are you sure you want to delete this goal?"
                                     confirmButton.label: "Delete"
                                     confirmButton.enabled: true
                                     cancelButton.label: "Cancel"
                                     cancelButton.enabled: true
                                     onFinished: {
                                         if (result == SystemUiResult.ConfirmButtonSelection) {
-                                            var folderData = {"id": ListItemData.id}
-                                            app.folderDataModel.remove(folderData);
+                                            var goalData = {"id": ListItemData.id}
+                                            app.goalDataModel.remove(goalData);
                                         }
                                     }
                                 }
@@ -58,23 +58,25 @@ Page {
             ]
             
             onTriggered: {
-                var folder = dataModel.data(indexPath);
-                var page = addEditFolderDefinition.createObject();
-                page.data = folder;
+                var goal = dataModel.data(indexPath);
+                var page = addEditGoalDefinition.createObject();
+                page.data = goal;
                 page.edit = true;
                 page.setup();
                 mainNavPane.push(page);
             }
             
-            function description(isPrivate, isArchived) {
-                if (isPrivate == 1 && isArchived == 1) {
-                    return "Archived, Private";
-                } else if (isPrivate == 1) {
-                    return "Private, Not Archived";
-                } else if (isArchived == 1) {
-                    return "Archived, Not Private";
+            function status() {
+                
+            }
+            
+            function description(note) {
+                if (note.indexOf("\n") > -1) {
+                    //Note is multi-line, take first line as description
+                    return note.substring(0, note.indexOf("\n"));
                 } else {
-                    return "Not Archived, Not Private";
+                    //Note is a single line
+                    return note;
                 }
             }
         }
@@ -86,15 +88,15 @@ Page {
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_reload.png"
             onTriggered: {
-                app.folderDataModel.refresh();
+                app.goalDataModel.refresh();
             }
         },
         ActionItem {
-            title: "Add Folder"
+            title: "Add Goal"
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_add.png"
             onTriggered: {
-                var page = addEditFolderDefinition.createObject();
+                var page = addEditGoalDefinition.createObject();
                 page.edit = false;
                 page.setup();
                 mainNavPane.push(page);
@@ -104,8 +106,8 @@ Page {
     
     attachedObjects: [
         ComponentDefinition {
-            id: addEditFolderDefinition
-            content: AddEditFolder{}
+            id: addEditGoalDefinition
+            content: AddEditGoal{}
         }
     ]
 }

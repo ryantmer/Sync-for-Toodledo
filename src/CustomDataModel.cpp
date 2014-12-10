@@ -7,6 +7,9 @@ const QString CustomDataModel::editUrl = QString("http://api.toodledo.com/3/%1/e
 const QString CustomDataModel::removeUrl = QString("http://api.toodledo.com/3/%1/delete.php");
 const QString CustomDataModel::tasks = QString("tasks");
 const QString CustomDataModel::folders = QString("folders");
+const QString CustomDataModel::contexts = QString("contexts");
+const QString CustomDataModel::goals = QString("goals");
+const QString CustomDataModel::locations = QString("locations");
 
 using namespace bb::cascades;
 using namespace bb::data;
@@ -74,6 +77,8 @@ void CustomDataModel::populateDataModel() {
             urlData.addQueryItem("fields", "note");
             break;
         case Context:
+            url.setUrl(getUrl.arg(contexts));
+            break;
         case Goal:
         case Location:
         default:
@@ -137,6 +142,13 @@ bool compareCompletedTasks(QVariant &a, QVariant &b) {
     }
 }
 
+bool compareContexts(QVariant &a, QVariant &b) {
+    QVariantMap first = a.toMap();
+    QVariantMap second = b.toMap();
+
+    return first.value("private").toLongLong(NULL) <= second.value("private").toLongLong(NULL);
+}
+
 void CustomDataModel::sort() {
     switch (_dataType) {
         case Task:
@@ -149,6 +161,8 @@ void CustomDataModel::sort() {
             qSort(_internalDB.begin(), _internalDB.end(), compareCompletedTasks);
             break;
         case Context:
+            qSort(_internalDB.begin(), _internalDB.end(), compareContexts);
+            break;
         case Goal:
         case Location:
         default:
@@ -397,7 +411,8 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
         }
 
         QString replyUrl = reply->url().toString(QUrl::RemoveQuery);
-        if (replyUrl == getUrl.arg(tasks) || replyUrl == getUrl.arg(folders)) {
+        if (replyUrl == getUrl.arg(tasks) || replyUrl == getUrl.arg(folders) ||
+                replyUrl == getUrl.arg(contexts)) {
             qDebug() << Q_FUNC_INFO << "Get URL data received";
             //Discard summary item (only when getting tasks)
             if (dataList.first().toMap().contains("num") && dataList.first().toMap().contains("total")) {

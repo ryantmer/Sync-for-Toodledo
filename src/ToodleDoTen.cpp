@@ -217,8 +217,8 @@ void ToodledoTen::onNetworkStateChanged(bool connected) {
         _taskDataModel->refresh();
         _folderDataModel->refresh();
         _completedTaskDataModel->refresh();
+        _contextDataModel->refresh();
         //TODO: Implement these
-//        _contextDataModel->refresh();
 //        _goalDataModel->refresh();
 //        _locationDataModel->refresh();
     } else {
@@ -248,8 +248,8 @@ void ToodledoTen::onAccessTokenRefreshed() {
     _taskDataModel->refresh();
     _folderDataModel->refresh();
     _completedTaskDataModel->refresh();
+    _contextDataModel->refresh();
     //TODO: Implement these
-//        _contextDataModel->refresh();
 //        _goalDataModel->refresh();
 //        _locationDataModel->refresh();
 }

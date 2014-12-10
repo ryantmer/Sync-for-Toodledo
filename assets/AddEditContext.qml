@@ -8,8 +8,8 @@ Page {
     
     function setup() {
         if (edit) {
-            contextName.text = data.name;
-            contextPrivate.checked = data.private;
+            nameField.text = data.name;
+            privateCheckBox.checked = data.private;
             
             addSaveButton.title = "Save";
             addSaveButton.imageSource = "asset:///images/ic_save.png";
@@ -32,24 +32,30 @@ Page {
             imageSource: "asset:///images/ic_add.png" //Changed in setup if editing a context
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
-                if (!contextName.text) {
+                if (!nameField.text) {
                     titleRequired.visible = true;
                     return;
                 }
-                if (contextName.text.length > 32) {
+                if (nameField.text.length > 32) {
                     nameTooLong.visible = true;
                     return;
                 }
                 
+                var newData = {}
                 if (edit) {
-                    var contextData = {"id": data.id,
-                                "name": contextName.text,
-                                "private": contextPrivate.checked + 0};
-                    app.contextDataModel.edit(data, contextData);
+                    newData = data;
+                }
+                newData["name"] = nameField.text;
+                newData["private"] = privateCheckBox.checked + 0;
+                
+                for (var param in newData) {
+                    console.log("newData." + param + " = " + newData[param]);
+                }
+                
+                if (edit) {
+                    app.contextDataModel.edit(data, newData);
                 } else {
-                    var contextData = {"name": contextName.text,
-                                "private": contextPrivate.checked + 0};
-                    app.contextDataModel.add(contextData);
+                    app.contextDataModel.add(newData);
                 }
                 mainNavPane.pop();
             }
@@ -82,13 +88,13 @@ Page {
                 visible: false
             }
             TextField {
-                id: contextName
-                hintText: "Folder Name"
+                id: nameField
+                hintText: "Context Name"
                 horizontalAlignment: HorizontalAlignment.Fill
                 bottomMargin: 30
             }
             CheckBox {
-                id: contextPrivate
+                id: privateCheckBox
                 text: "Private"
                 bottomMargin: 30
             }

@@ -38,6 +38,9 @@ public:
     static const QString removeUrl;
     static const QString tasks;
     static const QString folders;
+    static const QString contexts;
+    static const QString goals;
+    static const QString locations;
 
     //Required by bb::cascades::DataModel
     Q_INVOKABLE virtual int childCount(const QVariantList &indexPath);

@@ -69,8 +69,8 @@ NavigationPane {
                             }
                             StandardListItem {
                                 title: ListItemData.title
-                                status: itemContainer.ListItem.view.dueDateString(ListItemData.duedate);
-                                description: itemContainer.ListItem.view.descriptionString(ListItemData.note);
+                                status: itemContainer.ListItem.view.status(ListItemData.duedate);
+                                description: itemContainer.ListItem.view.description(ListItemData.note);
                                 textFormat: TextFormat.Auto
                                 
                                 contextActions: [
@@ -114,7 +114,7 @@ NavigationPane {
                     mainNavPane.push(page);
                 }
                 
-                function dueDateString(dueDate) {
+                function status(dueDate) {
                     if (dueDate == 0) {
                         return "No due date";
                     } else if (dueDate <= Math.floor((new Date()).getTime() / 1000)) {
@@ -126,7 +126,7 @@ NavigationPane {
                     }
                 }
                 
-                function descriptionString(note) {
+                function description(note) {
                     if (note.indexOf("\n") > -1) {
                         //Note is multi-line, take first line as description
                         return note.substring(0, note.indexOf("\n"));
@@ -183,6 +183,24 @@ NavigationPane {
                     var page = contextsDefinition.createObject();
                     mainNavPane.push(page);
                 }
+            },
+            ActionItem {
+                title: "Manage Goals"
+                ActionBar.placement: ActionBarPlacement.InOverflow
+                imageSource: "asset:///images/ic_settings.png"
+                onTriggered: {
+                    var page = goalsDefinition.createObject();
+                    mainNavPane.push(page);
+                }
+            },
+            ActionItem {
+                title: "Manage Locations"
+                ActionBar.placement: ActionBarPlacement.InOverflow
+                imageSource: "asset:///images/ic_settings.png"
+                onTriggered: {
+                    var page = locationsDefinition.createObject();
+                    mainNavPane.push(page);
+                }
             }
         ]
     }
@@ -203,6 +221,14 @@ NavigationPane {
         ComponentDefinition {
             id: contextsDefinition
             content: Contexts{}
+        },
+        ComponentDefinition {
+            id: goalsDefinition
+            content: Goals{}
+        },
+        ComponentDefinition {
+            id: locationsDefinition
+            content: Locations{}
         },
         ComponentDefinition {
             id: settingsSheetDefinition

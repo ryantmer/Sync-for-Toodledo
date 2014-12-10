@@ -9,7 +9,7 @@ Page {
     
     Container {
         ListView {
-            id: contextListView
+            id: listView
             layout: StackListLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             
@@ -22,7 +22,7 @@ Page {
                         id: itemContainer
                         StandardListItem {
                             title: ListItemData.name
-                            description: contextItemContainer.ListItem.view.privateString(ListItemData.private)
+                            description: itemContainer.ListItem.view.privateString(ListItemData.private)
                             
                             contextActions: [
                                 ActionSet {
@@ -37,7 +37,7 @@ Page {
                             attachedObjects: [
                                 SystemDialog {
                                     id: deleteConfirmDialog
-                                    title: "Delete Folder"
+                                    title: "Delete Context"
                                     body: "Are you sure you want to delete this context?"
                                     confirmButton.label: "Delete"
                                     confirmButton.enabled: true
@@ -58,7 +58,7 @@ Page {
             
             onTriggered: {
                 var context = dataModel.data(indexPath);
-                var page = addEditFolderDefinition.createObject();
+                var page = addEditContextDefinition.createObject();
                 page.data = context;
                 page.edit = true;
                 page.setup();
@@ -85,11 +85,11 @@ Page {
             }
         },
         ActionItem {
-            title: "Add Folder"
+            title: "Add Context"
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_add.png"
             onTriggered: {
-                var page = addEditFolderDefinition.createObject();
+                var page = addEditContextDefinition.createObject();
                 page.edit = false;
                 page.setup();
                 mainNavPane.push(page);
@@ -99,8 +99,8 @@ Page {
     
     attachedObjects: [
         ComponentDefinition {
-            id: addEditFolderDefinition
-            content: AddEditFolder{}
+            id: addEditContextDefinition
+            content: AddEditContext{}
         }
     ]
 }
