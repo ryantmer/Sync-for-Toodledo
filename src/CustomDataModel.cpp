@@ -230,8 +230,6 @@ void CustomDataModel::removeFromDataModel(QVariantMap data) {
             break;
     }
 
-    qDebug() << Q_FUNC_INFO << removeId;
-
     for (int i = 0; i < _internalDB.count(); ++i) {
         qlonglong currentId = _internalDB.value(i).toMap().value("id").toLongLong(NULL);
         if (currentId == removeId) {
@@ -355,6 +353,12 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
             }
             break;
         case Context:
+            url.setUrl(editUrl.arg(contexts));
+            urlData.addQueryItem("id", newData["id"].toString());
+            for (iter = newData.begin(); iter != newData.end(); ++iter) {
+                urlData.addQueryItem(iter.key(), iter.value().toString());
+            }
+            break;
         case Goal:
         case Location:
         default:
@@ -375,6 +379,7 @@ void CustomDataModel::remove(QVariantMap data) {
 
     switch (_dataType) {
         case Task:
+        case CompletedTask:
             url.setUrl(removeUrl.arg(tasks));
             urlData.addQueryItem("tasks", "[\"" + data["id"].toString() + "\"]");
             break;
@@ -382,8 +387,10 @@ void CustomDataModel::remove(QVariantMap data) {
             url.setUrl(removeUrl.arg(folders));
             urlData.addQueryItem("id", data["id"].toString());
             break;
-        case CompletedTask:
         case Context:
+            url.setUrl(removeUrl.arg(contexts));
+            urlData.addQueryItem("id", data["id"].toString());
+            break;
         case Goal:
         case Location:
         default:
@@ -434,7 +441,8 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
                 addToDataModel(dataList.value(i).toMap());
             }
         }
-        else if (replyUrl == editUrl.arg(tasks) || replyUrl == editUrl.arg(folders)) {
+        else if (replyUrl == editUrl.arg(tasks) || replyUrl == editUrl.arg(folders) ||
+                replyUrl == editUrl.arg(contexts)) {
             qDebug() << Q_FUNC_INFO << "Edit URL data received";
             for (int i = 0; i < dataList.count(); ++i) {
                 editInDataModel(dataList.value(i).toMap());
@@ -445,9 +453,9 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
             for (int i = 0; i < dataList.count(); ++i) {
                 removeFromDataModel(dataList.value(i).toMap());
             }
-        } else if (replyUrl == removeUrl.arg(folders)) {
-            //Folder remove reply comes as a single map, not list of maps
-            qDebug() << Q_FUNC_INFO << "Remove folder data received";
+        } else if (replyUrl == removeUrl.arg(folders) || replyUrl == removeUrl.arg(contexts)) {
+            //These remove replies come as a single map, not list of maps
+            qDebug() << Q_FUNC_INFO << "Remove URL data received";
             QVariantMap dataMap = jda.loadFromBuffer(response).value<QVariantMap>();
             if (jda.hasError()) {
                 qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();

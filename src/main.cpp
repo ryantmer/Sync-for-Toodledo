@@ -11,7 +11,7 @@ void messageOutput(QtMsgType type, const char *msg)
 {
     switch (type) {
     case QtDebugMsg:
-//        fprintf(stderr, "Debug: %s\n", msg);
+        fprintf(stderr, "Debug: %s\n", msg);
         break;
     case QtWarningMsg:
         fprintf(stderr, "Warning: %s\n", msg);
