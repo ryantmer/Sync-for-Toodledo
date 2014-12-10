@@ -217,13 +217,13 @@ void CustomDataModel::removeFromDataModel(QVariantMap data) {
     qlonglong removeId;
     switch (_dataType) {
         case Task:
+        case CompletedTask:
             removeId = data.value("id").toLongLong(NULL);
             break;
         case Folder:
+        case Context:
             removeId = data.value("deleted").toLongLong(NULL);
             break;
-        case CompletedTask:
-        case Context:
         case Goal:
         case Location:
         default:
@@ -287,6 +287,11 @@ void CustomDataModel::add(QVariantMap data) {
             }
             break;
         case Context:
+            url.setUrl(addUrl.arg(contexts));
+            for (iter = data.begin(); iter != data.end(); ++iter) {
+                urlData.addQueryItem(iter.key(), data[iter.key()].toString());
+            }
+            break;
         case Goal:
         case Location:
         default:
@@ -422,7 +427,8 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
                 addToDataModel(dataList.value(i).toMap());
             }
         }
-        else if (replyUrl == addUrl.arg(tasks) || replyUrl == addUrl.arg(folders)) {
+        else if (replyUrl == addUrl.arg(tasks) || replyUrl == addUrl.arg(folders) ||
+                replyUrl == addUrl.arg(contexts)) {
             qDebug() << Q_FUNC_INFO << "Add URL data received";
             for (int i = 0; i < dataList.count(); ++i) {
                 addToDataModel(dataList.value(i).toMap());
