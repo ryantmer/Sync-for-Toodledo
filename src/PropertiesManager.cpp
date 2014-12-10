@@ -64,16 +64,16 @@ void PropertiesManager::clearTokens() {
     settings.setValue("tokenType", tokenType);
 }
 
-//Delay after which a task is removed from UI after being checked
-int PropertiesManager::completedDelay() {
+//Number of days to go back for completed tasks
+int PropertiesManager::completedTaskAge() {
     QSettings settings("ryantmer", "SyncForToodledo");
-    return settings.value("completedDelay", 3000).toInt(NULL);
+    return settings.value("completedTaskAge", 1).toInt(NULL);
 }
-void PropertiesManager::setCompletedDelay(int delay) {
+void PropertiesManager::setCompletedTaskAge(int days) {
     QSettings settings("ryantmer", "SyncForToodledo");
-    int d = settings.value("completedDelay", 3000).toInt(NULL);
-    if (d != delay) {
-        settings.setValue("completedDelay", delay);
-        qDebug() << Q_FUNC_INFO << "Changed completedDelay to" << delay;
+    int d = settings.value("completedTaskAge", 1).toInt(NULL);
+    if (d != days) {
+        settings.setValue("completedTaskAge", days);
+        qDebug() << Q_FUNC_INFO << "Changed completedDelay to" << days;
     }
 }

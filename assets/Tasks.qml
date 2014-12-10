@@ -9,7 +9,9 @@ NavigationPane {
     Menu.definition: MenuDefinition {
         settingsAction: SettingsActionItem {
             onTriggered: {
-                settingsSheetDefinition.createObject().open();
+                var page = settingsSheetDefinition.createObject()
+                page.setup();
+                page.open();
             }
         }
         

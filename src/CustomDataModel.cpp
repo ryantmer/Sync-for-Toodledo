@@ -68,9 +68,9 @@ void CustomDataModel::populateDataModel() {
             break;
         case CompletedTask:
             url.setUrl(getUrl.arg(tasks));
-            //only get tasks modified in last 24 hours
-            urlData.addQueryItem("before", QString::number(QDateTime::currentDateTimeUtc().toTime_t()));
-            urlData.addQueryItem("after", QString::number(QDateTime::currentDateTimeUtc().toTime_t() - 86400));
+            //only get tasks modified in last n days, based on setting
+            urlData.addQueryItem("after", QString::number(
+                    QDateTime::currentDateTimeUtc().toTime_t() - 86400 * _propMan->completedTaskAge()));
             urlData.addQueryItem("comp", QString::number(1));
             urlData.addQueryItem("fields", "note");
             break;
@@ -508,7 +508,7 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
     } else {
         qWarning() << Q_FUNC_INFO << "Network error";
         qWarning() << Q_FUNC_INFO << response;
-        emit toast("Network error!");
+        emit toast("Network error! " + response);
     }
     reply->deleteLater();
 }

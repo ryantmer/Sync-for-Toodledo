@@ -8,6 +8,16 @@ Sheet {
         destroy();
     }
     
+    function setup() {
+        var index;
+        for (index = 0; index < completedDaysDropDown.options.length; index++) {
+            if (completedDaysDropDown.options[index].value == propertyManager.completedTaskAge) {
+                break;
+            }
+        }
+        completedDaysDropDown.setSelectedIndex(index);
+    }
+    
     Page {
         titleBar: TitleBar {
             dismissAction: ActionItem {
@@ -19,6 +29,7 @@ Sheet {
             acceptAction: ActionItem {
                 title: "Save"
                 onTriggered: {
+                    propertyManager.completedTaskAge = completedDaysDropDown.selectedValue;
                     settingsSheet.close();
                 }
             }
@@ -33,10 +44,7 @@ Sheet {
             rightPadding: 20
             
             Container {
-                topPadding: 10
-                bottomPadding: 10
-                leftPadding: 10
-                rightPadding: 10
+                bottomMargin: 30
                 layout: DockLayout {}
                 horizontalAlignment: HorizontalAlignment.Fill
                 Label {
@@ -52,6 +60,54 @@ Sheet {
                     horizontalAlignment: HorizontalAlignment.Right
                     onClicked: {
                         app.logout();
+                    }
+                }
+            }
+            
+            Container {
+                layout: StackLayout {
+                    orientation: LayoutOrientation.LeftToRight
+                }
+                bottomMargin: 30
+                Label {
+                    text: "Get"
+                    textStyle.fontSize: FontSize.XLarge
+                    verticalAlignment: VerticalAlignment.Center
+                    layoutProperties: StackLayoutProperties {
+                        spaceQuota: 1
+                    }
+                }
+                DropDown {
+                    id: completedDaysDropDown
+                    
+                    options: [
+                        Option {
+                            text: "1"
+                            value: 1
+                        },
+                        Option {
+                            text: "2"
+                            value: 2
+                        },
+                        Option {
+                            text: "7"
+                            value: 7
+                        },
+                        Option {
+                            text: "30"
+                            value: 30
+                        }
+                    ]
+                    layoutProperties: StackLayoutProperties {
+                        spaceQuota: 1
+                    }
+                }
+                Label {
+                    text: "days of completed tasks"
+                    textStyle.fontSize: FontSize.XLarge
+                    verticalAlignment: VerticalAlignment.Center
+                    layoutProperties: StackLayoutProperties {
+                        spaceQuota: 6
                     }
                 }
             }
