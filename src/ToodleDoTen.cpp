@@ -201,6 +201,14 @@ QString ToodledoTen::getVersionNumber() {
     return pi.version();
 }
 
+QVariantMap ToodledoTen::getLocation() {
+    //TODO: Actually implement location
+    QVariantMap location = QVariantMap();
+    location.insert("lat", 0);
+    location.insert("lon", 0);
+    return location;
+}
+
 void ToodledoTen::logout() {
     emit loggedOut();
 }
@@ -219,8 +227,7 @@ void ToodledoTen::onNetworkStateChanged(bool connected) {
         _completedTaskDataModel->refresh();
         _contextDataModel->refresh();
         _goalDataModel->refresh();
-        //TODO: Implement these
-//        _locationDataModel->refresh();
+        _locationDataModel->refresh();
     } else {
         qWarning() << Q_FUNC_INFO << "Network connection lost";
         showToast("Network connection lost");
@@ -250,8 +257,7 @@ void ToodledoTen::onAccessTokenRefreshed() {
     _completedTaskDataModel->refresh();
     _contextDataModel->refresh();
     _goalDataModel->refresh();
-    //TODO: Implement these
-//        _locationDataModel->refresh();
+    _locationDataModel->refresh();
 }
 
 void ToodledoTen::onRefreshTokenExpired() {

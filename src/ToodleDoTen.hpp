@@ -43,6 +43,7 @@ public:
     Q_INVOKABLE uint dateTimeToUnixTimeNoOffset(QDateTime dateTime);
     Q_INVOKABLE uint getLengthValue(QDateTime dateTime);
     Q_INVOKABLE QString getVersionNumber();
+    Q_INVOKABLE QVariantMap getLocation();
 
     Q_INVOKABLE void logout();
     Q_INVOKABLE void showToast(QString message);

@@ -22,7 +22,7 @@ Page {
                         id: itemContainer
                         StandardListItem {
                             title: ListItemData.name
-                            description: itemContainer.ListItem.view.privateString(ListItemData.private)
+                            description: itemContainer.ListItem.view.description(ListItemData.private)
                             
                             contextActions: [
                                 ActionSet {
@@ -65,7 +65,7 @@ Page {
                 mainNavPane.push(page);
             }
             
-            function privateString(isPrivate) {
+            function description(isPrivate) {
                 if (isPrivate) {
                     return "Private";
                 } else {

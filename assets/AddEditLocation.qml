@@ -1,15 +1,17 @@
 import bb.cascades 1.2
 
 Page {
-    id: addEditContextPage
+    id: addEditLocationPage
     
     property variant data;
     property bool edit;
     
     function setup() {
         if (edit) {
-            contextName.text = data.name;
-            contextPrivate.checked = data.private;
+            nameField.text = data.name;
+            descriptionArea.text = data.description;
+            latField.text = data.lat;
+            lonField.text = data.lon;
             
             addSaveButton.title = "Save";
             addSaveButton.imageSource = "asset:///images/ic_save.png";
@@ -28,28 +30,36 @@ Page {
     actions: [
         ActionItem {
             id: addSaveButton
-            title: "Add" //Changed to "Save" in setup if editing a context
-            imageSource: "asset:///images/ic_add.png" //Changed in setup if editing a context
+            title: "Add" //Changed to "Save" in setup if editing a location
+            imageSource: "asset:///images/ic_add.png" //Changed in setup if editing a location
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
-                if (!contextName.text) {
+                if (!nameField.text) {
                     titleRequired.visible = true;
                     return;
                 }
-                if (contextName.text.length > 32) {
+                if (nameField.text.length > 32) {
                     nameTooLong.visible = true;
                     return;
                 }
                 
+                var newData = {}
                 if (edit) {
-                    var contextData = {"id": data.id,
-                                "name": contextName.text,
-                                "private": contextPrivate.checked + 0};
-                    app.contextDataModel.edit(data, contextData);
+                    newData = data;
+                }
+                newData["name"] = nameField.text;
+                newData["description"] = descriptionArea.text;
+                newData["lat"] = latField.text;
+                newData["lon"] = lonField.text;
+                
+//                for (var param in newData) {
+//                    console.log("newData." + param + " = " + newData[param]);
+//                }
+                
+                if (edit) {
+                    app.locationDataModel.edit(data, newData);
                 } else {
-                    var contextData = {"name": contextName.text,
-                                "private": contextPrivate.checked + 0};
-                    app.contextDataModel.add(contextData);
+                    app.locationDataModel.add(newData);
                 }
                 mainNavPane.pop();
             }
@@ -82,15 +92,47 @@ Page {
                 visible: false
             }
             TextField {
-                id: contextName
-                hintText: "Folder Name"
+                id: nameField
+                hintText: "Location Name"
                 horizontalAlignment: HorizontalAlignment.Fill
                 bottomMargin: 30
             }
-            CheckBox {
-                id: contextPrivate
-                text: "Private"
+            TextArea {
+                id: descriptionArea
+                hintText: "Location description"
+                horizontalAlignment: HorizontalAlignment.Fill
                 bottomMargin: 30
+            }
+            Container {
+                layout: StackLayout {
+                    orientation: LayoutOrientation.LeftToRight
+                }
+                TextField {
+                    id: latField
+                    hintText: "Latitude"
+                    bottomMargin: 30
+                    layoutProperties: StackLayoutProperties {
+                        spaceQuota: 1
+                    }
+                }
+                TextField {
+                    id: lonField
+                    hintText: "Longitude"
+                    bottomMargin: 30
+                    layoutProperties: StackLayoutProperties {
+                        spaceQuota: 1
+                    }
+                }
+            }
+            Button {
+                id: currentLocationButton
+                text: "Use Current Location"
+                horizontalAlignment: HorizontalAlignment.Fill
+                onClicked: {
+                    var location = app.getLocation();
+                    latField.text = location.lat;
+                    lonField.text = location.lon;
+                }
             }
         }
     }

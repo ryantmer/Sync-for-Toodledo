@@ -4,16 +4,16 @@ import bb.system 1.2
 
 Page {
     titleBar: TitleBar {
-        title: "Sync for Toodledo - Contexts"
+        title: "Sync for Toodledo - Locations"
     }
     
     Container {
         ListView {
-            id: contextListView
+            id: listView
             layout: StackListLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             
-            dataModel: app.contextDataModel
+            dataModel: app.locationDataModel
             
             listItemComponents: [
                 ListItemComponent {
@@ -22,7 +22,7 @@ Page {
                         id: itemContainer
                         StandardListItem {
                             title: ListItemData.name
-                            description: contextItemContainer.ListItem.view.privateString(ListItemData.private)
+                            description: itemContainer.ListItem.view.description(ListItemData.description)
                             
                             contextActions: [
                                 ActionSet {
@@ -37,16 +37,16 @@ Page {
                             attachedObjects: [
                                 SystemDialog {
                                     id: deleteConfirmDialog
-                                    title: "Delete Folder"
-                                    body: "Are you sure you want to delete this context?"
+                                    title: "Delete Location"
+                                    body: "Are you sure you want to delete this location?"
                                     confirmButton.label: "Delete"
                                     confirmButton.enabled: true
                                     cancelButton.label: "Cancel"
                                     cancelButton.enabled: true
                                     onFinished: {
                                         if (result == SystemUiResult.ConfirmButtonSelection) {
-                                            var contextData = {"id": ListItemData.id}
-                                            app.contextDataModel.remove(contextData);
+                                            var locationData = {"id": ListItemData.id}
+                                            app.locationDataModel.remove(locationData);
                                         }
                                     }
                                 }
@@ -57,19 +57,21 @@ Page {
             ]
             
             onTriggered: {
-                var context = dataModel.data(indexPath);
-                var page = addEditFolderDefinition.createObject();
-                page.data = context;
+                var location = dataModel.data(indexPath);
+                var page = addEditLocationDefinition.createObject();
+                page.data = location;
                 page.edit = true;
                 page.setup();
                 mainNavPane.push(page);
             }
             
-            function privateString(isPrivate) {
-                if (isPrivate) {
-                    return "Private";
+            function description(desc) {
+                if (desc.indexOf("\n") > -1) {
+                    //Description is multi-line, take first line as description
+                    return desc.substring(0, desc.indexOf("\n"));
                 } else {
-                    return "Not Private";
+                    //Note is a single line
+                    return desc;
                 }
             }
         }
@@ -81,15 +83,15 @@ Page {
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_reload.png"
             onTriggered: {
-                app.contextDataModel.refresh();
+                app.locationDataModel.refresh();
             }
         },
         ActionItem {
-            title: "Add Folder"
+            title: "Add Location"
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_add.png"
             onTriggered: {
-                var page = addEditFolderDefinition.createObject();
+                var page = addEditLocationDefinition.createObject();
                 page.edit = false;
                 page.setup();
                 mainNavPane.push(page);
@@ -99,8 +101,8 @@ Page {
     
     attachedObjects: [
         ComponentDefinition {
-            id: addEditFolderDefinition
-            content: AddEditFolder{}
+            id: addEditLocationDefinition
+            content: AddEditLocation{}
         }
     ]
 }
