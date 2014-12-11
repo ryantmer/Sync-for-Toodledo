@@ -9,6 +9,8 @@
 #include <bb/cascades/Page>
 #include <bb/cascades/WebView>
 #include <bb/cascades/ScrollView>
+#include <QtLocationSubset/QGeoPositionInfo>
+#include <QtLocationSubset/QGeoPositionInfoSource>
 
 #include "PropertiesManager.hpp"
 #include "CustomDataModel.hpp"
@@ -16,6 +18,7 @@
 #include "LoginManager.hpp"
 
 using namespace bb::cascades;
+using namespace QtMobilitySubset;
 
 class ToodledoTen : public QObject {
     Q_OBJECT
@@ -43,7 +46,7 @@ public:
     Q_INVOKABLE uint dateTimeToUnixTimeNoOffset(QDateTime dateTime);
     Q_INVOKABLE uint getLengthValue(QDateTime dateTime);
     Q_INVOKABLE QString getVersionNumber();
-    Q_INVOKABLE QVariantMap getLocation();
+    Q_INVOKABLE void getLocation();
 
     Q_INVOKABLE void logout();
     Q_INVOKABLE void showToast(QString message);
@@ -52,6 +55,7 @@ signals:
     void loggedOut();
 
 public slots:
+    void onPositionUpdated(const QGeoPositionInfo &pos);
     void onNetworkStateChanged(bool connected);
     void onWebViewUrlChanged(QUrl url);
     void onAccessTokenRefreshed();

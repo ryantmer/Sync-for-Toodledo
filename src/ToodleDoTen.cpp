@@ -5,6 +5,8 @@
 
 #include <bb/cascades/Container>
 #include <bb/cascades/SceneCover>
+#include <bb/cascades/Button>
+#include <bb/cascades/TextField>
 #include <bb/cascades/Label>
 #include <bb/system/SystemToast>
 #include <bb/system/SystemUiPosition>
@@ -201,12 +203,17 @@ QString ToodledoTen::getVersionNumber() {
     return pi.version();
 }
 
-QVariantMap ToodledoTen::getLocation() {
-    //TODO: Actually implement location
-    QVariantMap location = QVariantMap();
-    location.insert("lat", 0);
-    location.insert("lon", 0);
-    return location;
+void ToodledoTen::getLocation() {
+    QGeoPositionInfoSource *src = QGeoPositionInfoSource::createDefaultSource(this);
+    src->setPreferredPositioningMethods(QGeoPositionInfoSource::AllPositioningMethods);
+
+    bool isOk = connect(src, SIGNAL(positionUpdated(const QGeoPositionInfo &)),
+            this, SLOT(onPositionUpdated(const QGeoPositionInfo &)));
+    if (isOk) {
+        src->requestUpdate();
+    } else {
+        qDebug() << Q_FUNC_INFO << "Couldn't connect to location signal";
+    }
 }
 
 void ToodledoTen::logout() {
@@ -219,6 +226,21 @@ void ToodledoTen::logout() {
 /*
  * Slots begin
  */
+void ToodledoTen::onPositionUpdated(const QGeoPositionInfo &pos) {
+    double lat = pos.coordinate().latitude();
+    double lon = pos.coordinate().longitude();
+    qDebug() << Q_FUNC_INFO << "Got location:" << lat << lon;
+
+    Button *button = _root->findChild<Button*>("currentLocationButton");
+    button->setEnabled(true);
+    button->setText("Use Current Location");
+
+    TextField *field = _root->findChild<TextField*>("latField");
+    field->setText(QString::number(lat));
+    field = _root->findChild<TextField*>("lonField");
+    field->setText(QString::number(lon));
+}
+
 void ToodledoTen::onNetworkStateChanged(bool connected) {
     if (connected) {
         qDebug() << Q_FUNC_INFO << "Network connection established";

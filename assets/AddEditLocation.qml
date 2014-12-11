@@ -109,6 +109,7 @@ Page {
                 }
                 TextField {
                     id: latField
+                    objectName: "latField"
                     hintText: "Latitude"
                     bottomMargin: 30
                     layoutProperties: StackLayoutProperties {
@@ -117,6 +118,7 @@ Page {
                 }
                 TextField {
                     id: lonField
+                    objectName: "lonField"
                     hintText: "Longitude"
                     bottomMargin: 30
                     layoutProperties: StackLayoutProperties {
@@ -126,12 +128,13 @@ Page {
             }
             Button {
                 id: currentLocationButton
+                objectName: "currentLocationButton"
                 text: "Use Current Location"
                 horizontalAlignment: HorizontalAlignment.Fill
                 onClicked: {
-                    var location = app.getLocation();
-                    latField.text = location.lat;
-                    lonField.text = location.lon;
+                    currentLocationButton.text = "Getting location..."
+                    currentLocationButton.enabled = false;
+                    app.getLocation();
                 }
             }
         }
