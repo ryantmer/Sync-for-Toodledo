@@ -42,12 +42,10 @@ Page {
         //Populate options in locations dropdown
         var locations = app.locationDataModel.getInternalList();
         for (var x = 0; x < locations.length; x++) {
-            if (locations[x].archived == 0) {
-                var opt = option.createObject();
-                opt.text = locations[x].name;
-                opt.value = locations[x].id;
-                locationDropDown.add(opt);
-            }
+            var opt = option.createObject();
+            opt.text = locations[x].name;
+            opt.value = locations[x].id;
+            locationDropDown.add(opt);
         }
         
         //If we're editing a task, rather than adding a new one
