@@ -234,7 +234,7 @@ void CustomDataModel::editInDataModel(QVariantMap data) {
 
 void CustomDataModel::removeFromDataModel(QVariantMap data) {
     qDebug() << Q_FUNC_INFO << data;
-    qlonglong removeId;
+    qlonglong removeId = 0;
     switch (_dataType) {
         case Task:
         case CompletedTask:
@@ -273,8 +273,6 @@ void CustomDataModel::add(QVariantMap data) {
             url.setUrl(addUrl.arg(tasks));
             //Build task data string from user's input
             QString encodedData = QString("[{");
-            QString returnFields = "folder,tag,startdate,duedate,duedatemod,starttime,"
-                        "duetime,remind,repeat,status,star,priority,length,note";
             for (iter = data.begin(); iter != data.end(); ++iter) {
                 bool isOk;
                 int value = data[iter.key()].toInt(&isOk);
@@ -295,7 +293,8 @@ void CustomDataModel::add(QVariantMap data) {
             encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
 
             urlData.addEncodedQueryItem("tasks", encodedData.toAscii());
-            urlData.addQueryItem("fields", returnFields);
+            urlData.addQueryItem("fields", "folder,tag,startdate,duedate,duedatemod,starttime,"
+                    "duetime,remind,repeat,status,star,priority,length,note,context,goal,location");
             break;
         }
         case Folder:
@@ -350,8 +349,6 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
             url.setUrl(editUrl.arg(tasks));
             QString encodedData = QString("[{");
             encodedData.append("\"id\":" + oldData["id"].toString());
-            QString returnFields = "folder,tag,startdate,duedate,duedatemod,starttime,"
-                        "duetime,remind,repeat,status,star,priority,length,note";
             for (iter = newData.begin(); iter != newData.end(); ++iter) {
                 if (newData[iter.key()] != oldData[iter.key()]) {
                     bool isOk;
@@ -370,7 +367,8 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
             encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
             encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
             urlData.addEncodedQueryItem("tasks", encodedData.toAscii());
-            urlData.addQueryItem("fields", returnFields);
+            urlData.addQueryItem("fields", "folder,tag,startdate,duedate,duedatemod,starttime,"
+                    "duetime,remind,repeat,status,star,priority,length,note");
             break;
         }
         case Folder:
@@ -400,7 +398,7 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
             break;
         case Location:
             url.setUrl(editUrl.arg(locations));
-//            urlData.addQueryItem("id", newData["id"].toString());
+            urlData.addQueryItem("id", newData["id"].toString());
             for (iter = newData.begin(); iter != newData.end(); ++iter) {
                 if (oldData[iter.key()] != newData[iter.key()]) {
                     urlData.addQueryItem(iter.key(), iter.value().toString());

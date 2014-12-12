@@ -52,7 +52,12 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/Settings.qml) \
         $$quote($$BASEDIR/assets/Tasks.qml) \
         $$quote($$BASEDIR/assets/images/ic_add.png) \
+        $$quote($$BASEDIR/assets/images/ic_completed.png) \
+        $$quote($$BASEDIR/assets/images/ic_contexts.png) \
+        $$quote($$BASEDIR/assets/images/ic_folders.png) \
+        $$quote($$BASEDIR/assets/images/ic_goals.png) \
         $$quote($$BASEDIR/assets/images/ic_info.png) \
+        $$quote($$BASEDIR/assets/images/ic_locations.png) \
         $$quote($$BASEDIR/assets/images/ic_reload.png) \
         $$quote($$BASEDIR/assets/images/ic_save.png) \
         $$quote($$BASEDIR/assets/images/ic_settings.png)

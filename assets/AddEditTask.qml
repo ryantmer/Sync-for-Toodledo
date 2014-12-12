@@ -524,78 +524,11 @@ Page {
                     id: remindDropDown
                     title: "Reminder"
                     bottomMargin: 30
+                    //Other length reminders are a premium-only feature
                     options: [
-                        Option {
-                            text: "No Reminder"
-                            value: 0
-                        },
-                        Option {
-                            text: "1 Minute"
-                            value: 1
-                        },
-                        Option {
-                            text: "15 Minutes"
-                            value: 15
-                        },
-                        Option {
-                            text: "30 Minutes"
-                            value: 30
-                        },
                         Option {
                             text: "60 Minutes"
                             value: 60
-                        },
-                        Option {
-                            text: "90 Minutes"
-                            value: 90
-                        },
-                        Option {
-                            text: "2 Hours"
-                            value: 120
-                        },
-                        Option {
-                            text: "3 Hours"
-                            value: 180
-                        },
-                        Option {
-                            text: "4 Hours"
-                            value: 240
-                        },
-                        Option {
-                            text: "1 Day"
-                            value: 1440
-                        },
-                        Option {
-                            text: "2 Days"
-                            value: 2880
-                        },
-                        Option {
-                            text: "3 Days"
-                            value: 4320
-                        },
-                        Option {
-                            text: "4 Days"
-                            value: 5760
-                        },
-                        Option {
-                            text: "5 Days"
-                            value: 7200
-                        },
-                        Option {
-                            text: "6 Days"
-                            value: 8640
-                        },
-                        Option {
-                            text: "1 Week"
-                            value: 10080
-                        },
-                        Option {
-                            text: "2 Weeks"
-                            value: 20160
-                        },
-                        Option {
-                            text: "1 Month"
-                            value: 43200
                         }
                     ]
                 }

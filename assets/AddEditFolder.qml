@@ -8,9 +8,9 @@ Page {
     
     function setup() {
         if (edit) {
-            folderName.text = data.name;
-            folderPrivate.checked = data.private;
-            folderArchived.checked = data.archived;
+            nameField.text = data.name;
+            privateCheckBox.checked = data.private;
+            archivedCheckBox.checked = data.archived;
             
             addSaveButton.title = "Save";
             addSaveButton.imageSource = "asset:///images/ic_save.png";

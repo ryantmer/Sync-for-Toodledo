@@ -163,6 +163,7 @@ NavigationPane {
             ActionItem {
                 title: "Completed Tasks"
                 ActionBar.placement: ActionBarPlacement.InOverflow
+                imageSource: "asset:///images/ic_completed.png"
                 onTriggered: {
                     var page = completedTasksDefinition.createObject();
                     mainNavPane.push(page);
@@ -171,7 +172,7 @@ NavigationPane {
             ActionItem {
                 title: "Manage Folders"
                 ActionBar.placement: ActionBarPlacement.InOverflow
-                imageSource: "asset:///images/ic_settings.png"
+                imageSource: "asset:///images/ic_folders.png"
                 onTriggered: {
                     var page = foldersDefinition.createObject();
                     mainNavPane.push(page);
@@ -180,7 +181,7 @@ NavigationPane {
             ActionItem {
                 title: "Manage Contexts"
                 ActionBar.placement: ActionBarPlacement.InOverflow
-                imageSource: "asset:///images/ic_settings.png"
+                imageSource: "asset:///images/ic_contexts.png"
                 onTriggered: {
                     var page = contextsDefinition.createObject();
                     mainNavPane.push(page);
@@ -189,7 +190,7 @@ NavigationPane {
             ActionItem {
                 title: "Manage Goals"
                 ActionBar.placement: ActionBarPlacement.InOverflow
-                imageSource: "asset:///images/ic_settings.png"
+                imageSource: "asset:///images/ic_goals.png"
                 onTriggered: {
                     var page = goalsDefinition.createObject();
                     mainNavPane.push(page);
@@ -198,7 +199,7 @@ NavigationPane {
             ActionItem {
                 title: "Manage Locations"
                 ActionBar.placement: ActionBarPlacement.InOverflow
-                imageSource: "asset:///images/ic_settings.png"
+                imageSource: "asset:///images/ic_locations.png"
                 onTriggered: {
                     var page = locationsDefinition.createObject();
                     mainNavPane.push(page);
