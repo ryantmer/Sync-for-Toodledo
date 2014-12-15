@@ -11,12 +11,14 @@ Page {
         ScrollView {
             id: loginScrollView
             objectName: "loginScrollView"
+            accessibility.name: "Login scrollview"
             scrollViewProperties.pinchToZoomEnabled: false
             scrollViewProperties.scrollMode: ScrollMode.Vertical
             
             WebView {
                 id: loginWebView
                 objectName: "loginWebView"
+                accessibility.name: "Login webview"
                 
                 onLoadProgressChanged: {
                     progressIndicator.value = loadProgress / 100.0;
@@ -39,6 +41,7 @@ Page {
             
             ProgressIndicator {
                 id: progressIndicator
+                accessibility.name: "Login page loading progress indicator"
                 opacity: 0
             }
         }

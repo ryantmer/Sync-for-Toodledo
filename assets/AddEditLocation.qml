@@ -67,6 +67,7 @@ Page {
     ]
     
     ScrollView {
+        accessibility.name: "Add/edit location scrollview"
         scrollViewProperties {
             scrollMode: ScrollMode.Vertical
         }

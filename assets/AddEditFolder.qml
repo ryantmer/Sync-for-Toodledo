@@ -60,6 +60,7 @@ Page {
     ]
     
     ScrollView {
+        accessibility.name: "Add/Edit folder scrollview"
         scrollViewProperties {
             scrollMode: ScrollMode.Vertical
         }

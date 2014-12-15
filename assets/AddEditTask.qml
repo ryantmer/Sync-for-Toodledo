@@ -219,6 +219,7 @@ Page {
     ]
     
     ScrollView {
+        accessibility.name: "Add/edit task scrollview"
         scrollViewProperties {
             scrollMode: ScrollMode.Vertical
         }
@@ -313,6 +314,7 @@ Page {
                 }
                 ToggleButton {
                     id: advancedOptionsToggle
+                    accessibility.name: "Advanced options toggle button"
                     verticalAlignment: VerticalAlignment.Center
                     onCheckedChanged: {
                         advancedContainer.visible = checked;
@@ -401,6 +403,7 @@ Page {
                     }
                     DropDown {
                         id: duedatemodDropDown
+                        accessibility.name: "Due date modifier dropdown"
                         layoutProperties: StackLayoutProperties {
                             spaceQuota: 3
                         }
@@ -676,6 +679,7 @@ Page {
                     }
                     ToggleButton {
                         id: starToggle
+                        accessibility.name: "Star toggle button"
                         verticalAlignment: VerticalAlignment.Center
                         layoutProperties: StackLayoutProperties {
                             spaceQuota: 1

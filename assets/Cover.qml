@@ -4,6 +4,7 @@ import bb.data 1.0
 Container {
     ListView {
         id: coverListView
+        accessibility.name: "Cover task list"
         layout: StackListLayout {}
         horizontalAlignment: HorizontalAlignment.Fill
         

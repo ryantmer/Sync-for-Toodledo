@@ -63,6 +63,7 @@ Page {
     ]
     
     ScrollView {
+        accessibility.name: "Add/Edit context scrollview"
         scrollViewProperties {
             scrollMode: ScrollMode.Vertical
         }
