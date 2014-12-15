@@ -16,15 +16,13 @@ public:
     void setCompletedTaskAge(int days);
     int dateFormat();
 
-    void updateAccessToken(QString accessToken, qlonglong expiresIn, QString refreshToken, QString tokenScope, QString tokenType);
+    void updateAccessToken(QString accessToken, qlonglong expiresIn, QString refreshToken);
     void clearTokens();
 
     QString accessToken;
     uint accessTokenExpiry;
     QString refreshToken;
     uint refreshTokenExpiry;
-    QString tokenScope;
-    QString tokenType;
 
     //Account info
     QVariantMap accountInfo;

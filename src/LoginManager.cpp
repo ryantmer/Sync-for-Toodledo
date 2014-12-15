@@ -163,9 +163,7 @@ void LoginManager::onTokenRequestFinished(QNetworkReply *reply) {
             qDebug() << Q_FUNC_INFO << "New tokens received";
             _propMan->updateAccessToken(data.value("access_token").toString(),
                     data.value("expires_in").toLongLong(NULL),
-                    data.value("refresh_token").toString(),
-                    data.value("scope").toString(),
-                    data.value("token_type").toString());
+                    data.value("refresh_token").toString());
             _loggedIn = true;
             emit accessTokenRefreshed();
             emit refreshTokenRefreshed();

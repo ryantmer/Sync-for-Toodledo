@@ -318,26 +318,36 @@ void ToodledoTen::onAccountInfoUpdated() {
             old_lastedit_task == 0 || old_lastdelete_task == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Tasks";
         _taskDataModel->refresh();
+    } else {
+        qDebug() << Q_FUNC_INFO << "No changes to tasks on server since last update";
     }
     if (old_lastedit_folder < newInfo.value("lastedit_folder").toInt(NULL) ||
             old_lastedit_folder == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Folders";
         _folderDataModel->refresh();
+    } else {
+        qDebug() << Q_FUNC_INFO << "No changes to folders on server since last update";
     }
     if (old_lastedit_context < newInfo.value("lastedit_context").toInt(NULL) ||
             old_lastedit_context == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Contexts";
         _contextDataModel->refresh();
+    } else {
+        qDebug() << Q_FUNC_INFO << "No changes to contexts on server since last update";
     }
     if (old_lastedit_goal < newInfo.value("lastedit_goal").toInt(NULL) ||
             old_lastedit_goal == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Goals";
         _goalDataModel->refresh();
+    } else {
+        qDebug() << Q_FUNC_INFO << "No changes to goals on server since last update";
     }
     if (old_lastedit_location < newInfo.value("lastedit_location").toInt(NULL) ||
             old_lastedit_location == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Locations";
         _locationDataModel->refresh();
+    } else {
+        qDebug() << Q_FUNC_INFO << "No changes to locations on server since last update";
     }
 
     _propertiesManager->accountInfo = newInfo;
