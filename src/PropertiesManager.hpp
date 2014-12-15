@@ -24,6 +24,9 @@ public:
     QString tokenScope;
     QString tokenType;
 
+    //Account info fields
+    QVariantMap accountInfo;
+
 signals:
     void completedTaskAgeChanged(int delay);
     void toast(QString message);

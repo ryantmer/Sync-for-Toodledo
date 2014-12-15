@@ -60,6 +60,7 @@ public slots:
     void onWebViewUrlChanged(QUrl url);
     void onAccessTokenRefreshed();
     void onRefreshTokenExpired();
+    void onAccountInfoUpdated();
     void onToast(QString message);
 
 private:

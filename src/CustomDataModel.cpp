@@ -482,10 +482,27 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
 
     if (reply->error() == QNetworkReply::NoError) {
         JsonDataAccess jda;
+
+        //Some replies are a list of maps, others are just a single map
         QVariantList dataList = jda.loadFromBuffer(response).value<QVariantList>();
         if (jda.hasError()) {
             qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
             qWarning() << Q_FUNC_INFO << response;
+            return;
+        }
+        QVariantMap dataMap = jda.loadFromBuffer(response).value<QVariantMap>();
+        if (jda.hasError()) {
+            qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+            qWarning() << Q_FUNC_INFO << response;
+            return;
+        }
+        //Errors come back as a single map
+        if (dataMap.contains("errorDesc")) {
+            qWarning() << Q_FUNC_INFO << "Toodledo error" <<
+                        dataMap.value("errorCode").toInt(NULL) << ":" <<
+                        dataMap.value("errorDesc").toString();
+            emit toast("Toodledo Error " + dataMap.value("errorCode").toString() +
+                        " : " + dataMap.value("errorDesc").toString());
             return;
         }
 
@@ -493,15 +510,19 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
 
         if (replyUrl == getUrl.arg(tasks) || replyUrl == getUrl.arg(folders) ||
                 replyUrl == getUrl.arg(contexts) || replyUrl == getUrl.arg(goals) ||
-                replyUrl == getUrl.arg(locations) || replyUrl == getUrl.arg(account)) {
+                replyUrl == getUrl.arg(locations)) {
             qDebug() << Q_FUNC_INFO << "Get URL data received from" << replyUrl;
-            //Discard summary item (only when getting tasks)
+            //Discard summary item (only included when getting tasks)
             if (dataList.length() > 0) {
                 if (dataList.first().toMap().contains("num") && dataList.first().toMap().contains("total")) {
                     dataList.pop_front();
                 }
             }
             addToDataModel(dataList);
+        }
+        else if (replyUrl == getUrl.arg(account)) {
+            qDebug() << Q_FUNC_INFO << "Account data received from" << replyUrl;
+            addToDataModel(QVariantList() << dataMap);
         }
         else if (replyUrl == addUrl.arg(tasks) || replyUrl == addUrl.arg(folders) ||
                 replyUrl == addUrl.arg(contexts) || replyUrl == addUrl.arg(goals) ||
@@ -518,24 +539,11 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
         else if (replyUrl == removeUrl.arg(tasks)) {
             qDebug() << Q_FUNC_INFO << "Remove URL data received from" << replyUrl;
             removeFromDataModel(dataList);
-        } else if (replyUrl == removeUrl.arg(folders) || replyUrl == removeUrl.arg(contexts) ||
+        }
+        else if (replyUrl == removeUrl.arg(folders) || replyUrl == removeUrl.arg(contexts) ||
                 replyUrl == removeUrl.arg(goals) || replyUrl == removeUrl.arg(locations)) {
-            //These remove replies come as a single map, not list of maps
+            //These replies come as a single map, not list of maps
             qDebug() << Q_FUNC_INFO << "Remove URL data received from" << replyUrl;
-            QVariantMap dataMap = jda.loadFromBuffer(response).value<QVariantMap>();
-            if (jda.hasError()) {
-                qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-                qWarning() << Q_FUNC_INFO << response;
-                return;
-            }
-            if (dataMap.contains("errorDesc")) {
-                qWarning() << Q_FUNC_INFO << "Toodledo error" <<
-                            dataMap.value("errorCode").toInt(NULL) << ":" <<
-                            dataMap.value("errorDesc").toString();
-                emit toast("Toodledo Error " + dataMap.value("errorCode").toString() +
-                            " : " + dataMap.value("errorDesc").toString());
-                return;
-            }
             removeFromDataModel(QVariantList() << dataMap);
         }
         else {

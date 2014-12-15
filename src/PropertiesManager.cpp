@@ -26,6 +26,8 @@ PropertiesManager::PropertiesManager(QObject *parent) : QObject (parent) {
     refreshTokenExpiry = settings.value("refreshTokenExpiry", 0).toUInt(NULL);
     tokenScope = settings.value("tokenScope", "").toString();
     tokenType = settings.value("tokenType", "").toString();
+
+    accountInfo = QVariantMap();
 }
 PropertiesManager::~PropertiesManager() {}
 
