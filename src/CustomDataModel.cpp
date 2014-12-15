@@ -559,7 +559,7 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
 }
 
 void CustomDataModel::onLogOut() {
-    //Clear all stored tasks
+    //Clear all stored info
     _internalDB = QVariantList();
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
 }

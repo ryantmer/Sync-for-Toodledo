@@ -31,7 +31,8 @@ signals:
     void completedTaskAgeChanged(int delay);
     void toast(QString message);
 
-private:
+public slots:
+    void onLogOut();
 };
 
 #endif /* PROPERTIESMANAGER_HPP_ */

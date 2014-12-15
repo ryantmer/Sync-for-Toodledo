@@ -79,3 +79,8 @@ void PropertiesManager::setCompletedTaskAge(int days) {
         qDebug() << Q_FUNC_INFO << "Changed completedDelay to" << days;
     }
 }
+
+void PropertiesManager::onLogOut() {
+    clearTokens();
+    accountInfo = QVariantMap();
+}

@@ -119,6 +119,9 @@ ToodledoTen::ToodledoTen() : QObject() {
             _loginManager, SLOT(onLogOut()));
     Q_ASSERT(isOk);
     isOk = connect(this, SIGNAL(loggedOut()),
+            _propertiesManager, SLOT(onLogOut()));
+    Q_ASSERT(isOk);
+    isOk = connect(this, SIGNAL(loggedOut()),
             _taskDataModel, SLOT(onLogOut()));
     Q_ASSERT(isOk);
     isOk = connect(this, SIGNAL(loggedOut()),
@@ -293,6 +296,11 @@ void ToodledoTen::onRefreshTokenExpired() {
 }
 
 void ToodledoTen::onAccountInfoUpdated() {
+    //When logout is called, first() ends up getting called on an empty list,
+    //so avoid that here
+    if (_accountInfo->getInternalList().length() <= 0) {
+        return;
+    }
     //Go through new account info and update things as required
     QVariantMap newInfo = _accountInfo->getInternalList().first().value<QVariantMap>();
     QVariantMap oldInfo = _propertiesManager->accountInfo;
