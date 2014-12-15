@@ -35,6 +35,9 @@ ToodledoTen::ToodledoTen() : QObject() {
     _goalDataModel = new CustomDataModel(this);
     _goalDataModel->setDataType(CustomDataModel::Goal);
 
+    _accountInfo = new CustomDataModel(this);
+    _accountInfo->setDataType(CustomDataModel::AccountInfo);
+
     //Create root QML document from main.qml and expose certain variables to QML
     QmlDocument *qml = QmlDocument::create("asset:///Tasks.qml").parent(this);
     qml->setContextProperty("app", this);
@@ -244,12 +247,7 @@ void ToodledoTen::onPositionUpdated(const QGeoPositionInfo &pos) {
 void ToodledoTen::onNetworkStateChanged(bool connected) {
     if (connected) {
         qDebug() << Q_FUNC_INFO << "Network connection established";
-        _taskDataModel->refresh();
-        _folderDataModel->refresh();
-        _completedTaskDataModel->refresh();
-        _contextDataModel->refresh();
-        _goalDataModel->refresh();
-        _locationDataModel->refresh();
+        _accountInfo->refresh();
     } else {
         qWarning() << Q_FUNC_INFO << "Network connection lost";
         showToast("Network connection lost");
@@ -274,12 +272,7 @@ void ToodledoTen::onWebViewUrlChanged(QUrl url) {
 void ToodledoTen::onAccessTokenRefreshed() {
     //access token is automatically refreshed when it expires using refresh token
     //When a new access token is received, refresh
-    _taskDataModel->refresh();
-    _folderDataModel->refresh();
-    _completedTaskDataModel->refresh();
-    _contextDataModel->refresh();
-    _goalDataModel->refresh();
-    _locationDataModel->refresh();
+    _accountInfo->refresh();
 }
 
 void ToodledoTen::onRefreshTokenExpired() {

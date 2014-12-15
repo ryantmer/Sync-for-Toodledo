@@ -18,7 +18,8 @@ public:
         CompletedTask,
         Context,
         Goal,
-        Location
+        Location,
+        AccountInfo
     };
 
     CustomDataModel(QObject *parent = 0);
@@ -41,6 +42,7 @@ public:
     static const QString contexts;
     static const QString goals;
     static const QString locations;
+    static const QString account;
 
     //Required by bb::cascades::DataModel
     Q_INVOKABLE virtual int childCount(const QVariantList &indexPath);
@@ -53,9 +55,9 @@ private:
     void populateDataModel();
     void clear();
     //Called by onReplyReceived, as required
-    void addToDataModel(QVariantMap data);
-    void editInDataModel(QVariantMap data);
-    void removeFromDataModel(QVariantMap data);
+    void addToDataModel(QVariantList data);
+    void editInDataModel(QVariantList data);
+    void removeFromDataModel(QVariantList data);
 
     QVariantList _internalDB;
     DataType _dataType;

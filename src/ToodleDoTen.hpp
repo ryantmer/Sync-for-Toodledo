@@ -69,6 +69,7 @@ private:
     CustomDataModel *_contextDataModel;
     CustomDataModel *_goalDataModel;
     CustomDataModel *_locationDataModel;
+    CustomDataModel *_accountInfo;
     NetworkManager *_networkManager;
     PropertiesManager *_propertiesManager;
     LoginManager *_loginManager;

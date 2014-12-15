@@ -10,6 +10,7 @@ const QString CustomDataModel::folders = QString("folders");
 const QString CustomDataModel::contexts = QString("contexts");
 const QString CustomDataModel::goals = QString("goals");
 const QString CustomDataModel::locations = QString("locations");
+const QString CustomDataModel::account = QString("account");
 
 using namespace bb::cascades;
 using namespace bb::data;
@@ -82,6 +83,9 @@ void CustomDataModel::populateDataModel() {
             break;
         case Location:
             url.setUrl(getUrl.arg(locations));
+            break;
+        case AccountInfo:
+            url.setUrl(getUrl.arg(account));
             break;
         default:
             break;
@@ -185,79 +189,89 @@ void CustomDataModel::sort() {
         case Location:
             qSort(_internalDB.begin(), _internalDB.end(), compareLocations);
             break;
+        case AccountInfo:
         default:
             break;
     }
 }
 
-void CustomDataModel::addToDataModel(QVariantMap data) {
-    _internalDB.append(data);
-    sort();
+void CustomDataModel::addToDataModel(QVariantList dataList) {
+    foreach (QVariant v, dataList) {
+        QVariantMap data = v.toMap();
+        _internalDB.append(data);
+        sort();
+        qDebug() << Q_FUNC_INFO << "New data added to CustomDataModel:" << data;
+    }
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-    qDebug() << Q_FUNC_INFO << "New data added to CustomDataModel:" << data;
 }
 
-void CustomDataModel::editInDataModel(QVariantMap data) {
-    qlonglong editId = data.value("id").toLongLong(NULL);
-    for (int i = 0; i < _internalDB.count(); ++i) {
-        qlonglong currentId = _internalDB.value(i).toMap().value("id").toLongLong(NULL);
-        if (currentId == editId) {
-            //Create a new QVM, overwriting pre-existing values, and inserting new ones if required
-            QVariantMap amalgamatedData = _internalDB.value(i).toMap();
-            for (QVariantMap::const_iterator iter = data.begin(); iter != data.end(); ++iter) {
-                amalgamatedData.insert(iter.key(), iter.value());
-            }
-            _internalDB.replace(i, amalgamatedData);
-
-            if (_dataType == Task) {
-                //Special case for a task that is set to complete; remove from CDM
-                if (_internalDB.value(i).toMap().value("completed").toLongLong(NULL) != 0) {
-                    _internalDB.removeAt(i);
+void CustomDataModel::editInDataModel(QVariantList dataList) {
+    foreach (QVariant v, dataList) {
+        QVariantMap data = v.toMap();
+        qlonglong editId = data.value("id").toLongLong(NULL);
+        for (int i = 0; i < _internalDB.count(); ++i) {
+            qlonglong currentId = _internalDB.value(i).toMap().value("id").toLongLong(NULL);
+            if (currentId == editId) {
+                //Create a new QVM, overwriting pre-existing values, and inserting new ones if required
+                QVariantMap amalgamatedData = _internalDB.value(i).toMap();
+                for (QVariantMap::const_iterator iter = data.begin(); iter != data.end(); ++iter) {
+                    amalgamatedData.insert(iter.key(), iter.value());
                 }
-            } else if (_dataType == CompletedTask) {
-                //Special case for a completed task that is set to not complete; remove from CDM
-                if (_internalDB.value(i).toMap().value("completed").toLongLong(NULL) == 0) {
-                    _internalDB.removeAt(i);
-                }
-            }
+                _internalDB.replace(i, amalgamatedData);
 
-            sort();
-            emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-            qDebug() << Q_FUNC_INFO << "Data edited in CustomDataModel:" << data;
-            return;
+                if (_dataType == Task) {
+                    //Special case for a task that is set to complete; remove from CDM
+                    if (_internalDB.value(i).toMap().value("completed").toLongLong(NULL) != 0) {
+                        _internalDB.removeAt(i);
+                    }
+                } else if (_dataType == CompletedTask) {
+                    //Special case for a completed task that is set to not complete; remove from CDM
+                    if (_internalDB.value(i).toMap().value("completed").toLongLong(NULL) == 0) {
+                        _internalDB.removeAt(i);
+                    }
+                }
+
+                sort();
+                emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+                qDebug() << Q_FUNC_INFO << "Data edited in CustomDataModel:" << data;
+                return;
+            }
         }
-    }
 
-    //If not found in datamodel, add as new item
-    addToDataModel(data);
+        //If not found in datamodel, add as new item
+        addToDataModel(QVariantList() << data);
+    }
 }
 
-void CustomDataModel::removeFromDataModel(QVariantMap data) {
-    qDebug() << Q_FUNC_INFO << data;
-    qlonglong removeId = 0;
-    switch (_dataType) {
-        case Task:
-        case CompletedTask:
-            removeId = data.value("id").toLongLong(NULL);
-            break;
-        case Folder:
-        case Context:
-        case Goal:
-        case Location:
-            removeId = data.value("deleted").toLongLong(NULL);
-            break;
-        default:
-            break;
-    }
+void CustomDataModel::removeFromDataModel(QVariantList dataList) {
+    foreach (QVariant v, dataList) {
+        QVariantMap data = v.toMap();
+        qlonglong removeId = 0;
+        switch (_dataType) {
+            case Task:
+            case CompletedTask:
+                removeId = data.value("id").toLongLong(NULL);
+                break;
+            case Folder:
+            case Context:
+            case Goal:
+            case Location:
+                removeId = data.value("deleted").toLongLong(NULL);
+                break;
+            case AccountInfo:
+            default:
+                return;
+        }
 
-    for (int i = 0; i < _internalDB.count(); ++i) {
-        qlonglong currentId = _internalDB.value(i).toMap().value("id").toLongLong(NULL);
-        if (currentId == removeId) {
-            _internalDB.removeAt(i);
-            sort();
-            emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-            qDebug() << Q_FUNC_INFO << "Data removed from CustomDataModel:" << data;
-            break;
+        for (int i = 0; i < _internalDB.count(); ++i) {
+            qlonglong currentId = _internalDB.value(i).toMap().value("id").toLongLong(NULL);
+            if (currentId == removeId) {
+                _internalDB.removeAt(i);
+                sort();
+                emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+                qDebug() << Q_FUNC_INFO << "Data removed from CustomDataModel:" << data;
+                return;
+            }
         }
     }
 }
@@ -321,8 +335,9 @@ void CustomDataModel::add(QVariantMap data) {
                 urlData.addQueryItem(iter.key(), data[iter.key()].toString());
             }
             break;
+        case AccountInfo:
         default:
-            break;
+            return;
     }
 
     urlData.addQueryItem("access_token", _propMan->accessToken);
@@ -405,8 +420,9 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
                 }
             }
             break;
+        case AccountInfo:
         default:
-            break;
+            return;
     }
 
     urlData.addQueryItem("access_token", _propMan->accessToken);
@@ -443,8 +459,9 @@ void CustomDataModel::remove(QVariantMap data) {
             url.setUrl(removeUrl.arg(locations));
             urlData.addQueryItem("id", data["id"].toString());
             break;
+        case AccountInfo:
         default:
-            break;
+            return;
     }
 
     urlData.addQueryItem("access_token", _propMan->accessToken);
@@ -476,7 +493,7 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
 
         if (replyUrl == getUrl.arg(tasks) || replyUrl == getUrl.arg(folders) ||
                 replyUrl == getUrl.arg(contexts) || replyUrl == getUrl.arg(goals) ||
-                replyUrl == getUrl.arg(locations)) {
+                replyUrl == getUrl.arg(locations) || replyUrl == getUrl.arg(account)) {
             qDebug() << Q_FUNC_INFO << "Get URL data received from" << replyUrl;
             //Discard summary item (only when getting tasks)
             if (dataList.length() > 0) {
@@ -484,31 +501,23 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
                     dataList.pop_front();
                 }
             }
-            for (int i = 0; i < dataList.count(); ++i) {
-                addToDataModel(dataList.value(i).toMap());
-            }
+            addToDataModel(dataList);
         }
         else if (replyUrl == addUrl.arg(tasks) || replyUrl == addUrl.arg(folders) ||
                 replyUrl == addUrl.arg(contexts) || replyUrl == addUrl.arg(goals) ||
                 replyUrl == addUrl.arg(locations)) {
             qDebug() << Q_FUNC_INFO << "Add URL data received from" << replyUrl;
-            for (int i = 0; i < dataList.count(); ++i) {
-                addToDataModel(dataList.value(i).toMap());
-            }
+            addToDataModel(dataList);
         }
         else if (replyUrl == editUrl.arg(tasks) || replyUrl == editUrl.arg(folders) ||
                 replyUrl == editUrl.arg(contexts) || replyUrl == editUrl.arg(goals) ||
                 replyUrl == editUrl.arg(locations)) {
             qDebug() << Q_FUNC_INFO << "Edit URL data received from" << replyUrl;
-            for (int i = 0; i < dataList.count(); ++i) {
-                editInDataModel(dataList.value(i).toMap());
-            }
+            editInDataModel(dataList);
         }
         else if (replyUrl == removeUrl.arg(tasks)) {
             qDebug() << Q_FUNC_INFO << "Remove URL data received from" << replyUrl;
-            for (int i = 0; i < dataList.count(); ++i) {
-                removeFromDataModel(dataList.value(i).toMap());
-            }
+            removeFromDataModel(dataList);
         } else if (replyUrl == removeUrl.arg(folders) || replyUrl == removeUrl.arg(contexts) ||
                 replyUrl == removeUrl.arg(goals) || replyUrl == removeUrl.arg(locations)) {
             //These remove replies come as a single map, not list of maps
@@ -527,7 +536,7 @@ void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
                             " : " + dataMap.value("errorDesc").toString());
                 return;
             }
-            removeFromDataModel(dataMap);
+            removeFromDataModel(QVariantList() << dataMap);
         }
         else {
             qWarning() << Q_FUNC_INFO << "Unrecognized reply received from" << replyUrl;
