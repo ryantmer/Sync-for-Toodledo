@@ -60,6 +60,7 @@ ToodledoTen::ToodledoTen() : QObject() {
     //Add cover QML for app
     QmlDocument *qmlCover = QmlDocument::create("asset:///Cover.qml").parent(this);
     qmlCover->setContextProperty("app", this);
+    qmlCover->setContextProperty("propertyManager", _propertiesManager);
     _coverRoot = qmlCover->createRootObject<Container>();
     SceneCover *cover = SceneCover::create().content(_coverRoot);
     Application::instance()->setCover(cover);

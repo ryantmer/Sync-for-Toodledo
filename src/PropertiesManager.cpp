@@ -80,6 +80,11 @@ void PropertiesManager::setCompletedTaskAge(int days) {
     }
 }
 
+//Date format, read-only (from account info)
+int PropertiesManager::dateFormat() {
+    return accountInfo.value("dateformat").toInt(NULL);
+}
+
 void PropertiesManager::onLogOut() {
     clearTokens();
     accountInfo = QVariantMap();

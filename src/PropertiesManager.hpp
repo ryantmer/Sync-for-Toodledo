@@ -5,6 +5,7 @@ class PropertiesManager : public QObject {
     Q_OBJECT
 public:
     Q_PROPERTY(int completedTaskAge READ completedTaskAge WRITE setCompletedTaskAge NOTIFY completedTaskAgeChanged);
+    Q_PROPERTY(int dateFormat READ dateFormat CONSTANT);
 
     static PropertiesManager *getInstance();
     PropertiesManager(QObject *parent = 0);
@@ -13,6 +14,7 @@ public:
 
     int completedTaskAge();
     void setCompletedTaskAge(int days);
+    int dateFormat();
 
     void updateAccessToken(QString accessToken, qlonglong expiresIn, QString refreshToken, QString tokenScope, QString tokenType);
     void clearTokens();
@@ -24,7 +26,7 @@ public:
     QString tokenScope;
     QString tokenType;
 
-    //Account info fields
+    //Account info
     QVariantMap accountInfo;
 
 signals:
