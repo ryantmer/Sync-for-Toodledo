@@ -1,14 +1,4 @@
-/*
- * LoginManager keeps track of the app's connectivity status to ToodleDo.
- *
- * It will automatically keep track of the access code's expiry, and use the
- * refresh token to renew it as required.
- *
- * Other classes can check whether the app is logged in by calling
- * LoginManager::isLoggedIn().
- */
-
-
+#include <bb/data/JsonDataAccess>
 #include <QMutex>
 #include <QDateTime>
 #include <bb/data/JsonDataAccess>
@@ -19,6 +9,8 @@
 const QString LoginManager::authorizeUrl = QString("https://api.toodledo.com/3/account/authorize.php");
 const QString LoginManager::tokenUrl = QString("https://api.toodledo.com/3/account/token.php");
 const QString LoginManager::_credentials = QString("");
+
+using namespace bb::data;
 
 LoginManager *LoginManager::getInstance() {
     static LoginManager *singleton = NULL;
@@ -119,16 +111,19 @@ void LoginManager::refreshAccessToken() {
     QUrl url(tokenUrl);
     QNetworkRequest req(url);
 
-    QUrl data;
-    data.addQueryItem("grant_type", "refresh_token");
-    data.addQueryItem("refresh_token", PropertiesManager::getInstance()->refreshToken);
-    data.addQueryItem("version", QString::number(1));
+    QUrl urlData;
+    urlData.addQueryItem("grant_type", "refresh_token");
+    urlData.addQueryItem("refresh_token", PropertiesManager::getInstance()->refreshToken);
+    urlData.addQueryItem("version", QString::number(1));
 
     QString auth = QString("Basic " + _credentials.toAscii().toBase64());
     req.setRawHeader("Authorization", auth.toAscii());
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-    _networkAccessManager->post(req, data.encodedQuery());
+    qDebug() << Q_FUNC_INFO << url;
+    qDebug() << Q_FUNC_INFO << urlData;
+
+    _networkAccessManager->post(req, urlData.encodedQuery());
 }
 
 void LoginManager::onLogOut() {
@@ -150,41 +145,44 @@ void LoginManager::onAccessTokenExpired() {
 void LoginManager::onTokenRequestFinished(QNetworkReply *reply) {
     QString response = reply->readAll();
 
-    bb::data::JsonDataAccess jda;
-    QVariantMap data = jda.loadFromBuffer(response).value<QVariantMap>();
+    JsonDataAccess jda;
+    QVariantMap dataMap = jda.loadFromBuffer(response).value<QVariantMap>();
     if (jda.hasError()) {
         qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
         qWarning() << Q_FUNC_INFO << response;
         return;
     }
 
+    if (dataMap.contains("errorDesc")) {
+        qWarning() << Q_FUNC_INFO << "Toodledo error" <<
+                    dataMap.value("errorCode").toInt(NULL) << ":" <<
+                    dataMap.value("errorDesc").toString();
+        emit toast("Error " + dataMap.value("errorCode").toString() +
+                ": " + dataMap.value("errorDesc").toString());
+        if (dataMap.value("errorCode").toInt(NULL) == 102) {
+            //Can be caused by a few things, but refreshing the refresh token should always clear it
+            emit refreshTokenExpired();
+        }
+        return;
+    }
+
     if (reply->error() == QNetworkReply::NoError) {
-        if (reply->url().toString().contains(tokenUrl)) {
-            qDebug() << Q_FUNC_INFO << "New tokens received";
-            _propMan->updateAccessToken(data.value("access_token").toString(),
-                    data.value("expires_in").toLongLong(NULL),
-                    data.value("refresh_token").toString());
-            _loggedIn = true;
-            emit accessTokenRefreshed();
-            emit refreshTokenRefreshed();
+        _propMan->updateAccessToken(dataMap.value("access_token").toString(),
+                dataMap.value("expires_in").toLongLong(NULL),
+                dataMap.value("refresh_token").toString());
+        _loggedIn = true;
+        qDebug() << Q_FUNC_INFO << "New refresh token:" << _propMan->refreshToken;
+        emit accessTokenRefreshed();
+        emit refreshTokenRefreshed();
 
-            qDebug() << Q_FUNC_INFO << "New refresh token:" << _propMan->refreshToken;
-            //Restart timeout on access token
-            _accessTokenTimer->start(
-                    (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
-        }
+        //Restart timeout on access token
+        _accessTokenTimer->start(
+                (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
     } else {
-        //ToodleDo will come back with various error codes if there's a problem
-        QVariantMap errorMap = jda.loadFromBuffer(response).value<QVariantMap>();
-        if (jda.hasError()) {
-            qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-            qWarning() << Q_FUNC_INFO << response;
-            return;
-        }
-
-        qWarning() << Q_FUNC_INFO << "ToodleDo error" <<
-                errorMap.value("errorCode").toInt(NULL) << ":" <<
-                errorMap.value("errorDesc").toString();
+        qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error" << reply->errorString();
+        qWarning() << Q_FUNC_INFO << response;
+        emit toast("Error " + dataMap.value("errorCode").toString() +
+                ": " + dataMap.value("errorDesc").toString());
     }
     reply->deleteLater();
 }

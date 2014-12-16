@@ -1,12 +1,3 @@
-/*
- * NetworkManager keeps track of the phone's network status.
- *
- * When the status changes, it will internally update its connected status.
- *
- * Other classes can check whether the phone is connected to a network by
- * calling NetworkManager::isConnected().
- */
-
 #include <QMutex>
 #include "NetworkManager.hpp"
 
