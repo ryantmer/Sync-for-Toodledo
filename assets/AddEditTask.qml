@@ -541,44 +541,7 @@ Page {
                     id: repeatDropDown
                     title: "Repeat"
                     bottomMargin: 30
-                    options: [
-                        Option {
-                            text: "Don't Repeat"
-                            value: ""
-                        },
-                        Option {
-                            text: "Daily"
-                            value: "FREQ=DAILY"
-                        },
-                        Option {
-                            text: "Weekly"
-                            value: "FREQ=WEEKLY"
-                        },
-                        Option {
-                            text: "Biweekly"
-                            value: "FREQ=WEEKLY;INTERVAL=2"
-                        },
-                        Option {
-                            text: "Monthly"
-                            value: "FREQ=MONTHLY"
-                        },
-                        Option {
-                            text: "Bimonthly"
-                            value: "FREQ=MONTHLY;INTERVAL=2"
-                        },
-                        Option {
-                            text: "Quarterly"
-                            value: "FREQ=MONTHLY;INTERVAL=3"
-                        },
-                        Option {
-                            text: "Semiannually"
-                            value: "FREQ=MONTHLY;INTERVAL=6"
-                        },
-                        Option {
-                            text: "Yearly"
-                            value: "FREQ=YEARLY"
-                        }
-                    ]
+                    //Populated in onCreationCompleted
                 }
                 
                 //status
@@ -586,52 +549,7 @@ Page {
                     id: statusDropDown
                     title: "Status"
                     bottomMargin: 30
-                    options: [
-                        Option {
-                            text: "None"
-                            value: 0
-                        },
-                        Option {
-                            text: "Next Action"
-                            value: 1
-                        },
-                        Option {
-                            text: "Active"
-                            value: 2
-                        },
-                        Option {
-                            text: "Planning"
-                            value: 3
-                        },
-                        Option {
-                            text: "Delegated"
-                            value: 4
-                        },
-                        Option {
-                            text: "Waiting"
-                            value: 5
-                        },
-                        Option {
-                            text: "Hold"
-                            value: 6
-                        },
-                        Option {
-                            text: "Postponed"
-                            value: 7
-                        },
-                        Option {
-                            text: "Someday"
-                            value: 8
-                        },
-                        Option {
-                            text: "Canceled"
-                            value: 9
-                        },
-                        Option {
-                            text: "Reference"
-                            value: 10
-                        }
-                    ]
+                    //Populated in onCreationCompleted
                 }
                 
                 //priority
@@ -639,28 +557,7 @@ Page {
                     id: priorityDropDown
                     title: "Priority"
                     bottomMargin: 30
-                    options: [
-                        Option {
-                            text: "-1 Negative"
-                            value: -1
-                        },
-                        Option {
-                            text: "0 Low"
-                            value: 0
-                        },
-                        Option {
-                            text: "1 Medium"
-                            value: 1
-                        },
-                        Option {
-                            text: "2 High"
-                            value: 2
-                        },
-                        Option {
-                            text: "3 Top"
-                            value: 3
-                        }
-                    ]
+                    //Populated in onCreationCompleted
                 }
                 
                 //star
@@ -697,4 +594,49 @@ Page {
             Option {}
         }
     ]
+    
+    onCreationCompleted: {
+        var texts;
+        var values;
+        var value;
+        
+        //Populate repeat dropdown
+        texts = ["Don't repeat", "Daily", "Weekly", "Biweekly", "Monthly",
+                    "Bimonthly", "Quarterly", "Semiannually", "Yearly"];
+        values = ["", "FREQ=DAILY", "FREQ=WEEKLY", "FREQ=WEEKLY;INTERVAL=2",
+                    "FREQ=MONTHLY", "FREQ=MONTHLY;INTERVAL=2", "FREQ=MONTHLY;INTERVAL=3",
+                    "FREQ=MONTHLY;INTERVAL=6", "YEARLY"];
+        value = 0;
+        for (var text in texts) {
+            var opt = option.createObject();
+            opt.text = text;
+            opt.value = values[value];
+            repeatDropDown.add(opt);
+            value++;
+        }
+        
+        
+        //Populate status dropdown
+        texts = ["None", "Next Action", "Planning", "Delegated", "Waiting",
+                    "Hold", "Postponed", "Someday", "Canceled", "Reference"];
+        value = 0;
+        for (var text in texts) {
+            var opt = option.createObject();
+            opt.text = text;
+            opt.value = value;
+            statusDropDown.add(opt)
+            value++;
+        }
+        
+        //populate priority dropdown
+        texts = ["-1 Negative", "0 Low", "1 Medium", "2 High", "3 Top"];
+        value = -1;
+        for (var text in texts) {
+            var opt = option.createObject();
+            opt.tet = text;
+            opt.value = value;
+            priorityDropDown.add(opt);
+            value++;
+        }
+    }
 }
