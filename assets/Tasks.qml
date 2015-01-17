@@ -32,6 +32,12 @@ NavigationPane {
         }
         
         Container {
+            ActivityIndicator {
+                id: networkActivity
+                objectName: "networkActivity"
+                preferredWidth: 200
+                horizontalAlignment: HorizontalAlignment.Center
+            }
             ListView {
                 id: listView
                 accessibility.name: "Task list"

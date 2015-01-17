@@ -22,9 +22,8 @@ public:
         AccountInfo
     };
 
-    CustomDataModel(QObject *parent = 0);
+    CustomDataModel(QObject *parent = 0, DataType dataType = UndefinedType);
     virtual ~CustomDataModel();
-    void setDataType(DataType dataType);
 
     //Called by the UI through QML; initiate network stuff
     Q_INVOKABLE void refresh();
@@ -61,7 +60,6 @@ private:
 
     QVariantList _internalDB;
     DataType _dataType;
-    QNetworkAccessManager *_networkAccessManager;
     PropertiesManager *_propMan;
     NetworkManager *_netMan;
     LoginManager *_loginMan;

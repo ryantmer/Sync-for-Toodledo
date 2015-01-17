@@ -8,6 +8,7 @@
 #include <bb/cascades/Button>
 #include <bb/cascades/TextField>
 #include <bb/cascades/Label>
+#include <bb/cascades/ActivityIndicator>
 #include <bb/system/SystemToast>
 #include <bb/system/SystemUiPosition>
 #include <bb/PackageInfo>
@@ -22,20 +23,13 @@ ToodledoTen::ToodledoTen() : QObject() {
     _networkManager = NetworkManager::getInstance();
     _loginManager = LoginManager::getInstance();
 
-    _taskDataModel = new CustomDataModel(this);
-    _taskDataModel->setDataType(CustomDataModel::Task);
-    _folderDataModel = new CustomDataModel(this);
-    _folderDataModel->setDataType(CustomDataModel::Folder);
-    _completedTaskDataModel = new CustomDataModel(this);
-    _completedTaskDataModel->setDataType(CustomDataModel::CompletedTask);
-    _contextDataModel = new CustomDataModel(this);
-    _contextDataModel->setDataType(CustomDataModel::Context);
-    _locationDataModel = new CustomDataModel(this);
-    _locationDataModel->setDataType(CustomDataModel::Location);
-    _goalDataModel = new CustomDataModel(this);
-    _goalDataModel->setDataType(CustomDataModel::Goal);
-    _accountInfo = new CustomDataModel(this);
-    _accountInfo->setDataType(CustomDataModel::AccountInfo);
+    _taskDataModel = new CustomDataModel(this, CustomDataModel::Task);
+    _folderDataModel = new CustomDataModel(this, CustomDataModel::Folder);
+    _completedTaskDataModel = new CustomDataModel(this, CustomDataModel::CompletedTask);
+    _contextDataModel = new CustomDataModel(this, CustomDataModel::Context);
+    _locationDataModel = new CustomDataModel(this, CustomDataModel::Location);
+    _goalDataModel = new CustomDataModel(this, CustomDataModel::Goal);
+    _accountInfo = new CustomDataModel(this, CustomDataModel::AccountInfo);
 
     //Create root QML document from main.qml and expose certain variables to QML
     QmlDocument *qml = QmlDocument::create("asset:///Tasks.qml").parent(this);
@@ -65,9 +59,14 @@ ToodledoTen::ToodledoTen() : QObject() {
     Application::instance()->setCover(cover);
 
     bool ok;
-
     ok = connect(_networkManager, SIGNAL(accessTokenRefreshed(QString, qlonglong)),
             this, SLOT(onAccessTokenRefreshed(QString, qlonglong)));
+    Q_ASSERT(ok);
+    ok = connect(_networkManager, SIGNAL(networkRequestStarted()),
+            this, SLOT(onNetworkRequestStarted()));
+    Q_ASSERT(ok);
+    ok = connect(_networkManager, SIGNAL(networkRequestFinished()),
+            this, SLOT(onNetworkRequestFinished()));
     Q_ASSERT(ok);
     ok = connect(_loginWebView, SIGNAL(urlChanged(QUrl)),
             this, SLOT(onWebViewUrlChanged(QUrl)));
@@ -294,6 +293,18 @@ void ToodledoTen::onAccessTokenRefreshed(QString newToken, qlonglong expiresIn) 
     Q_UNUSED(newToken);
     Q_UNUSED(expiresIn);
     _accountInfo->refresh();
+}
+
+void ToodledoTen::onNetworkRequestStarted() {
+    qDebug() << Q_FUNC_INFO << "Starting busy indicator...";
+    ActivityIndicator *activity = _root->findChild<ActivityIndicator*>("networkActivity");
+    activity->start();
+}
+
+void ToodledoTen::onNetworkRequestFinished() {
+    ActivityIndicator *activity = _root->findChild<ActivityIndicator*>("networkActivity");
+    activity->stop();
+    qDebug() << Q_FUNC_INFO << "Stopped busy indicator.";
 }
 
 void ToodledoTen::onAccountInfoUpdated() {

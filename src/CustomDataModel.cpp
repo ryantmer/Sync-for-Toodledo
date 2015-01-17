@@ -1,41 +1,17 @@
 #include "CustomDataModel.hpp"
 #include <bb/data/JsonDataAccess>
 
-const QString CustomDataModel::getUrl = QString("http://api.toodledo.com/3/%1/get.php");
-const QString CustomDataModel::addUrl = QString("http://api.toodledo.com/3/%1/add.php");
-const QString CustomDataModel::editUrl = QString("http://api.toodledo.com/3/%1/edit.php");
-const QString CustomDataModel::removeUrl = QString("http://api.toodledo.com/3/%1/delete.php");
-const QString CustomDataModel::tasks = QString("tasks");
-const QString CustomDataModel::folders = QString("folders");
-const QString CustomDataModel::contexts = QString("contexts");
-const QString CustomDataModel::goals = QString("goals");
-const QString CustomDataModel::locations = QString("locations");
-const QString CustomDataModel::account = QString("account");
-
 using namespace bb::cascades;
 using namespace bb::data;
 
-CustomDataModel::CustomDataModel(QObject *parent) : DataModel(parent) {
-    _dataType = UndefinedType;
-
-    _networkAccessManager = new QNetworkAccessManager(this);
-    _propMan = PropertiesManager::getInstance();
-    _netMan = NetworkManager::getInstance();
-    _loginMan = LoginManager::getInstance();
-
-    //Connect signals
-    bool isOk;
-    isOk = connect(_networkAccessManager, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(onReplyReceived(QNetworkReply*)));
-    Q_ASSERT(isOk);
-    Q_UNUSED(isOk);
-}
-
-CustomDataModel::~CustomDataModel() {}
-
-void CustomDataModel::setDataType(DataType dataType) {
+CustomDataModel::CustomDataModel(QObject *parent, DataType dataType) : DataModel(parent) {
     _dataType = dataType;
+
+    _netMan = NetworkManager::getInstance();
+    _propMan = PropertiesManager::getInstance();
+    _loginMan = LoginManager::getInstance();
 }
+CustomDataModel::~CustomDataModel() {}
 
 void CustomDataModel::refresh() {
     if (_netMan->isConnected()) {
@@ -95,7 +71,7 @@ void CustomDataModel::populateDataModel() {
     qDebug() << Q_FUNC_INFO << url << urlData;
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    _networkAccessManager->post(req, urlData.encodedQuery());
+    _netMan->sendRequest(req, urlData.encodedQuery());
 }
 
 void CustomDataModel::clear() {
@@ -344,7 +320,7 @@ void CustomDataModel::add(QVariantMap data) {
     qDebug() << Q_FUNC_INFO << urlData;
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    _networkAccessManager->post(req, urlData.encodedQuery());
+    _netMan->sendRequest(req, urlData.encodedQuery());
 }
 
 void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
@@ -429,7 +405,7 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
     qDebug() << Q_FUNC_INFO << urlData;
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    _networkAccessManager->post(req, urlData.encodedQuery());
+    _netMan->sendRequest(req, urlData.encodedQuery());
 }
 
 void CustomDataModel::remove(QVariantMap data) {
@@ -468,7 +444,7 @@ void CustomDataModel::remove(QVariantMap data) {
     qDebug() << Q_FUNC_INFO << urlData;
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    _networkAccessManager->post(req, urlData.encodedQuery());
+    _netMan->sendRequest(req, urlData.encodedQuery());
 }
 
 /*

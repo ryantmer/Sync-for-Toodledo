@@ -57,6 +57,8 @@ signals:
 public slots:
     void onPositionUpdated(const QGeoPositionInfo &pos);
     void onNetworkStateChanged(bool connected);
+    void onNetworkRequestStarted();
+    void onNetworkRequestFinished();
     void onWebViewUrlChanged(QUrl url);
     void onRefreshTokenExpired();
     void onAccessTokenRefreshed(QString newToken, qlonglong expiresIn);
