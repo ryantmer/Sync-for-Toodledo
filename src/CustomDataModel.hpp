@@ -32,17 +32,6 @@ public:
     Q_INVOKABLE void remove(QVariantMap data);
     Q_INVOKABLE QVariantList getInternalList();
 
-    static const QString getUrl;
-    static const QString editUrl;
-    static const QString addUrl;
-    static const QString removeUrl;
-    static const QString tasks;
-    static const QString folders;
-    static const QString contexts;
-    static const QString goals;
-    static const QString locations;
-    static const QString account;
-
     //Required by bb::cascades::DataModel
     Q_INVOKABLE virtual int childCount(const QVariantList &indexPath);
     Q_INVOKABLE virtual bool hasChildren(const QVariantList &indexPath);
@@ -53,10 +42,6 @@ private:
     void sort();
     void populateDataModel();
     void clear();
-    //Called by onReplyReceived, as required
-    void addToDataModel(QVariantList data);
-    void editInDataModel(QVariantList data);
-    void removeFromDataModel(QVariantList data);
 
     QVariantList _internalDB;
     DataType _dataType;
@@ -64,14 +49,21 @@ private:
     NetworkManager *_netMan;
     LoginManager *_loginMan;
 
+    QString getUrl;
+    QString editUrl;
+    QString addUrl;
+    QString removeUrl;
+
 signals:
     void toast(QString message);
+    void emptyChanged(bool empty);
 
 public slots:
-    //Signal from UI
     void onLogOut();
-    //Signal from network access manager
-    void onReplyReceived(QNetworkReply *reply);
+    void onGetReply(QString replyUrl, QVariantList dataList);
+    void onAddReply(QString replyUrl, QVariantList dataList);
+    void onEditReply(QString replyUrl, QVariantList dataList);
+    void onRemoveReply(QString replyUrl, QVariantList dataList);
 };
 
 #endif /* CUSTOMDATAMODEL_HPP_ */

@@ -35,7 +35,7 @@ NavigationPane {
             ActivityIndicator {
                 id: networkActivity
                 objectName: "networkActivity"
-                preferredWidth: 200
+                preferredWidth: 100
                 horizontalAlignment: HorizontalAlignment.Center
             }
             ListView {

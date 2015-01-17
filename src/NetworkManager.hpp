@@ -16,13 +16,7 @@ public:
     static const QString getUrl;
     static const QString editUrl;
     static const QString addUrl;
-    static const QString removeUrl;
-    static const QString tasks;
-    static const QString contexts;
-    static const QString folders;
-    static const QString goals;
-    static const QString locations;
-    static const QString account;
+    static const QString deleteUrl;
 
     bool isConnected();
     void sendRequest(QNetworkRequest request, QByteArray encodedQuery);
@@ -34,6 +28,10 @@ signals:
     void refreshTokenRefreshed(QString newToken);
     void networkRequestStarted();
     void networkRequestFinished();
+    void getReply(QString replyUrl, QVariantList dataList);
+    void addReply(QString replyUrl, QVariantList dataList);
+    void editReply(QString replyUrl, QVariantList dataList);
+    void removeReply(QString replyUrl, QVariantList dataList);
 
 private slots:
     void onOnlineStateChanged(bool online);

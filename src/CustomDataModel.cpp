@@ -10,6 +10,60 @@ CustomDataModel::CustomDataModel(QObject *parent, DataType dataType) : DataModel
     _netMan = NetworkManager::getInstance();
     _propMan = PropertiesManager::getInstance();
     _loginMan = LoginManager::getInstance();
+
+    switch (_dataType) {
+        case Task:
+        case CompletedTask:
+            getUrl = _netMan->getUrl.arg("tasks");
+            addUrl = _netMan->addUrl.arg("tasks");
+            editUrl = _netMan->editUrl.arg("tasks");
+            removeUrl = _netMan->deleteUrl.arg("tasks");
+            break;
+        case Folder:
+            getUrl = _netMan->getUrl.arg("folders");
+            addUrl = _netMan->addUrl.arg("folders");
+            editUrl = _netMan->editUrl.arg("folders");
+            removeUrl = _netMan->deleteUrl.arg("folders");
+            break;
+        case Context:
+            getUrl = _netMan->getUrl.arg("contexts");
+            addUrl = _netMan->addUrl.arg("contexts");
+            editUrl = _netMan->editUrl.arg("contexts");
+            removeUrl = _netMan->deleteUrl.arg("contexts");
+            break;
+        case Goal:
+            getUrl = _netMan->getUrl.arg("goals");
+            addUrl = _netMan->addUrl.arg("goals");
+            editUrl = _netMan->editUrl.arg("goals");
+            removeUrl = _netMan->deleteUrl.arg("goals");
+            break;
+        case Location:
+            getUrl = _netMan->getUrl.arg("locations");
+            addUrl = _netMan->addUrl.arg("locations");
+            editUrl = _netMan->editUrl.arg("locations");
+            removeUrl = _netMan->deleteUrl.arg("locations");
+            break;
+        case AccountInfo:
+            getUrl = _netMan->getUrl.arg("account");
+            break;
+        default:
+            break;
+    }
+
+    bool ok;
+    ok = connect(_netMan, SIGNAL(getReply(QString, QVariantList)),
+            this, SLOT(onGetReply(QString, QVariantList)));
+    Q_ASSERT(ok);
+    ok = connect(_netMan, SIGNAL(addReply(QString, QVariantList)),
+            this, SLOT(onAddReply(QString, QVariantList)));
+    Q_ASSERT(ok);
+    ok = connect(_netMan, SIGNAL(editReply(QString, QVariantList)),
+            this, SLOT(onEditReply(QString, QVariantList)));
+    Q_ASSERT(ok);
+    ok = connect(_netMan, SIGNAL(removeReply(QString, QVariantList)),
+            this, SLOT(onRemoveReply(QString, QVariantList)));
+    Q_ASSERT(ok);
+    Q_UNUSED(ok);
 }
 CustomDataModel::~CustomDataModel() {}
 
@@ -32,40 +86,23 @@ void CustomDataModel::populateDataModel() {
     QUrl url;
     QUrl urlData;
 
-    switch (_dataType) {
-        case Task:
-            url.setUrl(getUrl.arg(tasks));
-            urlData.addQueryItem("comp", QString::number(0)); //incomplete tasks
-            //fields id, title, modified, completed come automatically
-            urlData.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,"
-                    "duedatemod,startdate,starttime,remind,repeat,status,length,context,goal,location");
-            break;
-        case Folder:
-            url.setUrl(getUrl.arg(folders));
-            break;
-        case CompletedTask:
-            url.setUrl(getUrl.arg(tasks));
-            //only get tasks modified in last n days, based on setting
-            urlData.addQueryItem("after", QString::number(
-                    QDateTime::currentDateTimeUtc().toTime_t() - 86400 * _propMan->completedTaskAge()));
-            urlData.addQueryItem("comp", QString::number(1));
-            urlData.addQueryItem("fields", "note");
-            break;
-        case Context:
-            url.setUrl(getUrl.arg(contexts));
-            break;
-        case Goal:
-            url.setUrl(getUrl.arg(goals));
-            break;
-        case Location:
-            url.setUrl(getUrl.arg(locations));
-            break;
-        case AccountInfo:
-            url.setUrl(getUrl.arg(account));
-            break;
-        default:
-            break;
+    url.setUrl(getUrl);
+    if (_dataType == Task) {
+        //incomplete tasks only
+        urlData.addQueryItem("comp", QString::number(0));
+        //fields id, title, modified, completed come automatically
+        urlData.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,"
+                "duedatemod,startdate,starttime,remind,repeat,status,length,context,goal,location");
+    } else if (_dataType == CompletedTask) {
+        //only get tasks modified in last n days, based on setting
+        urlData.addQueryItem("after", QString::number(
+                QDateTime::currentDateTimeUtc().toTime_t() - 86400 * _propMan->completedTaskAge()));
+        //completed tasks only
+        urlData.addQueryItem("comp", QString::number(1));
+        //other fields not required for completed tasks view
+        urlData.addQueryItem("fields", "note");
     }
+    //Other datatypes don't require any additional arguments, they just get everything
 
     urlData.addQueryItem("access_token", _propMan->accessToken);
     qDebug() << Q_FUNC_INFO << url << urlData;
@@ -85,7 +122,6 @@ QVariantList CustomDataModel::getInternalList() {
 bool compareTasks(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
     QVariantMap second = b.toMap();
-
     //duedate=0 means no due date; these are sent to the end/bottom
     if (first.value("duedate").toLongLong(NULL) == 0) {
         return false;
@@ -102,7 +138,6 @@ bool compareTasks(QVariant &a, QVariant &b) {
 bool compareFolders(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
     QVariantMap second = b.toMap();
-
     if (first.value("archived").toLongLong(NULL) == 0 && second.value("archived").toLongLong(NULL) != 0) {
         return true;
     } else if (first.value("archived").toLongLong(NULL) != 0 && second.value("archived").toLongLong(NULL) == 0) {
@@ -115,7 +150,6 @@ bool compareFolders(QVariant &a, QVariant &b) {
 bool compareCompletedTasks(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
     QVariantMap second = b.toMap();
-
     if (first.value("completed").toLongLong(NULL) == second.value("completed").toLongLong(NULL)) {
         return first.value("modified").toLongLong(NULL) > second.value("modified").toLongLong(NULL);
     } else {
@@ -126,51 +160,194 @@ bool compareCompletedTasks(QVariant &a, QVariant &b) {
 bool compareContexts(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
     QVariantMap second = b.toMap();
-
     return first.value("private").toLongLong(NULL) <= second.value("private").toLongLong(NULL);
 }
 
 bool compareGoals(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
     QVariantMap second = b.toMap();
-
     return first.value("level").toLongLong(NULL) <= second.value("level").toLongLong(NULL);
 }
 
 bool compareLocations(QVariant &a, QVariant &b) {
     QVariantMap first = a.toMap();
     QVariantMap second = b.toMap();
-
     return first.value("id").toLongLong(NULL) <= second.value("id").toLongLong(NULL);
 }
 
 void CustomDataModel::sort() {
-    switch (_dataType) {
-        case Task:
-            qSort(_internalDB.begin(), _internalDB.end(), compareTasks);
-            break;
-        case Folder:
-            qSort(_internalDB.begin(), _internalDB.end(), compareFolders);
-            break;
-        case CompletedTask:
-            qSort(_internalDB.begin(), _internalDB.end(), compareCompletedTasks);
-            break;
-        case Context:
-            qSort(_internalDB.begin(), _internalDB.end(), compareContexts);
-            break;
-        case Goal:
-            qSort(_internalDB.begin(), _internalDB.end(), compareGoals);
-            break;
-        case Location:
-            qSort(_internalDB.begin(), _internalDB.end(), compareLocations);
-            break;
-        case AccountInfo:
-        default:
-            break;
+    if (_dataType == AccountInfo) {
+        return;
+    } else if (_dataType == Task) {
+        qSort(_internalDB.begin(), _internalDB.end(), compareTasks);
+    } else if (_dataType == CompletedTask) {
+        qSort(_internalDB.begin(), _internalDB.end(), compareCompletedTasks);
+    } else if (_dataType == Folder) {
+        qSort(_internalDB.begin(), _internalDB.end(), compareFolders);
+    } else if (_dataType == Context) {
+        qSort(_internalDB.begin(), _internalDB.end(), compareContexts);
+    } else if (_dataType == Goal) {
+        qSort(_internalDB.begin(), _internalDB.end(), compareGoals);
+    } else if (_dataType == Location) {
+        qSort(_internalDB.begin(), _internalDB.end(), compareLocations);
     }
 }
 
-void CustomDataModel::addToDataModel(QVariantList dataList) {
+void CustomDataModel::add(QVariantMap data) {
+    //Called by UI. Creates network request to add item.
+    if (_dataType == AccountInfo) {
+        return;
+    }
+
+    QUrl url;
+    QUrl urlData;
+    QVariantMap::iterator iter;
+
+    url.setUrl(addUrl);
+    if (_dataType == Task || _dataType == CompletedTask) {
+        //Build task data string from user's input
+        QString encodedData = QString("[{");
+        for (iter = data.begin(); iter != data.end(); ++iter) {
+            bool isOk;
+            int value = data[iter.key()].toInt(&isOk);
+            Q_UNUSED(value);
+            if (isOk) {
+                //number values
+                encodedData.append(",\"" + iter.key() + "\":" + iter.value().toString());
+            } else {
+                //string values (extra quotation marks needed)
+                encodedData.append(",\"" + iter.key() + "\":\"" + iter.value().toString() + "\"");
+            }
+        }
+        encodedData.append("}]");
+        encodedData.remove(2, 1);  //Remove initial comma YES THIS IS MESSY I KNOW STOP YELLING.
+        qDebug() << Q_FUNC_INFO << encodedData;
+        //Required for ToodleDo's API to replace some stuff
+        encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
+        encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
+
+        urlData.addEncodedQueryItem("tasks", encodedData.toAscii());
+        urlData.addQueryItem("fields", "folder,tag,startdate,duedate,duedatemod,starttime,"
+                "duetime,remind,repeat,status,star,priority,length,note,context,goal,location");
+    } else {
+        for (iter = data.begin(); iter != data.end(); ++iter) {
+            urlData.addQueryItem(iter.key(), data[iter.key()].toString());
+        }
+    }
+
+    urlData.addQueryItem("access_token", _propMan->accessToken);
+    qDebug() << Q_FUNC_INFO << url;
+    qDebug() << Q_FUNC_INFO << urlData;
+    QNetworkRequest req(url);
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    _netMan->sendRequest(req, urlData.encodedQuery());
+}
+
+void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
+    //Called by UI. Creates network request to edit item.
+    if (_dataType == AccountInfo) {
+        return;
+    }
+
+    if (oldData == newData) {
+        //If nothing has changed, don't need to upload anything
+        return;
+    }
+
+    QUrl url;
+    QUrl urlData;
+    QVariantMap::iterator iter;
+
+    url.setUrl(editUrl);
+    if (_dataType == Task || _dataType == CompletedTask) {
+        QString encodedData = QString("[{");
+        encodedData.append("\"id\":" + oldData["id"].toString());
+        for (iter = newData.begin(); iter != newData.end(); ++iter) {
+            if (newData[iter.key()] != oldData[iter.key()]) {
+                bool isOk;
+                int value = newData[iter.key()].toInt(&isOk);
+                Q_UNUSED(value);
+                if (isOk) {
+                    //number values
+                    encodedData.append(",\"" + iter.key() + "\":" + iter.value().toString());
+                } else {
+                    //string values (extra quotation marks needed)
+                    encodedData.append(",\"" + iter.key() + "\":\"" + iter.value().toString() + "\"");
+                }
+            }
+        }
+        encodedData.append("}]");
+        encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
+        encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
+        urlData.addEncodedQueryItem("tasks", encodedData.toAscii());
+        urlData.addQueryItem("fields", "folder,tag,startdate,duedate,duedatemod,starttime,"
+                "duetime,remind,repeat,status,star,priority,length,note");
+    } else {
+        urlData.addQueryItem("id", newData["id"].toString());
+        for (iter = newData.begin(); iter != newData.end(); ++iter) {
+            if (oldData[iter.key()] != newData[iter.key()]) {
+                urlData.addQueryItem(iter.key(), iter.value().toString());
+            }
+        }
+    }
+
+    urlData.addQueryItem("access_token", _propMan->accessToken);
+    qDebug() << Q_FUNC_INFO << url;
+    qDebug() << Q_FUNC_INFO << urlData;
+    QNetworkRequest req(url);
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    _netMan->sendRequest(req, urlData.encodedQuery());
+}
+
+void CustomDataModel::remove(QVariantMap data) {
+    //Called by UI. Creates network request to delete item.
+    if (_dataType == AccountInfo) {
+        return;
+    }
+
+    QUrl url;
+    QUrl urlData;
+
+    url.setUrl(removeUrl);
+    if (_dataType == Task || _dataType == CompletedTask) {
+        urlData.addQueryItem("tasks", "[\"" + data["id"].toString() + "\"]");
+    } else {
+        urlData.addQueryItem("id", data["id"].toString());
+    }
+
+    urlData.addQueryItem("access_token", _propMan->accessToken);
+    qDebug() << Q_FUNC_INFO << url;
+    qDebug() << Q_FUNC_INFO << urlData;
+    QNetworkRequest req(url);
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    _netMan->sendRequest(req, urlData.encodedQuery());
+}
+
+/*
+ * Slots
+ */
+void CustomDataModel::onGetReply(QString replyUrl, QVariantList dataList) {
+    if (replyUrl != getUrl) {
+        return;
+    }
+
+    foreach (QVariant v, dataList) {
+        QVariantMap data = v.toMap();
+        _internalDB.append(data);
+        sort();
+        qDebug() << Q_FUNC_INFO << "New data inserted into CustomDataModel:" << data;
+    }
+    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+}
+
+void CustomDataModel::onAddReply(QString replyUrl, QVariantList dataList) {
+    if (_dataType == AccountInfo) {
+        return;
+    }
+    if (replyUrl != addUrl) {
+        return;
+    }
+
     foreach (QVariant v, dataList) {
         QVariantMap data = v.toMap();
         _internalDB.append(data);
@@ -180,7 +357,14 @@ void CustomDataModel::addToDataModel(QVariantList dataList) {
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
 }
 
-void CustomDataModel::editInDataModel(QVariantList dataList) {
+void CustomDataModel::onEditReply(QString replyUrl, QVariantList dataList) {
+    if (_dataType == AccountInfo) {
+        return;
+    }
+    if (replyUrl != editUrl) {
+        return;
+    }
+
     foreach (QVariant v, dataList) {
         QVariantMap data = v.toMap();
         qlonglong editId = data.value("id").toLongLong(NULL);
@@ -214,28 +398,26 @@ void CustomDataModel::editInDataModel(QVariantList dataList) {
         }
 
         //If not found in datamodel, add as new item
-        addToDataModel(QVariantList() << data);
+        onAddReply(replyUrl, QVariantList() << data);
     }
 }
 
-void CustomDataModel::removeFromDataModel(QVariantList dataList) {
+void CustomDataModel::onRemoveReply(QString replyUrl, QVariantList dataList) {
+    if (_dataType == AccountInfo) {
+        return;
+    }
+    if (replyUrl != removeUrl) {
+        return;
+    }
+
     foreach (QVariant v, dataList) {
         QVariantMap data = v.toMap();
         qlonglong removeId = 0;
-        switch (_dataType) {
-            case Task:
-            case CompletedTask:
-                removeId = data.value("id").toLongLong(NULL);
-                break;
-            case Folder:
-            case Context:
-            case Goal:
-            case Location:
-                removeId = data.value("deleted").toLongLong(NULL);
-                break;
-            case AccountInfo:
-            default:
-                return;
+
+        if (_dataType == Task || _dataType == CompletedTask) {
+            removeId = data.value("id").toLongLong(NULL);
+        } else {
+            removeId = data.value("deleted").toLongLong(NULL);
         }
 
         for (int i = 0; i < _internalDB.count(); ++i) {
@@ -251,288 +433,8 @@ void CustomDataModel::removeFromDataModel(QVariantList dataList) {
     }
 }
 
-void CustomDataModel::add(QVariantMap data) {
-    QUrl url;
-    QUrl urlData;
-    QVariantMap::iterator iter;
-
-    switch (_dataType) {
-        case Task:
-        case CompletedTask: {
-            url.setUrl(addUrl.arg(tasks));
-            //Build task data string from user's input
-            QString encodedData = QString("[{");
-            for (iter = data.begin(); iter != data.end(); ++iter) {
-                bool isOk;
-                int value = data[iter.key()].toInt(&isOk);
-                Q_UNUSED(value);
-                if (isOk) {
-                    //number values
-                    encodedData.append(",\"" + iter.key() + "\":" + iter.value().toString());
-                } else {
-                    //string values (extra quotation marks needed)
-                    encodedData.append(",\"" + iter.key() + "\":\"" + iter.value().toString() + "\"");
-                }
-            }
-            encodedData.append("}]");
-            encodedData.remove(2, 1);  //Remove initial comma YES THIS IS MESSY I KNOW STOP YELLING.
-            qDebug() << Q_FUNC_INFO << encodedData;
-            //Required for ToodleDo's API to replace some stuff
-            encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
-            encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
-
-            urlData.addEncodedQueryItem("tasks", encodedData.toAscii());
-            urlData.addQueryItem("fields", "folder,tag,startdate,duedate,duedatemod,starttime,"
-                    "duetime,remind,repeat,status,star,priority,length,note,context,goal,location");
-            break;
-        }
-        case Folder:
-            url.setUrl(addUrl.arg(folders));
-            for (iter = data.begin(); iter != data.end(); ++iter) {
-                urlData.addQueryItem(iter.key(), data[iter.key()].toString());
-            }
-            break;
-        case Context:
-            url.setUrl(addUrl.arg(contexts));
-            for (iter = data.begin(); iter != data.end(); ++iter) {
-                urlData.addQueryItem(iter.key(), data[iter.key()].toString());
-            }
-            break;
-        case Goal:
-            url.setUrl(addUrl.arg(goals));
-            for (iter = data.begin(); iter != data.end(); ++iter) {
-                urlData.addQueryItem(iter.key(), data[iter.key()].toString());
-            }
-            break;
-        case Location:
-            url.setUrl(addUrl.arg(locations));
-            for (iter = data.begin(); iter != data.end(); ++iter) {
-                urlData.addQueryItem(iter.key(), data[iter.key()].toString());
-            }
-            break;
-        case AccountInfo:
-        default:
-            return;
-    }
-
-    urlData.addQueryItem("access_token", _propMan->accessToken);
-    qDebug() << Q_FUNC_INFO << url;
-    qDebug() << Q_FUNC_INFO << urlData;
-    QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    _netMan->sendRequest(req, urlData.encodedQuery());
-}
-
-void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
-    if (oldData == newData) {
-        //If nothing has changed, don't need to upload anything
-        return;
-    }
-
-    QUrl url;
-    QUrl urlData;
-    QVariantMap::iterator iter;
-
-    switch (_dataType) {
-        case Task:
-        case CompletedTask: {
-            url.setUrl(editUrl.arg(tasks));
-            QString encodedData = QString("[{");
-            encodedData.append("\"id\":" + oldData["id"].toString());
-            for (iter = newData.begin(); iter != newData.end(); ++iter) {
-                if (newData[iter.key()] != oldData[iter.key()]) {
-                    bool isOk;
-                    int value = newData[iter.key()].toInt(&isOk);
-                    Q_UNUSED(value);
-                    if (isOk) {
-                        //number values
-                        encodedData.append(",\"" + iter.key() + "\":" + iter.value().toString());
-                    } else {
-                        //string values (extra quotation marks needed)
-                        encodedData.append(",\"" + iter.key() + "\":\"" + iter.value().toString() + "\"");
-                    }
-                }
-            }
-            encodedData.append("}]");
-            encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");
-            encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");
-            urlData.addEncodedQueryItem("tasks", encodedData.toAscii());
-            urlData.addQueryItem("fields", "folder,tag,startdate,duedate,duedatemod,starttime,"
-                    "duetime,remind,repeat,status,star,priority,length,note");
-            break;
-        }
-        case Folder:
-            url.setUrl(editUrl.arg(folders));
-            urlData.addQueryItem("id", newData["id"].toString());
-            for (iter = newData.begin(); iter != newData.end(); ++iter) {
-                if (oldData[iter.key()] != newData[iter.key()]) {
-                    urlData.addQueryItem(iter.key(), iter.value().toString());
-                }
-            }
-            break;
-        case Context:
-            url.setUrl(editUrl.arg(contexts));
-            urlData.addQueryItem("id", newData["id"].toString());
-            for (iter = newData.begin(); iter != newData.end(); ++iter) {
-                urlData.addQueryItem(iter.key(), iter.value().toString());
-            }
-            break;
-        case Goal:
-            url.setUrl(editUrl.arg(goals));
-            urlData.addQueryItem("id", newData["id"].toString());
-            for (iter = newData.begin(); iter != newData.end(); ++iter) {
-                if (oldData[iter.key()] != newData[iter.key()]) {
-                    urlData.addQueryItem(iter.key(), iter.value().toString());
-                }
-            }
-            break;
-        case Location:
-            url.setUrl(editUrl.arg(locations));
-            urlData.addQueryItem("id", newData["id"].toString());
-            for (iter = newData.begin(); iter != newData.end(); ++iter) {
-                if (oldData[iter.key()] != newData[iter.key()]) {
-                    urlData.addQueryItem(iter.key(), iter.value().toString());
-                }
-            }
-            break;
-        case AccountInfo:
-        default:
-            return;
-    }
-
-    urlData.addQueryItem("access_token", _propMan->accessToken);
-    qDebug() << Q_FUNC_INFO << url;
-    qDebug() << Q_FUNC_INFO << urlData;
-    QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    _netMan->sendRequest(req, urlData.encodedQuery());
-}
-
-void CustomDataModel::remove(QVariantMap data) {
-    QUrl url;
-    QUrl urlData;
-
-    switch (_dataType) {
-        case Task:
-        case CompletedTask:
-            url.setUrl(removeUrl.arg(tasks));
-            urlData.addQueryItem("tasks", "[\"" + data["id"].toString() + "\"]");
-            break;
-        case Folder:
-            url.setUrl(removeUrl.arg(folders));
-            urlData.addQueryItem("id", data["id"].toString());
-            break;
-        case Context:
-            url.setUrl(removeUrl.arg(contexts));
-            urlData.addQueryItem("id", data["id"].toString());
-            break;
-        case Goal:
-            url.setUrl(removeUrl.arg(goals));
-            urlData.addQueryItem("id", data["id"].toString());
-            break;
-        case Location:
-            url.setUrl(removeUrl.arg(locations));
-            urlData.addQueryItem("id", data["id"].toString());
-            break;
-        case AccountInfo:
-        default:
-            return;
-    }
-
-    urlData.addQueryItem("access_token", _propMan->accessToken);
-    qDebug() << Q_FUNC_INFO << url;
-    qDebug() << Q_FUNC_INFO << urlData;
-    QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    _netMan->sendRequest(req, urlData.encodedQuery());
-}
-
-/*
- * Slots
- */
-void CustomDataModel::onReplyReceived(QNetworkReply *reply) {
-    QString response = reply->readAll();
-
-    JsonDataAccess jda;
-    //Some replies are a list of maps, others are just a single map
-    QVariantList dataList = jda.loadFromBuffer(response).value<QVariantList>();
-    if (jda.hasError()) {
-        qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-        qWarning() << Q_FUNC_INFO << response;
-        return;
-    }
-    QVariantMap dataMap = jda.loadFromBuffer(response).value<QVariantMap>();
-    if (jda.hasError()) {
-        qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-        qWarning() << Q_FUNC_INFO << response;
-        return;
-    }
-
-    if (reply->error() == QNetworkReply::NoError) {
-        if (dataMap.contains("errorDesc")) {
-            qWarning() << Q_FUNC_INFO << "Toodledo error" <<
-                        dataMap.value("errorCode").toInt(NULL) << ":" <<
-                        dataMap.value("errorDesc").toString();
-            emit toast("Error " + dataMap.value("errorCode").toString() +
-                    ": " + dataMap.value("errorDesc").toString());
-            return;
-        }
-
-        QString replyUrl = reply->url().toString(QUrl::RemoveQuery);
-
-        if (replyUrl == getUrl.arg(tasks) || replyUrl == getUrl.arg(folders) ||
-                replyUrl == getUrl.arg(contexts) || replyUrl == getUrl.arg(goals) ||
-                replyUrl == getUrl.arg(locations)) {
-            qDebug() << Q_FUNC_INFO << "Get URL data received from" << replyUrl << ":" << dataList;
-            //Discard summary item (only included when getting tasks)
-            if (dataList.length() > 0) {
-                if (dataList.first().toMap().contains("num") && dataList.first().toMap().contains("total")) {
-                    dataList.pop_front();
-                }
-            }
-            addToDataModel(dataList);
-        }
-        else if (replyUrl == getUrl.arg(account)) {
-            qDebug() << Q_FUNC_INFO << "Account data received from" << replyUrl << ":" << dataMap;
-            addToDataModel(QVariantList() << dataMap);
-        }
-        else if (replyUrl == addUrl.arg(tasks) || replyUrl == addUrl.arg(folders) ||
-                replyUrl == addUrl.arg(contexts) || replyUrl == addUrl.arg(goals) ||
-                replyUrl == addUrl.arg(locations)) {
-            qDebug() << Q_FUNC_INFO << "Add URL data received from" << replyUrl << ":" << dataList;
-            addToDataModel(dataList);
-        }
-        else if (replyUrl == editUrl.arg(tasks) || replyUrl == editUrl.arg(folders) ||
-                replyUrl == editUrl.arg(contexts) || replyUrl == editUrl.arg(goals) ||
-                replyUrl == editUrl.arg(locations)) {
-            qDebug() << Q_FUNC_INFO << "Edit URL data received from" << replyUrl << ":" << dataList;
-            editInDataModel(dataList);
-        }
-        else if (replyUrl == removeUrl.arg(tasks)) {
-            qDebug() << Q_FUNC_INFO << "Remove URL data received from" << replyUrl << ":" << dataList;
-            removeFromDataModel(dataList);
-        }
-        else if (replyUrl == removeUrl.arg(folders) || replyUrl == removeUrl.arg(contexts) ||
-                replyUrl == removeUrl.arg(goals) || replyUrl == removeUrl.arg(locations)) {
-            //These replies come as a single map, not list of maps
-            qDebug() << Q_FUNC_INFO << "Remove URL data received from" << replyUrl << ":" << dataMap;
-            removeFromDataModel(QVariantList() << dataMap);
-        }
-        else {
-            qWarning() << Q_FUNC_INFO << "Unrecognized reply received from" << replyUrl;
-            qWarning() << Q_FUNC_INFO << response;
-        }
-    } else {
-        qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error" << reply->errorString();
-        qWarning() << Q_FUNC_INFO << response;
-        emit toast("Error " + dataMap.value("errorCode").toString() +
-                ": " + dataMap.value("errorDesc").toString());
-    }
-    reply->deleteLater();
-}
-
 void CustomDataModel::onLogOut() {
-    //Clear all stored info
+    //Called by UI. Clear all stored info.
     _internalDB = QVariantList();
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
 }
@@ -541,7 +443,7 @@ void CustomDataModel::onLogOut() {
  */
 
 /*
- * Functions required by DataModel. Not sure if these work.
+ * Functions required by DataModel.
  */
 int CustomDataModel::childCount(const QVariantList &indexPath) {
     int retVal = 0;
