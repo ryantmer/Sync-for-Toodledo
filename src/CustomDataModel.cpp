@@ -92,8 +92,7 @@ void CustomDataModel::populateDataModel() {
     }
 
     urlData.addQueryItem("access_token", _propMan->accessToken);
-    qDebug() << Q_FUNC_INFO << url;
-    qDebug() << Q_FUNC_INFO << urlData;
+    qDebug() << Q_FUNC_INFO << url << urlData;
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     _networkAccessManager->post(req, urlData.encodedQuery());

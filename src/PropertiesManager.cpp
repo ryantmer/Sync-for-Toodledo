@@ -1,8 +1,8 @@
-#include "PropertiesManager.hpp"
 #include <QSettings>
 #include <QMutex>
 #include <QDateTime>
 #include <QDebug>
+#include "PropertiesManager.hpp"
 
 PropertiesManager *PropertiesManager::getInstance() {
     static PropertiesManager *singleton = NULL;
@@ -18,8 +18,17 @@ PropertiesManager *PropertiesManager::getInstance() {
 }
 
 PropertiesManager::PropertiesManager(QObject *parent) : QObject (parent) {
-    QSettings settings("ryantmer", "SyncForToodledo");
+    _netMan = NetworkManager::getInstance();
+    bool ok;
+    ok = connect(_netMan, SIGNAL(accessTokenRefreshed(QString, qlonglong)),
+            this, SLOT(onAccessTokenRefreshed(QString, qlonglong)));
+    Q_ASSERT(ok);
+    ok = connect(_netMan, SIGNAL(refreshTokenRefreshed(QString)),
+            this, SLOT(onRefreshTokenRefreshed(QString)));
+    Q_ASSERT(ok);
+    Q_UNUSED(ok);
 
+    QSettings settings("ryantmer", "SyncForToodledo");
     accessToken = settings.value("accessToken", "").toString();
     accessTokenExpiry = settings.value("accessTokenExpiry", 0).toUInt(NULL);
     refreshToken = settings.value("refreshToken", "").toString();
@@ -29,16 +38,20 @@ PropertiesManager::PropertiesManager(QObject *parent) : QObject (parent) {
 }
 PropertiesManager::~PropertiesManager() {}
 
-void PropertiesManager::updateAccessToken(QString newAccessToken, qlonglong expiresIn,
-        QString newRefreshToken) {
-    accessToken = newAccessToken;
+void PropertiesManager::onAccessTokenRefreshed(QString newToken, qlonglong expiresIn) {
+    qDebug() << Q_FUNC_INFO << "New access token stored:" << newToken;
+    accessToken = newToken;
     accessTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + expiresIn;
-    refreshToken = newRefreshToken;
-    refreshTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + 2592000; //30 days from now
-
     QSettings settings("ryantmer", "SyncForToodledo");
     settings.setValue("accessToken", accessToken);
     settings.setValue("accessTokenExpiry", accessTokenExpiry);
+}
+
+void PropertiesManager::onRefreshTokenRefreshed(QString newToken) {
+    qDebug() << Q_FUNC_INFO << "New refresh token stored:" << newToken;
+    refreshToken = newToken;
+    refreshTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + 2592000; //30 days from now
+    QSettings settings("ryantmer", "SyncForToodledo");
     settings.setValue("refreshToken", refreshToken);
     settings.setValue("refreshTokenExpiry", refreshTokenExpiry);
 }

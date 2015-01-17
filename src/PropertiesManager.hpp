@@ -1,6 +1,8 @@
 #ifndef PROPERTIESMANAGER_HPP_
 #define PROPERTIESMANAGER_HPP_
 
+#include "NetworkManager.hpp"
+
 class PropertiesManager : public QObject {
     Q_OBJECT
 public:
@@ -10,13 +12,9 @@ public:
     static PropertiesManager *getInstance();
     PropertiesManager(QObject *parent = 0);
     virtual ~PropertiesManager();
-    void saveProperties();
-
     int completedTaskAge();
     void setCompletedTaskAge(int days);
     int dateFormat();
-
-    void updateAccessToken(QString accessToken, qlonglong expiresIn, QString refreshToken);
     void clearTokens();
 
     QString accessToken;
@@ -33,6 +31,11 @@ signals:
 
 public slots:
     void onLogOut();
+    void onAccessTokenRefreshed(QString newToken, qlonglong expiresIn);
+    void onRefreshTokenRefreshed(QString newToken);
+
+private:
+    NetworkManager *_netMan;
 };
 
 #endif /* PROPERTIESMANAGER_HPP_ */

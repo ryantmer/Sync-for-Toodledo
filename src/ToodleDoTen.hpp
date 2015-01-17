@@ -58,8 +58,8 @@ public slots:
     void onPositionUpdated(const QGeoPositionInfo &pos);
     void onNetworkStateChanged(bool connected);
     void onWebViewUrlChanged(QUrl url);
-    void onAccessTokenRefreshed();
     void onRefreshTokenExpired();
+    void onAccessTokenRefreshed(QString newToken, qlonglong expiresIn);
     void onAccountInfoUpdated();
     void onToast(QString message);
 

@@ -1,13 +1,10 @@
 #include <bb/data/JsonDataAccess>
 #include <QMutex>
 #include <QDateTime>
-#include <bb/data/JsonDataAccess>
 #include <bb/PackageInfo>
 #include "LoginManager.hpp"
 #include "PropertiesManager.hpp"
 
-const QString LoginManager::authorizeUrl = QString("https://api.toodledo.com/3/account/authorize.php");
-const QString LoginManager::tokenUrl = QString("https://api.toodledo.com/3/account/token.php");
 const QString LoginManager::_credentials = QString("");
 
 using namespace bb::data;
@@ -27,7 +24,7 @@ LoginManager *LoginManager::getInstance() {
 
 LoginManager::LoginManager(QObject *parent) : QObject(parent) {
     _loggedIn = false;
-    _networkAccessManager = new QNetworkAccessManager(this);
+    _netMan = NetworkManager::getInstance();
     _propMan = PropertiesManager::getInstance();
 
     //Timer that fires when access token expires (2 hours)
@@ -42,20 +39,17 @@ LoginManager::LoginManager(QObject *parent) : QObject(parent) {
     //No timer for refresh token, which expires every 30 days.
     //Who the hell keeps an app open for 30 days straight?
 
-    bool isOk;
-    isOk = connect(_networkAccessManager, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(onTokenRequestFinished(QNetworkReply*)));
-    Q_ASSERT(isOk);
-    isOk = connect(this, SIGNAL(refreshTokenExpired()),
-            this, SLOT(onRefreshTokenExpired()));
-    Q_ASSERT(isOk);
-    isOk = connect(this, SIGNAL(accessTokenExpired()),
+    bool ok;
+    ok = connect(this, SIGNAL(accessTokenExpired()),
             this, SLOT(onAccessTokenExpired()));
-    Q_ASSERT(isOk);
-    isOk = connect(_accessTokenTimer, SIGNAL(timeout()),
+    Q_ASSERT(ok);
+    ok = connect(_accessTokenTimer, SIGNAL(timeout()),
             this, SLOT(onAccessTokenExpired()));
-    Q_ASSERT(isOk);
-    Q_UNUSED(isOk);
+    Q_ASSERT(ok);
+    ok = connect(_netMan, SIGNAL(accessTokenRefreshed(QString, qlonglong)),
+            this, SLOT(onAccessTokenRefreshed(QString, qlonglong)));
+    Q_ASSERT(ok);
+    Q_UNUSED(ok);
 }
 
 LoginManager::~LoginManager() {}
@@ -72,7 +66,7 @@ bool LoginManager::isLoggedIn() {
 }
 
 QUrl LoginManager::getAuthorizeUrl() {
-    QUrl url(authorizeUrl);
+    QUrl url(_netMan->authorizeUrl);
     url.addQueryItem("response_type", "code");
     url.addQueryItem("client_id", "ToodleDo10");
     url.addQueryItem("state", getState());
@@ -90,7 +84,7 @@ QString LoginManager::getState() {
 
 void LoginManager::refreshRefreshToken(QString authCode) {
     //Gets called when user clicks "Authorize" in the login WebView
-    QUrl url(tokenUrl);
+    QUrl url(_netMan->tokenUrl);
     QNetworkRequest req(url);
 
     QUrl data;
@@ -103,12 +97,12 @@ void LoginManager::refreshRefreshToken(QString authCode) {
     req.setRawHeader(QByteArray("Authorization"), auth.toAscii());
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-    _networkAccessManager->post(req, data.encodedQuery());
+    _netMan->sendRequest(req, data.encodedQuery());
 }
 
 void LoginManager::refreshAccessToken() {
     //Gets called automatically whenever the access token expires
-    QUrl url(tokenUrl);
+    QUrl url(_netMan->tokenUrl);
     QNetworkRequest req(url);
 
     QUrl urlData;
@@ -123,17 +117,12 @@ void LoginManager::refreshAccessToken() {
     qDebug() << Q_FUNC_INFO << url;
     qDebug() << Q_FUNC_INFO << urlData;
 
-    _networkAccessManager->post(req, urlData.encodedQuery());
+    _netMan->sendRequest(req, urlData.encodedQuery());
 }
 
 void LoginManager::onLogOut() {
     _loggedIn = false;
-    _propMan->clearTokens();
     emit toast("Logged out");
-}
-
-void LoginManager::onRefreshTokenExpired() {
-    qWarning() << Q_FUNC_INFO << "Refresh token expired (30 days)";
 }
 
 void LoginManager::onAccessTokenExpired() {
@@ -142,47 +131,11 @@ void LoginManager::onAccessTokenExpired() {
     refreshAccessToken();
 }
 
-void LoginManager::onTokenRequestFinished(QNetworkReply *reply) {
-    QString response = reply->readAll();
-
-    JsonDataAccess jda;
-    QVariantMap dataMap = jda.loadFromBuffer(response).value<QVariantMap>();
-    if (jda.hasError()) {
-        qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
-        qWarning() << Q_FUNC_INFO << response;
-        return;
-    }
-
-    if (dataMap.contains("errorDesc")) {
-        qWarning() << Q_FUNC_INFO << "Toodledo error" <<
-                    dataMap.value("errorCode").toInt(NULL) << ":" <<
-                    dataMap.value("errorDesc").toString();
-        emit toast("Error " + dataMap.value("errorCode").toString() +
-                ": " + dataMap.value("errorDesc").toString());
-        if (dataMap.value("errorCode").toInt(NULL) == 102) {
-            //Can be caused by a few things, but refreshing the refresh token should always clear it
-            emit refreshTokenExpired();
-        }
-        return;
-    }
-
-    if (reply->error() == QNetworkReply::NoError) {
-        _propMan->updateAccessToken(dataMap.value("access_token").toString(),
-                dataMap.value("expires_in").toLongLong(NULL),
-                dataMap.value("refresh_token").toString());
-        _loggedIn = true;
-        qDebug() << Q_FUNC_INFO << "New refresh token:" << _propMan->refreshToken;
-        emit accessTokenRefreshed();
-        emit refreshTokenRefreshed();
-
-        //Restart timeout on access token
-        _accessTokenTimer->start(
-                (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
-    } else {
-        qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error" << reply->errorString();
-        qWarning() << Q_FUNC_INFO << response;
-        emit toast("Error " + dataMap.value("errorCode").toString() +
-                ": " + dataMap.value("errorDesc").toString());
-    }
-    reply->deleteLater();
+void LoginManager::onAccessTokenRefreshed(QString newToken, qlonglong expiresIn) {
+    //Restart access token timer for 2 hours
+    _loggedIn = true;
+    _accessTokenTimer->start(
+            (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
+    Q_UNUSED(newToken);
+    Q_UNUSED(expiresIn);
 }
