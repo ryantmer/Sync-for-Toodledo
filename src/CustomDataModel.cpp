@@ -81,6 +81,10 @@ void CustomDataModel::refresh() {
     }
 }
 
+bool CustomDataModel::empty() {
+    return _internalDB.length() == 0;
+}
+
 void CustomDataModel::populateDataModel() {
     //Gets data from API based on _dataType.
     QUrl url;
@@ -338,6 +342,7 @@ void CustomDataModel::onGetReply(QString replyUrl, QVariantList dataList) {
         qDebug() << Q_FUNC_INFO << "New data inserted into CustomDataModel:" << data;
     }
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+    emit emptyChanged(_internalDB.length() == 0);
 }
 
 void CustomDataModel::onAddReply(QString replyUrl, QVariantList dataList) {
@@ -355,6 +360,7 @@ void CustomDataModel::onAddReply(QString replyUrl, QVariantList dataList) {
         qDebug() << Q_FUNC_INFO << "New data added to CustomDataModel:" << data;
     }
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+    emit emptyChanged(_internalDB.length() == 0);
 }
 
 void CustomDataModel::onEditReply(QString replyUrl, QVariantList dataList) {
@@ -392,6 +398,7 @@ void CustomDataModel::onEditReply(QString replyUrl, QVariantList dataList) {
 
                 sort();
                 emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+                emit emptyChanged(_internalDB.length() == 0);
                 qDebug() << Q_FUNC_INFO << "Data edited in CustomDataModel:" << data;
                 return;
             }
@@ -426,6 +433,7 @@ void CustomDataModel::onRemoveReply(QString replyUrl, QVariantList dataList) {
                 _internalDB.removeAt(i);
                 sort();
                 emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+                emit emptyChanged(_internalDB.length() == 0);
                 qDebug() << Q_FUNC_INFO << "Data removed from CustomDataModel:" << data;
                 return;
             }

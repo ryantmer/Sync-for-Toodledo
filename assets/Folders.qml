@@ -8,6 +8,15 @@ Page {
     }
     
     Container {
+        Label {
+            id: noItems
+            text: "You don't have any folders!"
+            visible: listView.dataModel.empty
+            horizontalAlignment: HorizontalAlignment.Center
+            textStyle.fontSize: FontSize.XLarge
+            topMargin: 20
+            bottomMargin: 20;
+        }
         ListView {
             id: listView
             accessibility.name: "Folder list"

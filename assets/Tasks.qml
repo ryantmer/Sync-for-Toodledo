@@ -38,6 +38,15 @@ NavigationPane {
                 preferredWidth: 100
                 horizontalAlignment: HorizontalAlignment.Center
             }
+            Label {
+                id: noItems
+                text: "You don't have any tasks!"
+                visible: listView.dataModel.empty
+                horizontalAlignment: HorizontalAlignment.Center
+                textStyle.fontSize: FontSize.XLarge
+                topMargin: 20
+                bottomMargin: 20;
+            }
             ListView {
                 id: listView
                 accessibility.name: "Task list"

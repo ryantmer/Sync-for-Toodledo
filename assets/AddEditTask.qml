@@ -633,7 +633,7 @@ Page {
         value = -1;
         for (var text in texts) {
             var opt = option.createObject();
-            opt.tet = text;
+            opt.text = text;
             opt.value = value;
             priorityDropDown.add(opt);
             value++;

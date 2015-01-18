@@ -10,6 +10,8 @@
 class CustomDataModel : public bb::cascades::DataModel {
     Q_OBJECT
 
+    Q_PROPERTY(bool empty READ empty NOTIFY emptyChanged);
+
 public:
     enum DataType {
         UndefinedType,
@@ -24,7 +26,6 @@ public:
 
     CustomDataModel(QObject *parent = 0, DataType dataType = UndefinedType);
     virtual ~CustomDataModel();
-
     //Called by the UI through QML; initiate network stuff
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void add(QVariantMap data);
@@ -37,6 +38,8 @@ public:
     Q_INVOKABLE virtual bool hasChildren(const QVariantList &indexPath);
     Q_INVOKABLE virtual QString itemType(const QVariantList &indexPath);
     Q_INVOKABLE virtual QVariant data(const QVariantList &indexPath);
+
+    bool empty();
 
 private:
     void sort();

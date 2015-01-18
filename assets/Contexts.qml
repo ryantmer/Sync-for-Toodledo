@@ -9,11 +9,13 @@ Page {
     
     Container {
         Label {
-            id: noContexts
+            id: noItems
             text: "You don't have any contexts!"
             visible: listView.dataModel.empty
             horizontalAlignment: HorizontalAlignment.Center
             textStyle.fontSize: FontSize.XLarge
+            topMargin: 20
+            bottomMargin: 20
         }
         ListView {
             id: listView
@@ -63,11 +65,6 @@ Page {
                     }
                 }
             ]
-            
-            onDataModelChanged: {
-                console.log("DATA MODEL CHANGED");
-                noContexts.visible = !dataModel.hasChildren([]);
-            }
             
             onTriggered: {
                 var context = dataModel.data(indexPath);
