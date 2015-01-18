@@ -253,7 +253,7 @@ void CustomDataModel::add(QVariantMap data) {
     qDebug() << Q_FUNC_INFO << urlData;
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    req.setAttribute(QNetworkRequest::User, QVariantList() << _dataType << NetworkManager::Add);
+    req.setAttribute(QNetworkRequest::User, QVariant(_dataType));
     _netMan->sendRequest(req, urlData.encodedQuery());
 }
 
