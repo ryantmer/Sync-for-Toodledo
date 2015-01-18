@@ -1,6 +1,17 @@
 #include "CustomDataModel.hpp"
 #include <bb/data/JsonDataAccess>
 
+const char * CustomDataModel::DataTypeStrings[8] = {
+    "UndefinedType",
+    "Task",
+    "Folder",
+    "CompletedTask",
+    "Context",
+    "Goal",
+    "Location",
+    "AccountInfo"
+};
+
 using namespace bb::cascades;
 using namespace bb::data;
 
@@ -51,68 +62,24 @@ CustomDataModel::CustomDataModel(QObject *parent, DataType dataType) : DataModel
     }
 
     bool ok;
-    ok = connect(_netMan, SIGNAL(getReply(QString, QVariantList)),
-            this, SLOT(onGetReply(QString, QVariantList)));
+    ok = connect(_netMan, SIGNAL(getReply(int, QVariantList)),
+            this, SLOT(onGetReply(int, QVariantList)));
     Q_ASSERT(ok);
-    ok = connect(_netMan, SIGNAL(addReply(QString, QVariantList)),
-            this, SLOT(onAddReply(QString, QVariantList)));
+    ok = connect(_netMan, SIGNAL(addReply(int, QVariantList)),
+            this, SLOT(onAddReply(int, QVariantList)));
     Q_ASSERT(ok);
-    ok = connect(_netMan, SIGNAL(editReply(QString, QVariantList)),
-            this, SLOT(onEditReply(QString, QVariantList)));
+    ok = connect(_netMan, SIGNAL(editReply(int, QVariantList)),
+            this, SLOT(onEditReply(int, QVariantList)));
     Q_ASSERT(ok);
-    ok = connect(_netMan, SIGNAL(removeReply(QString, QVariantList)),
-            this, SLOT(onRemoveReply(QString, QVariantList)));
+    ok = connect(_netMan, SIGNAL(removeReply(int, QVariantList)),
+            this, SLOT(onRemoveReply(int, QVariantList)));
     Q_ASSERT(ok);
     Q_UNUSED(ok);
 }
 CustomDataModel::~CustomDataModel() {}
 
-void CustomDataModel::refresh() {
-    if (_netMan->isConnected()) {
-        if (_loginMan->isLoggedIn()) {
-            clear();
-            populateDataModel();
-        } else {
-            qWarning() << Q_FUNC_INFO << "LoginManager indicated not logged in";
-        }
-    } else {
-        qWarning() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
-        emit toast("No network connection!");
-    }
-}
-
 bool CustomDataModel::empty() {
     return _internalDB.length() == 0;
-}
-
-void CustomDataModel::populateDataModel() {
-    //Gets data from API based on _dataType.
-    QUrl url;
-    QUrl urlData;
-
-    url.setUrl(getUrl);
-    if (_dataType == Task) {
-        //incomplete tasks only
-        urlData.addQueryItem("comp", QString::number(0));
-        //fields id, title, modified, completed come automatically
-        urlData.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,"
-                "duedatemod,startdate,starttime,remind,repeat,status,length,context,goal,location");
-    } else if (_dataType == CompletedTask) {
-        //only get tasks modified in last n days, based on setting
-        urlData.addQueryItem("after", QString::number(
-                QDateTime::currentDateTimeUtc().toTime_t() - 86400 * _propMan->completedTaskAge()));
-        //completed tasks only
-        urlData.addQueryItem("comp", QString::number(1));
-        //other fields not required for completed tasks view
-        urlData.addQueryItem("fields", "note");
-    }
-    //Other datatypes don't require any additional arguments, they just get everything
-
-    urlData.addQueryItem("access_token", _propMan->accessToken);
-    qDebug() << Q_FUNC_INFO << url << urlData;
-    QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    _netMan->sendRequest(req, urlData.encodedQuery());
 }
 
 void CustomDataModel::clear() {
@@ -121,6 +88,20 @@ void CustomDataModel::clear() {
 
 QVariantList CustomDataModel::getInternalList() {
     return _internalDB;
+}
+
+void CustomDataModel::refresh() {
+    if (_netMan->isConnected()) {
+        if (_loginMan->isLoggedIn()) {
+            clear();
+            get();
+        } else {
+            qWarning() << Q_FUNC_INFO << "LoginManager indicated not logged in";
+        }
+    } else {
+        qWarning() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
+        emit toast("No network connection!");
+    }
 }
 
 bool compareTasks(QVariant &a, QVariant &b) {
@@ -197,11 +178,39 @@ void CustomDataModel::sort() {
     }
 }
 
+void CustomDataModel::get() {
+    //Gets data from API based on _dataType.
+    QUrl url;
+    QUrl urlData;
+
+    url.setUrl(getUrl);
+    if (_dataType == Task) {
+        //incomplete tasks only
+        urlData.addQueryItem("comp", QString::number(0));
+        //fields id, title, modified, completed come automatically
+        urlData.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,"
+                "duedatemod,startdate,starttime,remind,repeat,status,length,context,goal,location");
+    } else if (_dataType == CompletedTask) {
+        //only get tasks modified in last n days, based on setting
+        urlData.addQueryItem("after", QString::number(
+                QDateTime::currentDateTimeUtc().toTime_t() - 86400 * _propMan->completedTaskAge()));
+        //completed tasks only
+        urlData.addQueryItem("comp", QString::number(1));
+        //other fields not required for completed tasks view
+        urlData.addQueryItem("fields", "note");
+    }
+    //Other datatypes don't require any additional arguments, they just get everything
+
+    urlData.addQueryItem("access_token", _propMan->accessToken);
+    qDebug() << Q_FUNC_INFO << url << urlData;
+    QNetworkRequest req(url);
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    req.setAttribute(QNetworkRequest::User, QVariant(_dataType));
+    _netMan->sendRequest(req, urlData.encodedQuery());
+}
+
 void CustomDataModel::add(QVariantMap data) {
     //Called by UI. Creates network request to add item.
-    if (_dataType == AccountInfo) {
-        return;
-    }
 
     QUrl url;
     QUrl urlData;
@@ -244,14 +253,12 @@ void CustomDataModel::add(QVariantMap data) {
     qDebug() << Q_FUNC_INFO << urlData;
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    req.setAttribute(QNetworkRequest::User, QVariantList() << _dataType << NetworkManager::Add);
     _netMan->sendRequest(req, urlData.encodedQuery());
 }
 
 void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
     //Called by UI. Creates network request to edit item.
-    if (_dataType == AccountInfo) {
-        return;
-    }
 
     if (oldData == newData) {
         //If nothing has changed, don't need to upload anything
@@ -300,14 +307,12 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
     qDebug() << Q_FUNC_INFO << urlData;
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    req.setAttribute(QNetworkRequest::User, QVariant(_dataType));
     _netMan->sendRequest(req, urlData.encodedQuery());
 }
 
 void CustomDataModel::remove(QVariantMap data) {
     //Called by UI. Creates network request to delete item.
-    if (_dataType == AccountInfo) {
-        return;
-    }
 
     QUrl url;
     QUrl urlData;
@@ -324,52 +329,50 @@ void CustomDataModel::remove(QVariantMap data) {
     qDebug() << Q_FUNC_INFO << urlData;
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    req.setAttribute(QNetworkRequest::User, QVariant(_dataType));
     _netMan->sendRequest(req, urlData.encodedQuery());
 }
 
 /*
  * Slots
  */
-void CustomDataModel::onGetReply(QString replyUrl, QVariantList dataList) {
-    if (replyUrl != getUrl) {
+void CustomDataModel::onGetReply(int replyDataType, QVariantList dataList) {
+    if (_dataType != replyDataType) {
         return;
     }
+    qDebug() << Q_FUNC_INFO << DataTypeStrings[_dataType] << "received get reply";
 
     foreach (QVariant v, dataList) {
         QVariantMap data = v.toMap();
         _internalDB.append(data);
         sort();
-        qDebug() << Q_FUNC_INFO << "New data inserted into CustomDataModel:" << data;
+        qDebug() << Q_FUNC_INFO << "New data inserted into" << DataTypeStrings[_dataType] << ":" << data;
     }
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
     emit emptyChanged(_internalDB.length() == 0);
 }
 
-void CustomDataModel::onAddReply(QString replyUrl, QVariantList dataList) {
-    if (_dataType == AccountInfo) {
+void CustomDataModel::onAddReply(int replyDataType, QVariantList dataList) {
+    if (_dataType != replyDataType) {
         return;
     }
-    if (replyUrl != addUrl) {
-        return;
-    }
+    qDebug() << Q_FUNC_INFO << DataTypeStrings[_dataType] << "received add reply";
 
     foreach (QVariant v, dataList) {
         QVariantMap data = v.toMap();
         _internalDB.append(data);
         sort();
-        qDebug() << Q_FUNC_INFO << "New data added to CustomDataModel:" << data;
+        qDebug() << Q_FUNC_INFO << "New data added to" << DataTypeStrings[_dataType] << ":" << data;
     }
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
     emit emptyChanged(_internalDB.length() == 0);
 }
 
-void CustomDataModel::onEditReply(QString replyUrl, QVariantList dataList) {
-    if (_dataType == AccountInfo) {
+void CustomDataModel::onEditReply(int replyDataType, QVariantList dataList) {
+    if (_dataType != replyDataType) {
         return;
     }
-    if (replyUrl != editUrl) {
-        return;
-    }
+    qDebug() << Q_FUNC_INFO << DataTypeStrings[_dataType] << "received edit reply";
 
     foreach (QVariant v, dataList) {
         QVariantMap data = v.toMap();
@@ -399,23 +402,21 @@ void CustomDataModel::onEditReply(QString replyUrl, QVariantList dataList) {
                 sort();
                 emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
                 emit emptyChanged(_internalDB.length() == 0);
-                qDebug() << Q_FUNC_INFO << "Data edited in CustomDataModel:" << data;
+                qDebug() << Q_FUNC_INFO << "Data edited in" << DataTypeStrings[_dataType] << ":" << data;
                 return;
             }
         }
 
         //If not found in datamodel, add as new item
-        onAddReply(replyUrl, QVariantList() << data);
+        onAddReply(replyDataType, QVariantList() << data);
     }
 }
 
-void CustomDataModel::onRemoveReply(QString replyUrl, QVariantList dataList) {
-    if (_dataType == AccountInfo) {
+void CustomDataModel::onRemoveReply(int replyDataType, QVariantList dataList) {
+    if (_dataType != replyDataType) {
         return;
     }
-    if (replyUrl != removeUrl) {
-        return;
-    }
+    qDebug() << Q_FUNC_INFO << DataTypeStrings[_dataType] << "received remove reply";
 
     foreach (QVariant v, dataList) {
         QVariantMap data = v.toMap();
@@ -434,7 +435,7 @@ void CustomDataModel::onRemoveReply(QString replyUrl, QVariantList dataList) {
                 sort();
                 emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
                 emit emptyChanged(_internalDB.length() == 0);
-                qDebug() << Q_FUNC_INFO << "Data removed from CustomDataModel:" << data;
+                qDebug() << Q_FUNC_INFO << "Data removed from" << DataTypeStrings[_dataType] << ":" << data;
                 return;
             }
         }

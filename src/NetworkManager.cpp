@@ -62,6 +62,7 @@ void NetworkManager::sendRequest(QNetworkRequest request, QByteArray encodedQuer
 
 void NetworkManager::onFinished(QNetworkReply *reply) {
     QString response = reply->readAll();
+    int replyDataType = reply->request().attribute(QNetworkRequest::User).toInt(NULL);
 
     qDebug() << Q_FUNC_INFO << response;
 
@@ -102,27 +103,27 @@ void NetworkManager::onFinished(QNetworkReply *reply) {
             if (replyUrl.contains("account")) {
                 dataList = QVariantList() << dataMap; //Account info is just a map, not a list
             }
-            qDebug() << Q_FUNC_INFO << "Get reply received:" << dataList;
+            qDebug() << Q_FUNC_INFO << "Get reply received from" << replyUrl << ":" << dataList;
             if (dataList.length() > 0) {
                 if (dataList.first().toMap().contains("num") && dataList.first().toMap().contains("total")) {
                     dataList.pop_front(); //Discard summary item (only for getting tasks)
                 }
             }
-            emit getReply(replyUrl, dataList);
+            emit getReply(replyDataType, dataList);
         } else if (replyUrl.contains("add")) {
-            qDebug() << Q_FUNC_INFO << "Add reply received:" << dataList;
-            emit addReply(replyUrl, dataList);
+            qDebug() << Q_FUNC_INFO << "Add reply received from" << replyUrl << ":" << dataList;
+            emit addReply(replyDataType, dataList);
         } else if (replyUrl.contains("edit")) {
-            qDebug() << Q_FUNC_INFO << "Edit reply received:" << dataList;
-            emit editReply(replyUrl, dataList);
+            qDebug() << Q_FUNC_INFO << "Edit reply received from" << replyUrl << ":" << dataList;
+            emit editReply(replyDataType, dataList);
         } else if (replyUrl.contains("delete")) {
             if (!replyUrl.contains("tasks")) {
                 dataList = QVariantList() << dataMap; //only tasks returns a list after deletion
             }
-            qDebug() << Q_FUNC_INFO << "Remove reply received:" << dataList;
-            emit removeReply(replyUrl, dataList);
+            qDebug() << Q_FUNC_INFO << "Remove reply received from" << replyUrl << ":" << dataList;
+            emit removeReply(replyDataType, dataList);
         } else {
-            qDebug() << Q_FUNC_INFO << "Received unknown reply from URL:" << replyUrl << response;
+            qDebug() << Q_FUNC_INFO << "Received unknown reply from" << replyUrl << ":" << response;
         }
     } else {
         qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error" << reply->errorString();

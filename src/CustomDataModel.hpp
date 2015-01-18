@@ -24,6 +24,8 @@ public:
         AccountInfo
     };
 
+    static const char * DataTypeStrings[];
+
     CustomDataModel(QObject *parent = 0, DataType dataType = UndefinedType);
     virtual ~CustomDataModel();
     //Called by the UI through QML; initiate network stuff
@@ -39,12 +41,11 @@ public:
     Q_INVOKABLE virtual QString itemType(const QVariantList &indexPath);
     Q_INVOKABLE virtual QVariant data(const QVariantList &indexPath);
 
-    bool empty();
-
 private:
     void sort();
-    void populateDataModel();
+    void get();
     void clear();
+    bool empty();
 
     QVariantList _internalDB;
     DataType _dataType;
@@ -63,10 +64,10 @@ signals:
 
 public slots:
     void onLogOut();
-    void onGetReply(QString replyUrl, QVariantList dataList);
-    void onAddReply(QString replyUrl, QVariantList dataList);
-    void onEditReply(QString replyUrl, QVariantList dataList);
-    void onRemoveReply(QString replyUrl, QVariantList dataList);
+    void onGetReply(int replyDataType, QVariantList dataList);
+    void onAddReply(int replyDataType, QVariantList dataList);
+    void onEditReply(int replyDataType, QVariantList dataList);
+    void onRemoveReply(int replyDataType, QVariantList dataList);
 };
 
 #endif /* CUSTOMDATAMODEL_HPP_ */

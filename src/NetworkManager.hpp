@@ -28,10 +28,10 @@ signals:
     void refreshTokenRefreshed(QString newToken);
     void networkRequestStarted();
     void networkRequestFinished();
-    void getReply(QString replyUrl, QVariantList dataList);
-    void addReply(QString replyUrl, QVariantList dataList);
-    void editReply(QString replyUrl, QVariantList dataList);
-    void removeReply(QString replyUrl, QVariantList dataList);
+    void getReply(int replyDataType, QVariantList dataList);
+    void addReply(int replyDataType, QVariantList dataList);
+    void editReply(int replyDataType, QVariantList dataList);
+    void removeReply(int replyDataType, QVariantList dataList);
 
 private slots:
     void onOnlineStateChanged(bool online);
