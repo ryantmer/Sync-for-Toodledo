@@ -5,7 +5,7 @@
 #include "LoginManager.hpp"
 #include "PropertiesManager.hpp"
 
-const QString LoginManager::_credentials = QString("ToodleDo10:api53ed061e20f0f");
+const QString LoginManager::_credentials = QString("");
 
 using namespace bb::data;
 
