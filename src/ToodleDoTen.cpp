@@ -329,6 +329,7 @@ void ToodledoTen::onAccountInfoUpdated() {
             old_lastedit_task == 0 || old_lastdelete_task == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Tasks";
         _taskDataModel->refresh();
+        _completedTaskDataModel->refresh();
     } else {
         qDebug() << Q_FUNC_INFO << "No changes to tasks on server since last update";
     }
