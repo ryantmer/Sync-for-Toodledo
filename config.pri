@@ -42,15 +42,15 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/AddEditGoal.qml) \
         $$quote($$BASEDIR/assets/AddEditLocation.qml) \
         $$quote($$BASEDIR/assets/AddEditTask.qml) \
-        $$quote($$BASEDIR/assets/CompletedTasks.qml) \
-        $$quote($$BASEDIR/assets/Contexts.qml) \
         $$quote($$BASEDIR/assets/Cover.qml) \
-        $$quote($$BASEDIR/assets/Folders.qml) \
-        $$quote($$BASEDIR/assets/Goals.qml) \
-        $$quote($$BASEDIR/assets/Locations.qml) \
+        $$quote($$BASEDIR/assets/ListCompletedTasks.qml) \
+        $$quote($$BASEDIR/assets/ListContexts.qml) \
+        $$quote($$BASEDIR/assets/ListFolders.qml) \
+        $$quote($$BASEDIR/assets/ListGoals.qml) \
+        $$quote($$BASEDIR/assets/ListLocations.qml) \
+        $$quote($$BASEDIR/assets/ListTasks.qml) \
         $$quote($$BASEDIR/assets/Login.qml) \
         $$quote($$BASEDIR/assets/Settings.qml) \
-        $$quote($$BASEDIR/assets/Tasks.qml) \
         $$quote($$BASEDIR/assets/images/ic_add.png) \
         $$quote($$BASEDIR/assets/images/ic_completed.png) \
         $$quote($$BASEDIR/assets/images/ic_contexts.png) \

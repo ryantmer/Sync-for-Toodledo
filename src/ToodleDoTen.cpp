@@ -32,7 +32,7 @@ ToodledoTen::ToodledoTen() : QObject() {
     _accountInfo = new CustomDataModel(this, CustomDataModel::AccountInfo);
 
     //Create root QML document from main.qml and expose certain variables to QML
-    QmlDocument *qml = QmlDocument::create("asset:///Tasks.qml").parent(this);
+    QmlDocument *qml = QmlDocument::create("asset:///ListTasks.qml").parent(this);
     qml->setContextProperty("app", this);
     qml->setContextProperty("propertyManager", _propertiesManager);
     qml->setContextProperty("taskDataModel", _taskDataModel);
@@ -297,14 +297,27 @@ void ToodledoTen::onAccessTokenRefreshed(QString newToken, qlonglong expiresIn) 
 
 void ToodledoTen::onNetworkRequestStarted() {
     qDebug() << Q_FUNC_INFO << "Starting busy indicator...";
-    ActivityIndicator *activity = _root->findChild<ActivityIndicator*>("networkActivity");
-    activity->start();
+    Page *page = _root->top();
+    ActivityIndicator *activity = page->findChild<ActivityIndicator*>("networkActivity");
+    if (activity) {
+        activity->start();
+        qDebug() << Q_FUNC_INFO << "Stopped busy indicator.";
+    } else {
+        qDebug() << Q_FUNC_INFO << "Couldn't find activity indicator for page"
+                << page->objectName();
+    }
 }
 
 void ToodledoTen::onNetworkRequestFinished() {
-    ActivityIndicator *activity = _root->findChild<ActivityIndicator*>("networkActivity");
-    activity->stop();
-    qDebug() << Q_FUNC_INFO << "Stopped busy indicator.";
+    Page *page = _root->top();
+    ActivityIndicator *activity = page->findChild<ActivityIndicator*>("networkActivity");
+    if (activity) {
+        activity->stop();
+        qDebug() << Q_FUNC_INFO << "Stopped busy indicator.";
+    } else {
+        qDebug() << Q_FUNC_INFO << "Couldn't find activity indicator for page"
+                << page->objectName();
+    }
 }
 
 void ToodledoTen::onAccountInfoUpdated() {

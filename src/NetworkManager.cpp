@@ -55,7 +55,8 @@ void NetworkManager::onOnlineStateChanged(bool online) {
 }
 
 void NetworkManager::sendRequest(QNetworkRequest request, QByteArray encodedQuery) {
-    emit networkRequestStarted(); //Tells UI to show activity indicator
+    //Tells UI to show activity indicator
+    emit networkRequestStarted();
     qDebug() << Q_FUNC_INFO << "Sending" << encodedQuery << "to" << request.url().toString();
     _netAccessManager->post(request, encodedQuery);
 }
@@ -132,5 +133,6 @@ void NetworkManager::onFinished(QNetworkReply *reply) {
                 dataMap.value("errorCode").toString(), dataMap.value("errorDesc").toString()));
     }
     reply->deleteLater();
-    emit networkRequestFinished(); //hides activity indicator in UI
+    //hides activity indicator in UI
+    emit networkRequestFinished();
 }

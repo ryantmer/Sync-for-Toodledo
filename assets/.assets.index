@@ -6,11 +6,7 @@ AddEditFolder.qml
 AddEditGoal.qml
 AddEditLocation.qml
 AddEditTask.qml
-CompletedTasks.qml
-Contexts.qml
 Cover.qml
-Folders.qml
-Goals.qml
 images/ic_add.png
 images/ic_completed.png
 images/ic_contexts.png
@@ -21,7 +17,11 @@ images/ic_locations.png
 images/ic_reload.png
 images/ic_save.png
 images/ic_settings.png
-Locations.qml
+ListCompletedTasks.qml
+ListContexts.qml
+ListFolders.qml
+ListGoals.qml
+ListLocations.qml
+ListTasks.qml
 Login.qml
 Settings.qml
-Tasks.qml
