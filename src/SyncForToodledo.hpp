@@ -1,5 +1,5 @@
-#ifndef TOODLEDOTEN_HPP_
-#define TOODLEDOTEN_HPP_
+#ifndef SYNCFORTOODLEDO_HPP_
+#define SYNCFORTOODLEDO_HPP_
 
 #include <QObject>
 #include <bb/cascades/Application>
@@ -20,7 +20,7 @@
 using namespace bb::cascades;
 using namespace QtMobilitySubset;
 
-class ToodledoTen : public QObject {
+class SyncForToodledo : public QObject {
     Q_OBJECT
 
 public:
@@ -31,8 +31,8 @@ public:
     Q_PROPERTY(CustomDataModel *goalDataModel READ goalDataModel CONSTANT);
     Q_PROPERTY(CustomDataModel *locationDataModel READ locationDataModel CONSTANT);
 
-    ToodledoTen();
-    virtual ~ToodledoTen();
+    SyncForToodledo();
+    virtual ~SyncForToodledo();
     CustomDataModel *taskDataModel();
     CustomDataModel *folderDataModel();
     CustomDataModel *completedTaskDataModel();
@@ -83,4 +83,4 @@ private:
     WebView *_loginWebView;
 };
 
-#endif /* TOODLEDOTEN_HPP_ */
+#endif /* SYNCFORTOODLEDO_HPP_ */

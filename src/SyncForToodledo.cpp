@@ -1,7 +1,7 @@
-#ifndef TOODLEDOTEN_CPP_
-#define TOODLEDOTEN_CPP_
+#ifndef SYNCFORTOODLEDO_CPP_
+#define SYNCFORTOODLEDO_CPP_
 
-#include "ToodleDoTen.hpp"
+#include "SyncForToodledo.hpp"
 
 #include <bb/cascades/Container>
 #include <bb/cascades/SceneCover>
@@ -16,7 +16,7 @@
 using namespace bb::cascades;
 using namespace bb::system;
 
-ToodledoTen::ToodledoTen() : QObject() {
+SyncForToodledo::SyncForToodledo() : QObject() {
     qmlRegisterType<CustomDataModel>("DataModelUtil", 1, 0, "CustomDataModel");
 
     _propertiesManager = PropertiesManager::getInstance();
@@ -144,33 +144,33 @@ ToodledoTen::ToodledoTen() : QObject() {
     Q_UNUSED(ok);
 }
 
-ToodledoTen::~ToodledoTen() {};
+SyncForToodledo::~SyncForToodledo() {};
 
-CustomDataModel *ToodledoTen::taskDataModel() {
+CustomDataModel *SyncForToodledo::taskDataModel() {
     return _taskDataModel;
 }
 
-CustomDataModel *ToodledoTen::folderDataModel() {
+CustomDataModel *SyncForToodledo::folderDataModel() {
     return _folderDataModel;
 }
 
-CustomDataModel *ToodledoTen::completedTaskDataModel() {
+CustomDataModel *SyncForToodledo::completedTaskDataModel() {
     return _completedTaskDataModel;
 }
 
-CustomDataModel *ToodledoTen::contextDataModel() {
+CustomDataModel *SyncForToodledo::contextDataModel() {
     return _contextDataModel;
 }
 
-CustomDataModel *ToodledoTen::goalDataModel() {
+CustomDataModel *SyncForToodledo::goalDataModel() {
     return _goalDataModel;
 }
 
-CustomDataModel *ToodledoTen::locationDataModel() {
+CustomDataModel *SyncForToodledo::locationDataModel() {
     return _locationDataModel;
 }
 
-void ToodledoTen::showToast(QString message) {
+void SyncForToodledo::showToast(QString message) {
     SystemToast *toast = new SystemToast(this);
     toast->setBody(message);
     toast->setPosition(SystemUiPosition::MiddleCenter);
@@ -180,15 +180,15 @@ void ToodledoTen::showToast(QString message) {
 /*
  * Q_INVOKABLE functions begin
  */
-QDateTime ToodledoTen::unixTimeToDateTime(uint unixTime) {
+QDateTime SyncForToodledo::unixTimeToDateTime(uint unixTime) {
     return QDateTime::fromTime_t(unixTime);
 }
 
-uint ToodledoTen::dateTimeToUnixTime(QDateTime dateTime) {
+uint SyncForToodledo::dateTimeToUnixTime(QDateTime dateTime) {
     return dateTime.toTime_t();
 }
 
-QDateTime ToodledoTen::unixTimeToDateTimeNoOffset(uint unixTime) {
+QDateTime SyncForToodledo::unixTimeToDateTimeNoOffset(uint unixTime) {
     //Calculate offset in timestamp, and remove it
     QDateTime dt1 = QDateTime::currentDateTime();
     QDateTime dt2 = dt1.toUTC();
@@ -198,7 +198,7 @@ QDateTime ToodledoTen::unixTimeToDateTimeNoOffset(uint unixTime) {
     return QDateTime::fromTime_t(unixTime - offset);
 }
 
-uint ToodledoTen::dateTimeToUnixTimeNoOffset(QDateTime dateTime) {
+uint SyncForToodledo::dateTimeToUnixTimeNoOffset(QDateTime dateTime) {
     QDateTime dt1 = QDateTime::currentDateTime();
     QDateTime dt2 = dt1.toUTC();
     dt1.setTimeSpec(Qt::UTC);
@@ -207,16 +207,16 @@ uint ToodledoTen::dateTimeToUnixTimeNoOffset(QDateTime dateTime) {
     return dateTime.toTime_t() + offset;
 }
 
-uint ToodledoTen::getLengthValue(QDateTime dateTime) {
+uint SyncForToodledo::getLengthValue(QDateTime dateTime) {
     return dateTime.time().hour() * 60 + dateTime.time().minute();
 }
 
-QString ToodledoTen::getVersionNumber() {
+QString SyncForToodledo::getVersionNumber() {
     bb::PackageInfo pi;
     return pi.version();
 }
 
-void ToodledoTen::getLocation() {
+void SyncForToodledo::getLocation() {
     QGeoPositionInfoSource *src = QGeoPositionInfoSource::createDefaultSource(this);
     src->setPreferredPositioningMethods(QGeoPositionInfoSource::AllPositioningMethods);
 
@@ -229,7 +229,7 @@ void ToodledoTen::getLocation() {
     }
 }
 
-void ToodledoTen::logout() {
+void SyncForToodledo::logout() {
     emit loggedOut();
 }
 /*
@@ -239,7 +239,7 @@ void ToodledoTen::logout() {
 /*
  * Slots begin
  */
-void ToodledoTen::onPositionUpdated(const QGeoPositionInfo &pos) {
+void SyncForToodledo::onPositionUpdated(const QGeoPositionInfo &pos) {
     double lat = pos.coordinate().latitude();
     double lon = pos.coordinate().longitude();
     qDebug() << Q_FUNC_INFO << "Got location:" << lat << lon;
@@ -254,7 +254,7 @@ void ToodledoTen::onPositionUpdated(const QGeoPositionInfo &pos) {
     field->setText(QString::number(lon));
 }
 
-void ToodledoTen::onNetworkStateChanged(bool connected) {
+void SyncForToodledo::onNetworkStateChanged(bool connected) {
     if (connected) {
         qDebug() << Q_FUNC_INFO << "Network connection established";
         _accountInfo->refresh();
@@ -264,7 +264,7 @@ void ToodledoTen::onNetworkStateChanged(bool connected) {
     }
 }
 
-void ToodledoTen::onWebViewUrlChanged(QUrl url) {
+void SyncForToodledo::onWebViewUrlChanged(QUrl url) {
     if (url.hasQueryItem("code") && url.hasQueryItem("state")) {
         if (url.queryItemValue("state") == _loginManager->getState()) {
             //Get authCode from webview's URL
@@ -279,7 +279,7 @@ void ToodledoTen::onWebViewUrlChanged(QUrl url) {
     }
 }
 
-void ToodledoTen::onRefreshTokenExpired() {
+void SyncForToodledo::onRefreshTokenExpired() {
     //emitted by LoginManager when refresh token is no longer valid (30-day expiry)
     //when this occurs, user has to log in again
     showToast("Please log in!");
@@ -287,7 +287,7 @@ void ToodledoTen::onRefreshTokenExpired() {
     _loginWebView->setUrl(_loginManager->getAuthorizeUrl().toString());
 }
 
-void ToodledoTen::onAccessTokenRefreshed(QString newToken, qlonglong expiresIn) {
+void SyncForToodledo::onAccessTokenRefreshed(QString newToken, qlonglong expiresIn) {
     //access token is automatically refreshed when it expires using refresh token
     //When a new access token is received, refresh account info
     Q_UNUSED(newToken);
@@ -295,7 +295,7 @@ void ToodledoTen::onAccessTokenRefreshed(QString newToken, qlonglong expiresIn) 
     _accountInfo->refresh();
 }
 
-void ToodledoTen::onNetworkRequestStarted() {
+void SyncForToodledo::onNetworkRequestStarted() {
     qDebug() << Q_FUNC_INFO << "Starting busy indicator...";
     Page *page = _root->top();
     ActivityIndicator *activity = page->findChild<ActivityIndicator*>("networkActivity");
@@ -308,7 +308,7 @@ void ToodledoTen::onNetworkRequestStarted() {
     }
 }
 
-void ToodledoTen::onNetworkRequestFinished() {
+void SyncForToodledo::onNetworkRequestFinished() {
     Page *page = _root->top();
     ActivityIndicator *activity = page->findChild<ActivityIndicator*>("networkActivity");
     if (activity) {
@@ -320,7 +320,7 @@ void ToodledoTen::onNetworkRequestFinished() {
     }
 }
 
-void ToodledoTen::onAccountInfoUpdated() {
+void SyncForToodledo::onAccountInfoUpdated() {
     //When logout is called, first() ends up getting called on an empty list,
     //so avoid that here
     if (_accountInfo->getInternalList().length() <= 0) {
@@ -378,11 +378,11 @@ void ToodledoTen::onAccountInfoUpdated() {
     _propertiesManager->accountInfo = newInfo;
 }
 
-void ToodledoTen::onToast(QString message) {
+void SyncForToodledo::onToast(QString message) {
     showToast(message);
 }
 /*
  * Slots end
  */
 
-#endif /* TOODLEDOTEN_CPP_ */
+#endif /* SYNCFORTOODLEDO_CPP_ */

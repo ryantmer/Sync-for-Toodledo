@@ -1,4 +1,4 @@
-#include "ToodleDoTen.hpp"
+#include "SyncForToodledo.hpp"
 #include <bb/cascades/Application>
 
 #include <QLocale>
@@ -29,6 +29,6 @@ Q_DECL_EXPORT int main(int argc, char **argv)
 {
     qInstallMsgHandler(messageOutput);
     Application app(argc, argv);
-    ToodledoTen toodleDoTen;
+    SyncForToodledo syncForToodledo;
     return Application::exec();
 }

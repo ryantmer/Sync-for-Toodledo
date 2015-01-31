@@ -1,4 +1,4 @@
-APP_NAME = Toodledo10
+APP_NAME = SyncForToodledo
 
 CONFIG += qt warn_on cascades10
 LIBS += -lbbdata -lbbsystem -lbb -lQtLocationSubset

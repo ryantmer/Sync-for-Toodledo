@@ -1,4 +1,4 @@
-QMAKE_TARGET  = Toodledo10
+QMAKE_TARGET  = SyncForToodledo
 LUPDATE       = $(QNX_HOST)/usr/bin/lupdate
 LRELEASE      = $(QNX_HOST)/usr/bin/lrelease
 
