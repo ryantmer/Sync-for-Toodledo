@@ -596,9 +596,7 @@ Page {
     ]
     
     onCreationCompleted: {
-        var texts;
-        var values;
-        var value;
+        var texts, values, i;
         
         //Populate repeat dropdown
         texts = ["Don't repeat", "Daily", "Weekly", "Biweekly", "Monthly",
@@ -606,37 +604,31 @@ Page {
         values = ["", "FREQ=DAILY", "FREQ=WEEKLY", "FREQ=WEEKLY;INTERVAL=2",
                     "FREQ=MONTHLY", "FREQ=MONTHLY;INTERVAL=2", "FREQ=MONTHLY;INTERVAL=3",
                     "FREQ=MONTHLY;INTERVAL=6", "YEARLY"];
-        value = 0;
-        for (var text in texts) {
+        for (i = 0; i < texts.length; i++) {
             var opt = option.createObject();
-            opt.text = text;
-            opt.value = values[value];
+            opt.text = texts[i];
+            opt.value = values[i];
             repeatDropDown.add(opt);
-            value++;
         }
         
         
         //Populate status dropdown
         texts = ["None", "Next Action", "Planning", "Delegated", "Waiting",
                     "Hold", "Postponed", "Someday", "Canceled", "Reference"];
-        value = 0;
-        for (var text in texts) {
+        for (i = 0; i < texts.length; i++) {
             var opt = option.createObject();
-            opt.text = text;
-            opt.value = value;
+            opt.text = texts[i];
+            opt.value = i;
             statusDropDown.add(opt)
-            value++;
         }
         
         //populate priority dropdown
         texts = ["-1 Negative", "0 Low", "1 Medium", "2 High", "3 Top"];
-        value = -1;
-        for (var text in texts) {
+        for (i = -1; i < texts.length - 1; i++) {
             var opt = option.createObject();
-            opt.text = text;
-            opt.value = value;
+            opt.text = texts[i+1];
+            opt.value = i;
             priorityDropDown.add(opt);
-            value++;
         }
     }
 }
