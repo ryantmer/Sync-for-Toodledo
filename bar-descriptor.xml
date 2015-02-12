@@ -26,7 +26,7 @@
 
     <!-- A universally unique application identifier. Must be unique across all BlackBerry 10 applications.
          Using a reverse DNS-style name as the id is recommended. (Eg. com.example.ExampleApplication.) Required. -->
-    <id>com.ryantmer.SyncForToodledo</id>
+    <id>com.ryantmer.Toodledo10</id>
     <configuration name="Device-Debug">
        <platformArchitecture>armle-v7</platformArchitecture>
        <asset path="arm/o.le-v7-g/SyncForToodledo" entry="true" type="Qnx/Elf">SyncForToodledo</asset>
@@ -85,7 +85,7 @@
     </splashScreens>
     <authorId>gYAAgCgfEw589DBHUpqjdpiUd8g</authorId>
     <author>ryantmer</author>
-    <buildId>48</buildId>
+    <buildId>49</buildId>
 
     <!--  Unique author ID assigned by signing authority. Required if using debug tokens. -->
     <!-- <authorId>ABC1234YjsnUk235h</authorId> -->
