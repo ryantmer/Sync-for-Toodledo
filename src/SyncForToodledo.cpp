@@ -31,7 +31,7 @@ SyncForToodledo::SyncForToodledo()
     qmlRegisterType<CustomDataModel>("DataModelUtil", 1, 0, "CustomDataModel");
 
     //Create root QML document from main.qml and expose certain variables to QML
-    QmlDocument *qml = QmlDocument::create("asset:///ListHotlist.qml").parent(this);
+    QmlDocument *qml = QmlDocument::create("asset:///ListTasks.qml").parent(this);
     qml->setContextProperty("app", this);
     qml->setContextProperty("propertyManager", _propertiesManager);
     _root = qml->createRootObject<NavigationPane>();

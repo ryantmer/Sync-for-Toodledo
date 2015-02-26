@@ -48,7 +48,6 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/ListContexts.qml) \
         $$quote($$BASEDIR/assets/ListFolders.qml) \
         $$quote($$BASEDIR/assets/ListGoals.qml) \
-        $$quote($$BASEDIR/assets/ListHotlist.qml) \
         $$quote($$BASEDIR/assets/ListLocations.qml) \
         $$quote($$BASEDIR/assets/ListTasks.qml) \
         $$quote($$BASEDIR/assets/Login.qml) \
