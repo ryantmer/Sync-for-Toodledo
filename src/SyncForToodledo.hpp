@@ -9,6 +9,7 @@
 #include <bb/cascades/Page>
 #include <bb/cascades/WebView>
 #include <bb/cascades/ScrollView>
+#include <bb/cascades/Dialog>
 #include <QtLocationSubset/QGeoPositionInfo>
 #include <QtLocationSubset/QGeoPositionInfoSource>
 
@@ -57,7 +58,7 @@ signals:
 public slots:
     void onPositionUpdated(const QGeoPositionInfo &pos);
     void onNetworkStateChanged(bool connected);
-    void onNetworkRequestStarted();
+    void onNetworkRequestStarted(QString message="Loading...");
     void onNetworkRequestFinished();
     void onWebViewUrlChanged(QUrl url);
     void onRefreshTokenExpired();
@@ -81,6 +82,7 @@ private:
     Container *_coverRoot;
     Page *_loginPage;
     WebView *_loginWebView;
+    Dialog *_activityDialog;
 };
 
 #endif /* SYNCFORTOODLEDO_HPP_ */

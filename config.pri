@@ -37,6 +37,7 @@ simulator {
 config_pri_assets {
     OTHER_FILES += \
         $$quote($$BASEDIR/assets/About.qml) \
+        $$quote($$BASEDIR/assets/ActivityDialog.qml) \
         $$quote($$BASEDIR/assets/AddEditContext.qml) \
         $$quote($$BASEDIR/assets/AddEditFolder.qml) \
         $$quote($$BASEDIR/assets/AddEditGoal.qml) \

@@ -26,7 +26,7 @@ signals:
     void toast(QString message);
     void accessTokenRefreshed(QString newToken, qlonglong expiresIn);
     void refreshTokenRefreshed(QString newToken);
-    void networkRequestStarted();
+    void networkRequestStarted(QString message="Loading...");
     void networkRequestFinished();
     void getReply(int replyDataType, QVariantList dataList);
     void addReply(int replyDataType, QVariantList dataList);

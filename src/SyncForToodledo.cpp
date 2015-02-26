@@ -8,7 +8,6 @@
 #include <bb/cascades/Button>
 #include <bb/cascades/TextField>
 #include <bb/cascades/Label>
-#include <bb/cascades/ActivityIndicator>
 #include <bb/system/SystemToast>
 #include <bb/system/SystemUiPosition>
 #include <bb/PackageInfo>
@@ -39,6 +38,9 @@ SyncForToodledo::SyncForToodledo() : QObject() {
     qml->setContextProperty("folderDataModel", _folderDataModel);
     _root = qml->createRootObject<NavigationPane>();
     Application::instance()->setScene(_root);
+
+    qml = QmlDocument::create("asset:///ActivityDialog.qml").parent(this);
+    _activityDialog = qml->createRootObject<Dialog>();
 
     //Expose app to the main listview
     QDeclarativeEngine *engine = QmlDocument::defaultDeclarativeEngine();
@@ -295,29 +297,14 @@ void SyncForToodledo::onAccessTokenRefreshed(QString newToken, qlonglong expires
     _accountInfo->refresh();
 }
 
-void SyncForToodledo::onNetworkRequestStarted() {
-    qDebug() << Q_FUNC_INFO << "Starting busy indicator...";
-    Page *page = _root->top();
-    ActivityIndicator *activity = page->findChild<ActivityIndicator*>("networkActivity");
-    if (activity) {
-        activity->start();
-        qDebug() << Q_FUNC_INFO << "Stopped busy indicator.";
-    } else {
-        qDebug() << Q_FUNC_INFO << "Couldn't find activity indicator for page"
-                << page->objectName();
-    }
+void SyncForToodledo::onNetworkRequestStarted(QString message) {
+    Label *activityText = _activityDialog->findChild<Label*>("activityText");
+    activityText->setText(message);
+    _activityDialog->open();
 }
 
 void SyncForToodledo::onNetworkRequestFinished() {
-    Page *page = _root->top();
-    ActivityIndicator *activity = page->findChild<ActivityIndicator*>("networkActivity");
-    if (activity) {
-        activity->stop();
-        qDebug() << Q_FUNC_INFO << "Stopped busy indicator.";
-    } else {
-        qDebug() << Q_FUNC_INFO << "Couldn't find activity indicator for page"
-                << page->objectName();
-    }
+    _activityDialog->close();
 }
 
 void SyncForToodledo::onAccountInfoUpdated() {

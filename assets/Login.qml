@@ -2,7 +2,7 @@ import bb.cascades 1.2
 import bb.system 1.2
 
 Page {
-    id: loginPage;
+    id: loginPage
     objectName: "loginPage"
     
     Container {
@@ -17,11 +17,9 @@ Page {
             WebView {
                 id: loginWebView
                 objectName: "loginWebView"
-                
                 onLoadProgressChanged: {
                     progressIndicator.value = loadProgress / 100.0;
                 }
-                
                 onLoadingChanged: {
                     if (loadRequest.status == WebLoadStatus.Started) {
                         progressIndicator.opacity = 1.0;
@@ -31,7 +29,6 @@ Page {
                 }
             }
         }
-        
         Container {
             bottomPadding: 25
             horizontalAlignment: HorizontalAlignment.Center

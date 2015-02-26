@@ -3,95 +3,9 @@ import bb.data 1.0
 import bb.system 1.2
 
 Page {
-    id: contextsPage
-    objectName: "contextsPage"
-    
     titleBar: TitleBar {
         title: "Sync for Toodledo - Contexts"
     }
-    
-    Container {
-        ActivityIndicator {
-            id: networkActivity
-            objectName: "networkActivity"
-            preferredWidth: 100
-            horizontalAlignment: HorizontalAlignment.Center
-        }
-        Label {
-            id: noItems
-            text: "You don't have any contexts!"
-            visible: listView.dataModel.empty
-            textStyle.fontSize: FontSize.XLarge
-            horizontalAlignment: HorizontalAlignment.Center
-            topMargin: 30
-        }
-        ListView {
-            id: listView
-            layout: StackListLayout {}
-            horizontalAlignment: HorizontalAlignment.Fill
-            
-            dataModel: app.contextDataModel
-            
-            listItemComponents: [
-                ListItemComponent {
-                    type: "item"
-                    Container {
-                        id: itemContainer
-                        StandardListItem {
-                            title: ListItemData.name
-                            description: itemContainer.ListItem.view.description(ListItemData.private)
-                            
-                            contextActions: [
-                                ActionSet {
-                                    DeleteActionItem {
-                                        onTriggered: {
-                                            deleteConfirmDialog.show();
-                                        }
-                                    }
-                                }
-                            ]
-                            
-                            attachedObjects: [
-                                SystemDialog {
-                                    id: deleteConfirmDialog
-                                    title: "Delete Context"
-                                    body: "Are you sure you want to delete this context?"
-                                    confirmButton.label: "Delete"
-                                    confirmButton.enabled: true
-                                    cancelButton.label: "Cancel"
-                                    cancelButton.enabled: true
-                                    onFinished: {
-                                        if (result == SystemUiResult.ConfirmButtonSelection) {
-                                            var contextData = {"id": ListItemData.id}
-                                            app.contextDataModel.remove(contextData);
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            ]
-            
-            onTriggered: {
-                var context = dataModel.data(indexPath);
-                var page = addEditContextDefinition.createObject();
-                page.data = context;
-                page.edit = true;
-                page.setup();
-                mainNavPane.push(page);
-            }
-            
-            function description(isPrivate) {
-                if (isPrivate) {
-                    return "Private";
-                } else {
-                    return "Not Private";
-                }
-            }
-        }
-    }
-    
     actions: [
         ActionItem {
             title: "Refresh"
@@ -113,11 +27,77 @@ Page {
             }
         }
     ]
-    
     attachedObjects: [
         ComponentDefinition {
             id: addEditContextDefinition
             content: AddEditContext{}
         }
     ]
+    
+    Container {
+        Label {
+            text: "You don't have any contexts!"
+            visible: listView.dataModel.empty
+            horizontalAlignment: HorizontalAlignment.Center
+        }
+        ListView {
+            id: listView
+            layout: StackListLayout {}
+            horizontalAlignment: HorizontalAlignment.Fill
+            dataModel: app.contextDataModel
+            listItemComponents: [
+                ListItemComponent {
+                    type: "item"
+                    Container {
+                        id: itemContainer
+                        StandardListItem {
+                            title: ListItemData.name
+                            description: itemContainer.ListItem.view.description(ListItemData.private)
+                            contextActions: [
+                                ActionSet {
+                                    DeleteActionItem {
+                                        onTriggered: {
+                                            deleteConfirmDialog.show();
+                                        }
+                                    }
+                                }
+                            ]
+                            attachedObjects: [
+                                SystemDialog {
+                                    id: deleteConfirmDialog
+                                    title: "Delete Context"
+                                    body: "Are you sure you want to delete this context?"
+                                    confirmButton.label: "Delete"
+                                    confirmButton.enabled: true
+                                    cancelButton.label: "Cancel"
+                                    cancelButton.enabled: true
+                                    onFinished: {
+                                        if (result == SystemUiResult.ConfirmButtonSelection) {
+                                            var contextData = {"id": ListItemData.id}
+                                            app.contextDataModel.remove(contextData);
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+            onTriggered: {
+                var context = dataModel.data(indexPath);
+                var page = addEditContextDefinition.createObject();
+                page.data = context;
+                page.edit = true;
+                page.setup();
+                mainNavPane.push(page);
+            }
+            function description(isPrivate) {
+                if (isPrivate) {
+                    return "Private";
+                } else {
+                    return "Not Private";
+                }
+            }
+        }
+    }
 }

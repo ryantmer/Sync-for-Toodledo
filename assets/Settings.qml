@@ -3,11 +3,9 @@ import bb.system 1.2
 
 Sheet {
     id: settingsSheet
-    
     onClosed: {
         destroy();
     }
-    
     function setup() {
         var index;
         for (index = 0; index < completedDaysDropDown.options.length; index++) {
@@ -34,10 +32,9 @@ Sheet {
                 }
             }
         }
+        
         Container {
-            layout: StackLayout {
-                orientation: LayoutOrientation.TopToBottom
-            }
+            layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
             topPadding: 20
             leftPadding: 20
             bottomPadding: 20
@@ -47,9 +44,10 @@ Sheet {
                 bottomMargin: 30
                 layout: DockLayout {}
                 horizontalAlignment: HorizontalAlignment.Fill
+                
                 Label {
                     text: "Log out current user"
-                    textStyle.fontSize: FontSize.XLarge
+                    textStyle.fontSize: FontSize.Medium
                     verticalAlignment: VerticalAlignment.Center
                     horizontalAlignment: HorizontalAlignment.Left
                 }
@@ -63,23 +61,18 @@ Sheet {
                     }
                 }
             }
-            
             Container {
-                layout: StackLayout {
-                    orientation: LayoutOrientation.LeftToRight
-                }
+                layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
                 bottomMargin: 30
+                
                 Label {
                     text: "Get"
-                    textStyle.fontSize: FontSize.XLarge
+                    textStyle.fontSize: FontSize.Medium
                     verticalAlignment: VerticalAlignment.Center
-                    layoutProperties: StackLayoutProperties {
-                        spaceQuota: 1
-                    }
+                    layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                 }
                 DropDown {
                     id: completedDaysDropDown
-                    
                     options: [
                         Option {
                             text: "1"
@@ -98,17 +91,13 @@ Sheet {
                             value: 30
                         }
                     ]
-                    layoutProperties: StackLayoutProperties {
-                        spaceQuota: 1
-                    }
+                    layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                 }
                 Label {
                     text: "days of completed tasks"
-                    textStyle.fontSize: FontSize.XLarge
+                    textStyle.fontSize: FontSize.Medium
                     verticalAlignment: VerticalAlignment.Center
-                    layoutProperties: StackLayoutProperties {
-                        spaceQuota: 6
-                    }
+                    layoutProperties: StackLayoutProperties { spaceQuota: 6 }
                 }
             }
         }

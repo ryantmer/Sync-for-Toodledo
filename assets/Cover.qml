@@ -6,9 +6,7 @@ Container {
         id: coverListView
         layout: StackListLayout {}
         horizontalAlignment: HorizontalAlignment.Fill
-        
         dataModel: app.taskDataModel
-        
         listItemComponents: [
             ListItemComponent {
                 type: "item"
@@ -21,7 +19,6 @@ Container {
                 }
             }
         ]
-        
         function description(dueDate) {
             var d = app.unixTimeToDateTime(dueDate);
             var formattedDate = "";

@@ -3,97 +3,9 @@ import bb.data 1.0
 import bb.system 1.2
 
 Page {
-    id: locationsPage
-    objectName: "locationsPage"
-    
     titleBar: TitleBar {
         title: "Sync for Toodledo - Locations"
     }
-    
-    Container {
-        ActivityIndicator {
-            id: networkActivity
-            objectName: "networkActivity"
-            preferredWidth: 100
-            horizontalAlignment: HorizontalAlignment.Center
-        }
-        Label {
-            id: noItems
-            text: "You don't have any locations!"
-            visible: listView.dataModel.empty
-            textStyle.fontSize: FontSize.XLarge
-            horizontalAlignment: HorizontalAlignment.Center
-            topMargin: 30
-        }
-        ListView {
-            id: listView
-            layout: StackListLayout {}
-            horizontalAlignment: HorizontalAlignment.Fill
-            
-            dataModel: app.locationDataModel
-            
-            listItemComponents: [
-                ListItemComponent {
-                    type: "item"
-                    Container {
-                        id: itemContainer
-                        StandardListItem {
-                            title: ListItemData.name
-                            description: itemContainer.ListItem.view.description(ListItemData.description)
-                            
-                            contextActions: [
-                                ActionSet {
-                                    DeleteActionItem {
-                                        onTriggered: {
-                                            deleteConfirmDialog.show();
-                                        }
-                                    }
-                                }
-                            ]
-                            
-                            attachedObjects: [
-                                SystemDialog {
-                                    id: deleteConfirmDialog
-                                    title: "Delete Location"
-                                    body: "Are you sure you want to delete this location?"
-                                    confirmButton.label: "Delete"
-                                    confirmButton.enabled: true
-                                    cancelButton.label: "Cancel"
-                                    cancelButton.enabled: true
-                                    onFinished: {
-                                        if (result == SystemUiResult.ConfirmButtonSelection) {
-                                            var locationData = {"id": ListItemData.id}
-                                            app.locationDataModel.remove(locationData);
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            ]
-            
-            onTriggered: {
-                var location = dataModel.data(indexPath);
-                var page = addEditLocationDefinition.createObject();
-                page.data = location;
-                page.edit = true;
-                page.setup();
-                mainNavPane.push(page);
-            }
-            
-            function description(desc) {
-                if (desc.indexOf("\n") > -1) {
-                    //Description is multi-line, take first line as description
-                    return desc.substring(0, desc.indexOf("\n"));
-                } else {
-                    //Note is a single line
-                    return desc;
-                }
-            }
-        }
-    }
-    
     actions: [
         ActionItem {
             title: "Refresh"
@@ -115,11 +27,79 @@ Page {
             }
         }
     ]
-    
     attachedObjects: [
         ComponentDefinition {
             id: addEditLocationDefinition
             content: AddEditLocation{}
         }
     ]
+    
+    Container {
+        Label {
+            text: "You don't have any locations!"
+            visible: listView.dataModel.empty
+            horizontalAlignment: HorizontalAlignment.Center
+        }
+        ListView {
+            id: listView
+            layout: StackListLayout {}
+            horizontalAlignment: HorizontalAlignment.Fill
+            dataModel: app.locationDataModel
+            listItemComponents: [
+                ListItemComponent {
+                    type: "item"
+                    Container {
+                        id: itemContainer
+                        StandardListItem {
+                            title: ListItemData.name
+                            description: itemContainer.ListItem.view.description(ListItemData.description)
+                            contextActions: [
+                                ActionSet {
+                                    DeleteActionItem {
+                                        onTriggered: {
+                                            deleteConfirmDialog.show();
+                                        }
+                                    }
+                                }
+                            ]
+                            attachedObjects: [
+                                SystemDialog {
+                                    id: deleteConfirmDialog
+                                    title: "Delete Location"
+                                    body: "Are you sure you want to delete this location?"
+                                    confirmButton.label: "Delete"
+                                    confirmButton.enabled: true
+                                    cancelButton.label: "Cancel"
+                                    cancelButton.enabled: true
+                                    onFinished: {
+                                        if (result == SystemUiResult.ConfirmButtonSelection) {
+                                            var locationData = {"id": ListItemData.id}
+                                            app.locationDataModel.remove(locationData);
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+            onTriggered: {
+                var location = dataModel.data(indexPath);
+                var page = addEditLocationDefinition.createObject();
+                page.data = location;
+                page.edit = true;
+                page.setup();
+                mainNavPane.push(page);
+            }
+            function description(desc) {
+                if (desc.indexOf("\n") > -1) {
+                    //Description is multi-line, take first line as description
+                    return desc.substring(0, desc.indexOf("\n"));
+                } else {
+                    //Note is a single line
+                    return desc;
+                }
+            }
+        }
+    }
 }

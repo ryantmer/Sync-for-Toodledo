@@ -1,6 +1,7 @@
 1
-25
+26
 About.qml
+ActivityDialog.qml
 AddEditContext.qml
 AddEditFolder.qml
 AddEditGoal.qml
