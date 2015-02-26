@@ -1,5 +1,5 @@
 1
-26
+28
 About.qml
 ActivityDialog.qml
 AddEditContext.qml
@@ -8,6 +8,7 @@ AddEditGoal.qml
 AddEditLocation.qml
 AddEditTask.qml
 Cover.qml
+images/all_tasks.png
 images/ic_add.png
 images/ic_completed.png
 images/ic_contexts.png
@@ -22,6 +23,7 @@ ListCompletedTasks.qml
 ListContexts.qml
 ListFolders.qml
 ListGoals.qml
+ListHotlist.qml
 ListLocations.qml
 ListTasks.qml
 Login.qml

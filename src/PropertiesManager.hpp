@@ -7,7 +7,7 @@ class PropertiesManager : public QObject {
     Q_OBJECT
 public:
     Q_PROPERTY(int completedTaskAge READ completedTaskAge WRITE setCompletedTaskAge NOTIFY completedTaskAgeChanged);
-    Q_PROPERTY(int dateFormat READ dateFormat CONSTANT);
+    Q_PROPERTY(int dateFormat READ dateFormat NOTIFY dateFormatChanged);
 
     static PropertiesManager *getInstance();
     PropertiesManager(QObject *parent = 0);
@@ -27,6 +27,7 @@ public:
 
 signals:
     void completedTaskAgeChanged(int delay);
+    void dateFormatChanged(int format);
     void toast(QString message);
 
 public slots:

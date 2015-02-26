@@ -45,6 +45,14 @@ Page {
             layout: StackListLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             dataModel: app.folderDataModel
+            onTriggered: {
+                var folder = dataModel.data(indexPath);
+                var page = addEditFolderDefinition.createObject();
+                page.data = folder;
+                page.edit = true;
+                page.setup();
+                mainNavPane.push(page);
+            }
             listItemComponents: [
                 ListItemComponent {
                     type: "item"
@@ -84,14 +92,6 @@ Page {
                     }
                 }
             ]
-            onTriggered: {
-                var folder = dataModel.data(indexPath);
-                var page = addEditFolderDefinition.createObject();
-                page.data = folder;
-                page.edit = true;
-                page.setup();
-                mainNavPane.push(page);
-            }
             function description(isPrivate, isArchived) {
                 if (isPrivate == 1 && isArchived == 1) {
                     return "Archived, Private";

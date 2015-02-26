@@ -31,11 +31,9 @@ SyncForToodledo::SyncForToodledo() : QObject() {
     _accountInfo = new CustomDataModel(this, CustomDataModel::AccountInfo);
 
     //Create root QML document from main.qml and expose certain variables to QML
-    QmlDocument *qml = QmlDocument::create("asset:///ListTasks.qml").parent(this);
+    QmlDocument *qml = QmlDocument::create("asset:///ListHotlist.qml").parent(this);
     qml->setContextProperty("app", this);
     qml->setContextProperty("propertyManager", _propertiesManager);
-    qml->setContextProperty("taskDataModel", _taskDataModel);
-    qml->setContextProperty("folderDataModel", _folderDataModel);
     _root = qml->createRootObject<NavigationPane>();
     Application::instance()->setScene(_root);
 

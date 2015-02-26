@@ -45,6 +45,14 @@ Page {
             layout: StackListLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             dataModel: app.goalDataModel
+            onTriggered: {
+                var goal = dataModel.data(indexPath);
+                var page = addEditGoalDefinition.createObject();
+                page.data = goal;
+                page.edit = true;
+                page.setup();
+                mainNavPane.push(page);
+            }
             listItemComponents: [
                 ListItemComponent {
                     type: "item"
@@ -85,14 +93,6 @@ Page {
                     }
                 }
             ]
-            onTriggered: {
-                var goal = dataModel.data(indexPath);
-                var page = addEditGoalDefinition.createObject();
-                page.data = goal;
-                page.edit = true;
-                page.setup();
-                mainNavPane.push(page);
-            }
             function status(level) {
                 if (level == 0) {
                     return "Lifelong";

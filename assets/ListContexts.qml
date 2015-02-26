@@ -45,6 +45,14 @@ Page {
             layout: StackListLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             dataModel: app.contextDataModel
+            onTriggered: {
+                var context = dataModel.data(indexPath);
+                var page = addEditContextDefinition.createObject();
+                page.data = context;
+                page.edit = true;
+                page.setup();
+                mainNavPane.push(page);
+            }
             listItemComponents: [
                 ListItemComponent {
                     type: "item"
@@ -83,14 +91,6 @@ Page {
                     }
                 }
             ]
-            onTriggered: {
-                var context = dataModel.data(indexPath);
-                var page = addEditContextDefinition.createObject();
-                page.data = context;
-                page.edit = true;
-                page.setup();
-                mainNavPane.push(page);
-            }
             function description(isPrivate) {
                 if (isPrivate) {
                     return "Private";

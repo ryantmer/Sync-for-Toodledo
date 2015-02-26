@@ -6,15 +6,6 @@ Sheet {
     onClosed: {
         destroy();
     }
-    function setup() {
-        var index;
-        for (index = 0; index < completedDaysDropDown.options.length; index++) {
-            if (completedDaysDropDown.options[index].value == propertyManager.completedTaskAge) {
-                break;
-            }
-        }
-        completedDaysDropDown.setSelectedIndex(index);
-    }
     
     Page {
         titleBar: TitleBar {
@@ -31,6 +22,15 @@ Sheet {
                     settingsSheet.close();
                 }
             }
+        }
+        onCreationCompleted: {
+            var index;
+            for (index = 0; index < completedDaysDropDown.options.length; index++) {
+                if (completedDaysDropDown.options[index].value == propertyManager.completedTaskAge) {
+                    break;
+                }
+            }
+            completedDaysDropDown.setSelectedIndex(index);
         }
         
         Container {

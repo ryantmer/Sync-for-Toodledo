@@ -45,6 +45,14 @@ Page {
             layout: StackListLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             dataModel: app.locationDataModel
+            onTriggered: {
+                var location = dataModel.data(indexPath);
+                var page = addEditLocationDefinition.createObject();
+                page.data = location;
+                page.edit = true;
+                page.setup();
+                mainNavPane.push(page);
+            }
             listItemComponents: [
                 ListItemComponent {
                     type: "item"
@@ -83,14 +91,6 @@ Page {
                     }
                 }
             ]
-            onTriggered: {
-                var location = dataModel.data(indexPath);
-                var page = addEditLocationDefinition.createObject();
-                page.data = location;
-                page.edit = true;
-                page.setup();
-                mainNavPane.push(page);
-            }
             function description(desc) {
                 if (desc.indexOf("\n") > -1) {
                     //Description is multi-line, take first line as description
