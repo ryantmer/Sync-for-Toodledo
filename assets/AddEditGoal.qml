@@ -2,10 +2,59 @@ import bb.cascades 1.2
 
 Page {
     id: addEditGoalPage
-    
     property variant data;
     property bool edit;
+    paneProperties: NavigationPaneProperties {
+        backButton: ActionItem {
+            title: "Cancel"
+            onTriggered: {
+                mainNavPane.pop();
+            }
+        }
+    }
+    actions: [
+        ActionItem {
+            id: addSaveButton
+            title: "Add" //Changed to "Save" in setup if editing a goal
+            imageSource: "asset:///images/ic_add.png" //Changed in setup if editing a goal
+            ActionBar.placement: ActionBarPlacement.OnBar
+            onTriggered: {
+                if (!nameField.text) {
+                    titleRequired.visible = true;
+                    return;
+                }
+                if (nameField.text.length > 32) {
+                    nameTooLong.visible = true;
+                    return;
+                }
     
+                var newData = {}
+                if (edit) {
+                    newData = data;
+                }
+                newData.name = nameField.text;
+                newData.level = levelDropDown.selectedValue;
+                newData.contributes = contributesDropDown.selectedValue;
+                newData.archived = archivedCheckBox.checked + 0;
+                newData.private = privateCheckBox.checked + 0;
+                newData.note = noteArea.text;
+                
+                if (edit) {
+                    app.goalDataModel.edit(data, newData);
+                } else {
+                    app.goalDataModel.add(newData);
+                }
+                mainNavPane.pop();
+            }
+        }
+    ]
+    attachedObjects: [
+        ComponentDefinition {
+            //Used to populate drop-downs
+            id: option
+            Option {}
+        }
+    ]
     function setup() {
         var goals = app.goalDataModel.getInternalList();
         
@@ -52,65 +101,11 @@ Page {
         }
     }
     
-    paneProperties: NavigationPaneProperties {
-        backButton: ActionItem {
-            title: "Cancel"
-            onTriggered: {
-                mainNavPane.pop();
-            }
-        }
-    }
-    
-    actions: [
-        ActionItem {
-            id: addSaveButton
-            title: "Add" //Changed to "Save" in setup if editing a goal
-            imageSource: "asset:///images/ic_add.png" //Changed in setup if editing a goal
-            ActionBar.placement: ActionBarPlacement.OnBar
-            onTriggered: {
-                if (!nameField.text) {
-                    titleRequired.visible = true;
-                    return;
-                }
-                if (nameField.text.length > 32) {
-                    nameTooLong.visible = true;
-                    return;
-                }
-    
-                var newData = {}
-                if (edit) {
-                    newData = data;
-                }
-                newData["name"] = nameField.text;
-                newData["level"] = levelDropDown.selectedValue;
-                newData["contributes"] = contributesDropDown.selectedValue;
-                newData["archived"] = archivedCheckBox.checked + 0;
-                newData["private"] = privateCheckBox.checked + 0;
-                newData["note"] = noteArea.text;
-                
-//                for (var param in newData) {
-//                    console.log("newData." + param + " = " + newData[param]);
-//                }
-                
-                if (edit) {
-                    app.goalDataModel.edit(data, newData);
-                } else {
-                    app.goalDataModel.add(newData);
-                }
-                mainNavPane.pop();
-            }
-        }
-    ]
-    
     ScrollView {
-        accessibility.name: "Add/edit goal scrollview"
-        scrollViewProperties {
-            scrollMode: ScrollMode.Vertical
-        }
+        scrollViewProperties { scrollMode: ScrollMode.Vertical }
+        
         Container {
-            layout: StackLayout {
-                orientation: LayoutOrientation.TopToBottom
-            }
+            layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
             topPadding: 20
             leftPadding: 20
             rightPadding: 20
@@ -182,6 +177,7 @@ Page {
             DropDown {
                 id: contributesDropDown
                 title: "Contributes to"
+                
                 Option {
                     text: "None"
                     value: 0
@@ -206,12 +202,4 @@ Page {
             }
         }
     }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            //Used to populate drop-downs
-            id: option
-            Option {}
-        }
-    ]
 }

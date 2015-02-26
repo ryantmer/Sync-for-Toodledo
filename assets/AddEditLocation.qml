@@ -2,22 +2,8 @@ import bb.cascades 1.2
 
 Page {
     id: addEditLocationPage
-    
     property variant data;
     property bool edit;
-    
-    function setup() {
-        if (edit) {
-            nameField.text = data.name;
-            descriptionArea.text = data.description;
-            latField.text = data.lat;
-            lonField.text = data.lon;
-            
-            addSaveButton.title = "Save";
-            addSaveButton.imageSource = "asset:///images/ic_save.png";
-        }
-    }
-    
     paneProperties: NavigationPaneProperties {
         backButton: ActionItem {
             title: "Cancel"
@@ -26,7 +12,6 @@ Page {
             }
         }
     }
-    
     actions: [
         ActionItem {
             id: addSaveButton
@@ -47,14 +32,10 @@ Page {
                 if (edit) {
                     newData = data;
                 }
-                newData["name"] = nameField.text;
-                newData["description"] = descriptionArea.text;
-                newData["lat"] = latField.text;
-                newData["lon"] = lonField.text;
-                
-//                for (var param in newData) {
-//                    console.log("newData." + param + " = " + newData[param]);
-//                }
+                newData.name = nameField.text;
+                newData.description = descriptionArea.text;
+                newData.lat = latField.text;
+                newData.lon = lonField.text;
                 
                 if (edit) {
                     app.locationDataModel.edit(data, newData);
@@ -65,16 +46,23 @@ Page {
             }
         }
     ]
+    function setup() {
+        if (edit) {
+            nameField.text = data.name;
+            descriptionArea.text = data.description;
+            latField.text = data.lat;
+            lonField.text = data.lon;
+            
+            addSaveButton.title = "Save";
+            addSaveButton.imageSource = "asset:///images/ic_save.png";
+        }
+    }
     
     ScrollView {
-        accessibility.name: "Add/edit location scrollview"
-        scrollViewProperties {
-            scrollMode: ScrollMode.Vertical
-        }
+        scrollViewProperties { scrollMode: ScrollMode.Vertical }
+        
         Container {
-            layout: StackLayout {
-                orientation: LayoutOrientation.TopToBottom
-            }
+            layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
             topPadding: 20
             leftPadding: 20
             rightPadding: 20
@@ -105,9 +93,8 @@ Page {
                 bottomMargin: 30
             }
             Container {
-                layout: StackLayout {
-                    orientation: LayoutOrientation.LeftToRight
-                }
+                layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                
                 TextField {
                     id: latField
                     objectName: "latField"

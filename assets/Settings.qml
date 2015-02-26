@@ -79,7 +79,6 @@ Sheet {
                 }
                 DropDown {
                     id: completedDaysDropDown
-                    accessibility.name: "Completed days to show dropdown"
                     
                     options: [
                         Option {

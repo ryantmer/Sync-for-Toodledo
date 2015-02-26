@@ -2,20 +2,8 @@ import bb.cascades 1.2
 
 Page {
     id: addEditContextPage
-    
     property variant data;
     property bool edit;
-    
-    function setup() {
-        if (edit) {
-            nameField.text = data.name;
-            privateCheckBox.checked = data.private;
-            
-            addSaveButton.title = "Save";
-            addSaveButton.imageSource = "asset:///images/ic_save.png";
-        }
-    }
-    
     paneProperties: NavigationPaneProperties {
         backButton: ActionItem {
             title: "Cancel"
@@ -24,7 +12,6 @@ Page {
             }
         }
     }
-    
     actions: [
         ActionItem {
             id: addSaveButton
@@ -45,12 +32,8 @@ Page {
                 if (edit) {
                     newData = data;
                 }
-                newData["name"] = nameField.text;
-                newData["private"] = privateCheckBox.checked + 0;
-                
-//                for (var param in newData) {
-//                    console.log("newData." + param + " = " + newData[param]);
-//                }
+                newData.name = nameField.text;
+                newData.private = privateCheckBox.checked + 0;
                 
                 if (edit) {
                     app.contextDataModel.edit(data, newData);
@@ -61,16 +44,21 @@ Page {
             }
         }
     ]
+    function setup() {
+        if (edit) {
+            nameField.text = data.name;
+            privateCheckBox.checked = data.private;
+            
+            addSaveButton.title = "Save";
+            addSaveButton.imageSource = "asset:///images/ic_save.png";
+        }
+    }
     
     ScrollView {
-        accessibility.name: "Add/Edit context scrollview"
-        scrollViewProperties {
-            scrollMode: ScrollMode.Vertical
-        }
+        scrollViewProperties { scrollMode: ScrollMode.Vertical }
+        
         Container {
-            layout: StackLayout {
-                orientation: LayoutOrientation.TopToBottom
-            }
+            layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
             topPadding: 20
             leftPadding: 20
             rightPadding: 20

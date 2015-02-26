@@ -27,7 +27,6 @@ Page {
         }
         ListView {
             id: listView
-            accessibility.name: "Contexts list"
             layout: StackListLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             

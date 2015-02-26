@@ -27,7 +27,6 @@ Page {
         }
         ListView {
             id: listView
-            accessibility.name: "Completed tasks list"
             layout: StackListLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             
@@ -44,7 +43,6 @@ Page {
                         leftPadding: 10.0
                         
                         CheckBox {
-                            accessibility.name: "Completed task checkbox"
                             //This should be ListItemData.completed... but doing this calls
                             //onCheckedChanged which edits the task and fucks everything
                             //up w.r.t modified/completed timestamps. Whatever. They're

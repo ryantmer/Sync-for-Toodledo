@@ -2,21 +2,8 @@ import bb.cascades 1.2
 
 Page {
     id: addEditFolderPage
-    
     property variant data;
     property bool edit;
-    
-    function setup() {
-        if (edit) {
-            nameField.text = data.name;
-            privateCheckBox.checked = data.private;
-            archivedCheckBox.checked = data.archived;
-            
-            addSaveButton.title = "Save";
-            addSaveButton.imageSource = "asset:///images/ic_save.png";
-        }
-    }
-    
     paneProperties: NavigationPaneProperties {
         backButton: ActionItem {
             title: "Cancel"
@@ -25,7 +12,6 @@ Page {
             }
         }
     }
-    
     actions: [
         ActionItem {
             id: addSaveButton
@@ -46,10 +32,10 @@ Page {
                 if (edit) {
                     newData = data;
                 }
-                newData["name"] = nameField.text
-                newData["private"] = privateCheckBox.checked + 0;
+                newData.name = nameField.text
+                newData.private = privateCheckBox.checked + 0;
                 if (edit) {
-                    newData["archived"] = archivedCheckBox.checked + 0;
+                    newData.archived = archivedCheckBox.checked + 0;
                     app.folderDataModel.edit(data, newData);
                 } else {
                     app.folderDataModel.add(newData);
@@ -58,16 +44,22 @@ Page {
             }
         }
     ]
+    function setup() {
+        if (edit) {
+            nameField.text = data.name;
+            privateCheckBox.checked = data.private;
+            archivedCheckBox.checked = data.archived;
+            
+            addSaveButton.title = "Save";
+            addSaveButton.imageSource = "asset:///images/ic_save.png";
+        }
+    }
     
     ScrollView {
-        accessibility.name: "Add/Edit folder scrollview"
-        scrollViewProperties {
-            scrollMode: ScrollMode.Vertical
-        }
+        scrollViewProperties { scrollMode: ScrollMode.Vertical }
+        
         Container {
-            layout: StackLayout {
-                orientation: LayoutOrientation.TopToBottom
-            }
+            layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
             topPadding: 20
             leftPadding: 20
             rightPadding: 20

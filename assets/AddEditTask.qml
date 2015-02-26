@@ -4,6 +4,113 @@ Page {
     id: addEditTaskPage
     property variant data;
     property bool edit;
+    paneProperties: NavigationPaneProperties {
+        backButton: ActionItem {
+            title: "Cancel"
+            onTriggered: {
+                mainNavPane.pop();
+            }
+        }
+    }
+    actions: [
+        ActionItem {
+            id: addSaveButton
+            title: "Add" //Changed to "Save" in setup if editing a task
+            imageSource: "asset:///images/ic_add.png" //Changed in setup if editing a task
+            ActionBar.placement: ActionBarPlacement.OnBar
+            onTriggered: {
+                if (!titleField.text) {
+                    titleRequiredLabel.visible = true;
+                    return;
+                }
+                
+                var newData = {}
+                if (edit) {
+                    //Editing a pre-existing task
+                    newData = data;
+                    newData.completed = completedCheckbox.checked ?
+                                Math.floor((new Date()).getTime() / 1000) : 0;
+                }
+                
+                newData.title = titleField.text;
+                newData.note = noteArea.text;
+                newData.duedate = duedateCheckbox.checked ? 
+                            0: app.dateTimeToUnixTime(duedatePicker.value);
+                newData.folder = folderDropDown.selectedValue;
+                
+                if (advancedOptionsToggle.checked) {
+                    newData.context = contextDropDown.selectedValue;
+                    newData.goal = goalDropDown.selectedValue;
+                    newData.location = locationDropDown.selectedValue;
+                    newData.tag = tagField.text;
+                    newData.duedatemod = duedatemodDropDown.selectedValue;
+                    newData.duetime = duetimeCheckbox.checked ?
+                                0 : app.dateTimeToUnixTimeNoOffset(duetimePicker.value);
+                    newData.startdate = startdateCheckbox.checked ?
+                                0 : app.dateTimeToUnixTime(startdatePicker.value);
+                    newData.starttime = starttimeCheckbox.checked ?
+                                0 : app.dateTimeToUnixTimeNoOffset(starttimePicker.value);
+                    newData.length = lengthCheckbox.checked ?
+                                0 : app.getLengthValue(lengthPicker.value);
+                    newData.remind = remindDropDown.selectedValue;
+                    newData.repeat = repeatDropDown.selectedValue;
+                    newData.status = statusDropDown.selectedValue;
+                    newData.priority = priorityDropDown.selectedValue;
+                    newData.star = starToggle.checked + 0;
+                }
+                
+                if (edit) {
+                    app.taskDataModel.edit(data, newData);
+                } else {
+                    app.taskDataModel.add(newData);
+                }
+                
+                mainNavPane.pop();
+            }
+        }
+    ]
+    attachedObjects: [
+        ComponentDefinition {
+            //Used to populate folder drop-down list
+            id: option
+            Option {}
+        }
+    ]
+    onCreationCompleted: {
+        var texts, values, i;
+        
+        //Populate repeat dropdown
+        texts = ["Don't repeat", "Daily", "Weekly", "Biweekly", "Monthly",
+        "Bimonthly", "Quarterly", "Semiannually", "Yearly"];
+        values = ["", "FREQ=DAILY", "FREQ=WEEKLY", "FREQ=WEEKLY;INTERVAL=2",
+        "FREQ=MONTHLY", "FREQ=MONTHLY;INTERVAL=2", "FREQ=MONTHLY;INTERVAL=3",
+        "FREQ=MONTHLY;INTERVAL=6", "YEARLY"];
+        for (i = 0; i < texts.length; i++) {
+            var opt = option.createObject();
+            opt.text = texts[i];
+            opt.value = values[i];
+            repeatDropDown.add(opt);
+        }
+        
+        //Populate status dropdown
+        texts = ["None", "Next Action", "Planning", "Delegated", "Waiting",
+        "Hold", "Postponed", "Someday", "Canceled", "Reference"];
+        for (i = 0; i < texts.length; i++) {
+            var opt = option.createObject();
+            opt.text = texts[i];
+            opt.value = i;
+            statusDropDown.add(opt)
+        }
+        
+        //populate priority dropdown
+        texts = ["-1 Negative", "0 Low", "1 Medium", "2 High", "3 Top"];
+        for (i = -1; i < texts.length - 1; i++) {
+            var opt = option.createObject();
+            opt.text = texts[i+1];
+            opt.value = i;
+            priorityDropDown.add(opt);
+        }
+    }
     //Called after creating the page to populate fields as required from the passed data
     function setup() {
         //Populate options in folder dropdown
@@ -139,116 +246,8 @@ Page {
             lengthCheckbox.checked = true;
         }
     }
-    paneProperties: NavigationPaneProperties {
-        backButton: ActionItem {
-            title: "Cancel"
-            onTriggered: {
-                mainNavPane.pop();
-            }
-        }
-    }
-    actions: [
-        ActionItem {
-            id: addSaveButton
-            title: "Add" //Changed to "Save" in setup if editing a task
-            imageSource: "asset:///images/ic_add.png" //Changed in setup if editing a task
-            ActionBar.placement: ActionBarPlacement.OnBar
-            onTriggered: {
-                if (!titleField.text) {
-                    titleRequiredLabel.visible = true;
-                    return;
-                }
-                
-                var newData = {}
-                if (edit) {
-                    //Editing a pre-existing task
-                    newData = data;
-                    newData.completed = completedCheckbox.checked ?
-                                Math.floor((new Date()).getTime() / 1000) : 0;
-                }
-                
-                newData.title = titleField.text;
-                newData.note = noteArea.text;
-                newData.duedate = duedateCheckbox.checked ? 
-                            0: app.dateTimeToUnixTime(duedatePicker.value);
-                newData.folder = folderDropDown.selectedValue;
-                
-                if (advancedOptionsToggle.checked) {
-                    newData.context = contextDropDown.selectedValue;
-                    newData.goal = goalDropDown.selectedValue;
-                    newData.location = locationDropDown.selectedValue;
-                    newData.tag = tagField.text;
-                    newData.duedatemod = duedatemodDropDown.selectedValue;
-                    newData.duetime = duetimeCheckbox.checked ?
-                                0 : app.dateTimeToUnixTimeNoOffset(duetimePicker.value);
-                    newData.startdate = startdateCheckbox.checked ?
-                                0 : app.dateTimeToUnixTime(startdatePicker.value);
-                    newData.starttime = starttimeCheckbox.checked ?
-                                0 : app.dateTimeToUnixTimeNoOffset(starttimePicker.value);
-                    newData.length = lengthCheckbox.checked ?
-                                0 : app.getLengthValue(lengthPicker.value);
-                    newData.remind = remindDropDown.selectedValue;
-                    newData.repeat = repeatDropDown.selectedValue;
-                    newData.status = statusDropDown.selectedValue;
-                    newData.priority = priorityDropDown.selectedValue;
-                    newData.star = starToggle.checked + 0;
-                }
-                
-                if (edit) {
-                    app.taskDataModel.edit(data, newData);
-                } else {
-                    app.taskDataModel.add(newData);
-                }
-                
-                mainNavPane.pop();
-            }
-        }
-    ]
-    attachedObjects: [
-        ComponentDefinition {
-            //Used to populate folder drop-down list
-            id: option
-            Option {}
-        }
-    ]
-    onCreationCompleted: {
-        var texts, values, i;
-        
-        //Populate repeat dropdown
-        texts = ["Don't repeat", "Daily", "Weekly", "Biweekly", "Monthly",
-        "Bimonthly", "Quarterly", "Semiannually", "Yearly"];
-        values = ["", "FREQ=DAILY", "FREQ=WEEKLY", "FREQ=WEEKLY;INTERVAL=2",
-        "FREQ=MONTHLY", "FREQ=MONTHLY;INTERVAL=2", "FREQ=MONTHLY;INTERVAL=3",
-        "FREQ=MONTHLY;INTERVAL=6", "YEARLY"];
-        for (i = 0; i < texts.length; i++) {
-            var opt = option.createObject();
-            opt.text = texts[i];
-            opt.value = values[i];
-            repeatDropDown.add(opt);
-        }
-        
-        //Populate status dropdown
-        texts = ["None", "Next Action", "Planning", "Delegated", "Waiting",
-        "Hold", "Postponed", "Someday", "Canceled", "Reference"];
-        for (i = 0; i < texts.length; i++) {
-            var opt = option.createObject();
-            opt.text = texts[i];
-            opt.value = i;
-            statusDropDown.add(opt)
-        }
-        
-        //populate priority dropdown
-        texts = ["-1 Negative", "0 Low", "1 Medium", "2 High", "3 Top"];
-        for (i = -1; i < texts.length - 1; i++) {
-            var opt = option.createObject();
-            opt.text = texts[i+1];
-            opt.value = i;
-            priorityDropDown.add(opt);
-        }
-    }
     
     ScrollView {
-        accessibility.name: "Add/edit task scrollview"
         scrollViewProperties { scrollMode: ScrollMode.Vertical }
         
         Container {
@@ -262,11 +261,14 @@ Page {
             CheckBox {
                 id: completedCheckbox
                 text: "Completed"
-                bottomMargin: 30
                 visible: edit  //only show if we're editing a task, not adding a new one
+                bottomMargin: 30
             }
             //title
             Container {
+                layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
+                bottomMargin: 30
+                
                 Label {
                     id: titleRequiredLabel
                     text: "Required"
@@ -288,21 +290,21 @@ Page {
             }
             //duedate
             Container {
-                bottomMargin: 30
                 layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                bottomMargin: 30
                 
                 DateTimePicker {
                     id: duedatePicker
-                    horizontalAlignment: HorizontalAlignment.Fill
+                    title: "Due Date"
                     mode: DateTimePickerMode.Date
                     expanded: false
-                    title: "Due Date"
+                    layoutProperties: StackLayoutProperties { spaceQuota: 2 }
                 }
                 CheckBox {
                     id: duedateCheckbox
                     text: "None"
-                    verticalAlignment: VerticalAlignment.Center
                     layoutProperties: StackLayoutProperties { spaceQuota: 1 }
+                    verticalAlignment: VerticalAlignment.Center
                     onCheckedChanged: {
                         duedatePicker.enabled = !checked;
                     }
@@ -321,18 +323,17 @@ Page {
             }
             //advanced options stuff
             Container {
-                bottomMargin: 30
                 layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                bottomMargin: 30
                 
                 Label {
                     text: "Additional Options"
-                    textStyle.fontSize: FontSize.XLarge
+                    textStyle.fontSize: FontSize.Large
                     verticalAlignment: VerticalAlignment.Center
                     layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                 }
                 ToggleButton {
                     id: advancedOptionsToggle
-                    accessibility.name: "Advanced options toggle button"
                     verticalAlignment: VerticalAlignment.Center
                     onCheckedChanged: {
                         advancedContainer.visible = checked;
@@ -386,9 +387,8 @@ Page {
                     
                     Label {
                         text: "Tags"
-                        textStyle.fontSize: FontSize.XLarge
+                        textStyle.fontSize: FontSize.Medium
                         verticalAlignment: VerticalAlignment.Center
-                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     }
                     TextField {
                         id: tagField
@@ -403,13 +403,13 @@ Page {
                     }
                     Label {
                         text: "Due"
-                        textStyle.fontSize: FontSize.XLarge
+                        textStyle.fontSize: FontSize.Medium
                         verticalAlignment: VerticalAlignment.Center
                         layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     }
                     DropDown {
                         id: duedatemodDropDown
-                        accessibility.name: "Due date modifier dropdown"
+                        layoutProperties: StackLayoutProperties { spaceQuota: 2 }
                         options: [
                             Option {
                                 text: "By Due Date"
@@ -439,15 +439,16 @@ Page {
                     }
                     DateTimePicker {
                         id: duetimePicker
-                        horizontalAlignment: HorizontalAlignment.Fill
+                        title: "Due Time"
                         mode: DateTimePickerMode.Time
                         expanded: false
-                        title: "Due Time"
+                        layoutProperties: StackLayoutProperties { spaceQuota: 2 }
                     }
                     CheckBox {
                         id: duetimeCheckbox
                         text: "None"
                         verticalAlignment: VerticalAlignment.Center
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                         onCheckedChanged: {
                             duetimePicker.enabled = !checked;
                         }
@@ -460,15 +461,16 @@ Page {
                     
                     DateTimePicker {
                         id: startdatePicker
-                        horizontalAlignment: HorizontalAlignment.Fill
+                        title: "Start Date"
                         mode: DateTimePickerMode.Date
                         expanded: false
-                        title: "Start Date"
+                        layoutProperties: StackLayoutProperties { spaceQuota: 2 }
                     }
                     CheckBox {
                         id: startdateCheckbox
                         text: "None"
                         verticalAlignment: VerticalAlignment.Center
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                         onCheckedChanged: {
                             startdatePicker.enabled = !checked;
                         }
@@ -481,15 +483,16 @@ Page {
                     
                     DateTimePicker {
                         id: starttimePicker
-                        horizontalAlignment: HorizontalAlignment.Fill
+                        title: "Start Time"
                         mode: DateTimePickerMode.Time
                         expanded: false
-                        title: "Start Time"
+                        layoutProperties: StackLayoutProperties { spaceQuota: 2 }
                     }
                     CheckBox {
                         id: starttimeCheckbox
                         text: "None"
                         verticalAlignment: VerticalAlignment.Center
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                         onCheckedChanged: {
                             starttimePicker.enabled = !checked;
                         }
@@ -502,15 +505,16 @@ Page {
                     
                     DateTimePicker {
                         id: lengthPicker
-                        horizontalAlignment: HorizontalAlignment.Fill
-                        mode: DateTimePickerMode.Timer
-                        expanded: false
                         title: "Task Length"
+                        expanded: false
+                        mode: DateTimePickerMode.Timer
+                        layoutProperties: StackLayoutProperties { spaceQuota: 2 }
                     }
                     CheckBox {
                         id: lengthCheckbox
                         text: "None"
                         verticalAlignment: VerticalAlignment.Center
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                         onCheckedChanged: {
                             lengthPicker.enabled = !checked;
                         }
@@ -557,13 +561,12 @@ Page {
                     
                     Label {
                         text: "Star"
-                        textStyle.fontSize: FontSize.XLarge
+                        textStyle.fontSize: FontSize.Medium
                         verticalAlignment: VerticalAlignment.Center
                         layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     }
                     ToggleButton {
                         id: starToggle
-                        accessibility.name: "Star toggle button"
                         verticalAlignment: VerticalAlignment.Center
                         layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     }

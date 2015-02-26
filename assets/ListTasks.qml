@@ -51,7 +51,6 @@ NavigationPane {
             }
             ListView {
                 id: listView
-                accessibility.name: "Task list"
                 layout: StackListLayout {}
                 horizontalAlignment: HorizontalAlignment.Fill
                 
@@ -68,7 +67,6 @@ NavigationPane {
                             leftPadding: 10.0
                             
                             CheckBox {
-                                accessibility.name: "Task checkbox"
                                 checked: ListItemData.completed
                                 verticalAlignment: VerticalAlignment.Center
                                 

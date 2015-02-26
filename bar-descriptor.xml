@@ -82,7 +82,7 @@
     </icon>
     <authorId>gYAAgCgfEw589DBHUpqjdpiUd8g</authorId>
     <author>ryantmer</author>
-    <buildId>50</buildId>
+    <buildId>51</buildId>
 
     <!--  Unique author ID assigned by signing authority. Required if using debug tokens. -->
     <!-- <authorId>ABC1234YjsnUk235h</authorId> -->
@@ -108,10 +108,6 @@
     <asset path="graphics/splash-screen-720x1280.png">splash-screen-720x1280.png</asset>
     <asset path="graphics/splash-screen-720x720.png">splash-screen-720x720.png</asset>
     <asset path="graphics/splash-screen-768x1280.png">splash-screen-768x1280.png</asset>
-    <asset path="graphics/logo110.png">logo110.png</asset>
-    <asset path="graphics/logo96.png">logo96.png</asset>
-    <asset path="graphics/logo64.png">logo64.png</asset>
-    <asset path="graphics/logo90.png">logo90.png</asset>
     <asset path="graphics/logo144.png">logo144.png</asset>
 
     <!-- Request permission to execute native code.  Required for native applications. -->
