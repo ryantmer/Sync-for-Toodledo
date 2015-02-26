@@ -8,7 +8,7 @@ class NetworkManager: public QObject {
 
 public:
     static NetworkManager *getInstance();
-    NetworkManager();
+    NetworkManager(QObject *parent = NULL);
     virtual ~NetworkManager();
 
     static const QString authorizeUrl;

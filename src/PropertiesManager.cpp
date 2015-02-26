@@ -17,8 +17,10 @@ PropertiesManager *PropertiesManager::getInstance() {
     return singleton;
 }
 
-PropertiesManager::PropertiesManager(QObject *parent) : QObject (parent) {
-    _netMan = NetworkManager::getInstance();
+PropertiesManager::PropertiesManager(QObject *parent)
+:   QObject (parent),
+    _netMan(NetworkManager::getInstance())
+{
     bool ok;
     ok = connect(_netMan, SIGNAL(accessTokenRefreshed(QString, qlonglong)),
             this, SLOT(onAccessTokenRefreshed(QString, qlonglong)));

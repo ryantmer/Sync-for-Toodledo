@@ -15,20 +15,20 @@
 using namespace bb::cascades;
 using namespace bb::system;
 
-SyncForToodledo::SyncForToodledo() : QObject() {
+SyncForToodledo::SyncForToodledo()
+:   QObject(),
+    _propertiesManager(PropertiesManager::getInstance()),
+    _networkManager(NetworkManager::getInstance()),
+    _loginManager(LoginManager::getInstance()),
+    _taskDataModel(new CustomDataModel(this, CustomDataModel::Task)),
+    _folderDataModel(new CustomDataModel(this, CustomDataModel::Folder)),
+    _completedTaskDataModel(new CustomDataModel(this, CustomDataModel::CompletedTask)),
+    _contextDataModel(new CustomDataModel(this, CustomDataModel::Context)),
+    _locationDataModel(new CustomDataModel(this, CustomDataModel::Location)),
+    _goalDataModel(new CustomDataModel(this, CustomDataModel::Goal)),
+    _accountInfo(new CustomDataModel(this, CustomDataModel::AccountInfo))
+{
     qmlRegisterType<CustomDataModel>("DataModelUtil", 1, 0, "CustomDataModel");
-
-    _propertiesManager = PropertiesManager::getInstance();
-    _networkManager = NetworkManager::getInstance();
-    _loginManager = LoginManager::getInstance();
-
-    _taskDataModel = new CustomDataModel(this, CustomDataModel::Task);
-    _folderDataModel = new CustomDataModel(this, CustomDataModel::Folder);
-    _completedTaskDataModel = new CustomDataModel(this, CustomDataModel::CompletedTask);
-    _contextDataModel = new CustomDataModel(this, CustomDataModel::Context);
-    _locationDataModel = new CustomDataModel(this, CustomDataModel::Location);
-    _goalDataModel = new CustomDataModel(this, CustomDataModel::Goal);
-    _accountInfo = new CustomDataModel(this, CustomDataModel::AccountInfo);
 
     //Create root QML document from main.qml and expose certain variables to QML
     QmlDocument *qml = QmlDocument::create("asset:///ListHotlist.qml").parent(this);

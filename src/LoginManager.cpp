@@ -22,13 +22,15 @@ LoginManager *LoginManager::getInstance() {
     return singleton;
 }
 
-LoginManager::LoginManager(QObject *parent) : QObject(parent) {
-    _loggedIn = false;
-    _netMan = NetworkManager::getInstance();
-    _propMan = PropertiesManager::getInstance();
-
+LoginManager::LoginManager(QObject *parent)
+:   QObject(parent),
+    _loggedIn(false),
+    _netMan(NetworkManager::getInstance()),
+    _propMan(PropertiesManager::getInstance()),
+    _accessTokenTimer(new QTimer(this)),
+    _appState(QString::null)
+{
     //Timer that fires when access token expires (2 hours)
-    _accessTokenTimer = new QTimer(this);
     _accessTokenTimer->setSingleShot(true);
 
     if (QDateTime::currentDateTimeUtc().toTime_t() < _propMan->accessTokenExpiry) {

@@ -32,12 +32,12 @@ signals:
     void toast(QString message);
 
 private:
-    static const QString _credentials;
+    bool _loggedIn;
     NetworkManager *_netMan;
     PropertiesManager *_propMan;
-    bool _loggedIn;
-    QString _appState;
     QTimer *_accessTokenTimer;
+    QString _appState;
+    static const QString _credentials;
 };
 
 #endif /* LOGINMANAGER_HPP_ */

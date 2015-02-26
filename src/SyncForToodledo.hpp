@@ -67,16 +67,16 @@ public slots:
     void onToast(QString message);
 
 private:
+    PropertiesManager *_propertiesManager;
+    NetworkManager *_networkManager;
+    LoginManager *_loginManager;
     CustomDataModel *_taskDataModel;
     CustomDataModel *_folderDataModel;
     CustomDataModel *_completedTaskDataModel;
     CustomDataModel *_contextDataModel;
-    CustomDataModel *_goalDataModel;
     CustomDataModel *_locationDataModel;
+    CustomDataModel *_goalDataModel;
     CustomDataModel *_accountInfo;
-    NetworkManager *_networkManager;
-    PropertiesManager *_propertiesManager;
-    LoginManager *_loginManager;
 
     NavigationPane *_root;
     Container *_coverRoot;

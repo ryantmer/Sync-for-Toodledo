@@ -15,12 +15,15 @@ const char * CustomDataModel::DataTypeStrings[8] = {
 using namespace bb::cascades;
 using namespace bb::data;
 
-CustomDataModel::CustomDataModel(QObject *parent, DataType dataType) : DataModel(parent) {
+CustomDataModel::CustomDataModel(QObject *parent, DataType dataType)
+:   DataModel(parent),
+    _internalDB(QVariantList()),
+    _dataType(UndefinedType),
+    _propMan(PropertiesManager::getInstance()),
+    _netMan(NetworkManager::getInstance()),
+    _loginMan(LoginManager::getInstance())
+{
     _dataType = dataType;
-
-    _netMan = NetworkManager::getInstance();
-    _propMan = PropertiesManager::getInstance();
-    _loginMan = LoginManager::getInstance();
 
     switch (_dataType) {
         case Task:

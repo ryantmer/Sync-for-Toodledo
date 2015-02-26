@@ -25,9 +25,12 @@ NetworkManager *NetworkManager::getInstance() {
     return singleton;
 }
 
-NetworkManager::NetworkManager() {
-    _netConfigManager = new QNetworkConfigurationManager(this);
-    _netAccessManager = new QNetworkAccessManager(this);
+NetworkManager::NetworkManager(QObject *parent)
+:   QObject(parent),
+    _netConfigManager(new QNetworkConfigurationManager(this)),
+    _netAccessManager(new QNetworkAccessManager(this)),
+    _connected(false)
+{
     _connected = _netConfigManager->isOnline();
 
     bool ok;
