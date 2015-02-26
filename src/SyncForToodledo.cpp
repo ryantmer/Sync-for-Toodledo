@@ -80,37 +80,6 @@ SyncForToodledo::SyncForToodledo() : QObject() {
     ok = connect(_accountInfo, SIGNAL(itemsChanged(bb::cascades::DataModelChangeType::Type)),
             this, SLOT(onAccountInfoUpdated()));
     Q_ASSERT(ok);
-    //YEAH TOAST
-    ok = connect(_propertiesManager, SIGNAL(toast(QString)),
-            this, SLOT(onToast(QString)));
-    Q_ASSERT(ok);
-    ok = connect(_loginManager, SIGNAL(toast(QString)),
-            this, SLOT(onToast(QString)));
-    Q_ASSERT(ok);
-    ok = connect(_networkManager, SIGNAL(toast(QString)),
-            this, SLOT(onToast(QString)));
-    Q_ASSERT(ok);
-    ok = connect(_taskDataModel, SIGNAL(toast(QString)),
-            this, SLOT(onToast(QString)));
-    Q_ASSERT(ok);
-    ok = connect(_folderDataModel, SIGNAL(toast(QString)),
-            this, SLOT(onToast(QString)));
-    Q_ASSERT(ok);
-    ok = connect(_completedTaskDataModel, SIGNAL(toast(QString)),
-            this, SLOT(onToast(QString)));
-    Q_ASSERT(ok);
-    ok = connect(_contextDataModel, SIGNAL(toast(QString)),
-            this, SLOT(onToast(QString)));
-    Q_ASSERT(ok);
-    ok = connect(_goalDataModel, SIGNAL(toast(QString)),
-            this, SLOT(onToast(QString)));
-    Q_ASSERT(ok);
-    ok = connect(_locationDataModel, SIGNAL(toast(QString)),
-            this, SLOT(onToast(QString)));
-    Q_ASSERT(ok);
-    ok = connect(_accountInfo, SIGNAL(toast(QString)),
-            this, SLOT(onToast(QString)));
-    Q_ASSERT(ok);
 
     //Logout signal
     ok = connect(this, SIGNAL(loggedOut()),

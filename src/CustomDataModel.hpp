@@ -59,7 +59,6 @@ private:
     QString removeUrl;
 
 signals:
-    void toast(QString message);
     void emptyChanged(bool empty);
 
 public slots:

@@ -100,7 +100,6 @@ void CustomDataModel::refresh() {
         }
     } else {
         qWarning() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
-        emit toast("No network connection!");
     }
 }
 
