@@ -2,10 +2,8 @@ import bb.cascades 1.2
 
 Page {
     id: addEditTaskPage
-    
     property variant data;
     property bool edit;
-    
     //Called after creating the page to populate fields as required from the passed data
     function setup() {
         //Populate options in folder dropdown
@@ -18,7 +16,6 @@ Page {
                 folderDropDown.add(opt);
             }
         }
-        
         //Populate options in context dropdown
         var contexts = app.contextDataModel.getInternalList();
         for (var x = 0; x < contexts.length; x++) {
@@ -27,7 +24,6 @@ Page {
             opt.value = contexts[x].id;
             contextDropDown.add(opt);
         }
-        
         //Populate options in goals dropdown
         var goals = app.goalDataModel.getInternalList();
         for (var x = 0; x < goals.length; x++) {
@@ -38,7 +34,6 @@ Page {
                 goalDropDown.add(opt);
             }
         }
-        
         //Populate options in locations dropdown
         var locations = app.locationDataModel.getInternalList();
         for (var x = 0; x < locations.length; x++) {
@@ -47,11 +42,9 @@ Page {
             opt.value = locations[x].id;
             locationDropDown.add(opt);
         }
-        
         //If we're editing a task, rather than adding a new one
         if (edit) {
             var index;
-            
             //Populate the fields of the form as required
             completedCheckbox.checked = data.completed;
             titleField.text = data.title;
@@ -146,7 +139,6 @@ Page {
             lengthCheckbox.checked = true;
         }
     }
-    
     paneProperties: NavigationPaneProperties {
         backButton: ActionItem {
             title: "Cancel"
@@ -155,7 +147,6 @@ Page {
             }
         }
     }
-    
     actions: [
         ActionItem {
             id: addSaveButton
@@ -172,40 +163,36 @@ Page {
                 if (edit) {
                     //Editing a pre-existing task
                     newData = data;
-                    newData["completed"] = completedCheckbox.checked ?
+                    newData.completed = completedCheckbox.checked ?
                                 Math.floor((new Date()).getTime() / 1000) : 0;
                 }
                 
-                newData["title"] = titleField.text;
-                newData["note"] = noteArea.text;
-                newData["duedate"] = duedateCheckbox.checked ? 
+                newData.title = titleField.text;
+                newData.note = noteArea.text;
+                newData.duedate = duedateCheckbox.checked ? 
                             0: app.dateTimeToUnixTime(duedatePicker.value);
-                newData["folder"] = folderDropDown.selectedValue;
+                newData.folder = folderDropDown.selectedValue;
                 
                 if (advancedOptionsToggle.checked) {
-                    newData["context"] = contextDropDown.selectedValue;
-                    newData["goal"] = goalDropDown.selectedValue;
-                    newData["location"] = locationDropDown.selectedValue;
-                    newData["tag"] = tagField.text;
-                    newData["duedatemod"] = duedatemodDropDown.selectedValue;
-                    newData["duetime"] = duetimeCheckbox.checked ?
+                    newData.context = contextDropDown.selectedValue;
+                    newData.goal = goalDropDown.selectedValue;
+                    newData.location = locationDropDown.selectedValue;
+                    newData.tag = tagField.text;
+                    newData.duedatemod = duedatemodDropDown.selectedValue;
+                    newData.duetime = duetimeCheckbox.checked ?
                                 0 : app.dateTimeToUnixTimeNoOffset(duetimePicker.value);
-                    newData["startdate"] = startdateCheckbox.checked ?
+                    newData.startdate = startdateCheckbox.checked ?
                                 0 : app.dateTimeToUnixTime(startdatePicker.value);
-                    newData["starttime"] = starttimeCheckbox.checked ?
+                    newData.starttime = starttimeCheckbox.checked ?
                                 0 : app.dateTimeToUnixTimeNoOffset(starttimePicker.value);
-                    newData["length"] = lengthCheckbox.checked ?
+                    newData.length = lengthCheckbox.checked ?
                                 0 : app.getLengthValue(lengthPicker.value);
-                    newData["remind"] = remindDropDown.selectedValue;
-                    newData["repeat"] = repeatDropDown.selectedValue;
-                    newData["status"] = statusDropDown.selectedValue;
-                    newData["priority"] = priorityDropDown.selectedValue;
-                    newData["star"] = starToggle.checked + 0;
+                    newData.remind = remindDropDown.selectedValue;
+                    newData.repeat = repeatDropDown.selectedValue;
+                    newData.status = statusDropDown.selectedValue;
+                    newData.priority = priorityDropDown.selectedValue;
+                    newData.star = starToggle.checked + 0;
                 }
-                
-//                for (var param in newData) {
-//                    console.log("newData." + param + " = " + newData[param]);
-//                }
                 
                 if (edit) {
                     app.taskDataModel.edit(data, newData);
@@ -217,16 +204,55 @@ Page {
             }
         }
     ]
+    attachedObjects: [
+        ComponentDefinition {
+            //Used to populate folder drop-down list
+            id: option
+            Option {}
+        }
+    ]
+    onCreationCompleted: {
+        var texts, values, i;
+        
+        //Populate repeat dropdown
+        texts = ["Don't repeat", "Daily", "Weekly", "Biweekly", "Monthly",
+        "Bimonthly", "Quarterly", "Semiannually", "Yearly"];
+        values = ["", "FREQ=DAILY", "FREQ=WEEKLY", "FREQ=WEEKLY;INTERVAL=2",
+        "FREQ=MONTHLY", "FREQ=MONTHLY;INTERVAL=2", "FREQ=MONTHLY;INTERVAL=3",
+        "FREQ=MONTHLY;INTERVAL=6", "YEARLY"];
+        for (i = 0; i < texts.length; i++) {
+            var opt = option.createObject();
+            opt.text = texts[i];
+            opt.value = values[i];
+            repeatDropDown.add(opt);
+        }
+        
+        //Populate status dropdown
+        texts = ["None", "Next Action", "Planning", "Delegated", "Waiting",
+        "Hold", "Postponed", "Someday", "Canceled", "Reference"];
+        for (i = 0; i < texts.length; i++) {
+            var opt = option.createObject();
+            opt.text = texts[i];
+            opt.value = i;
+            statusDropDown.add(opt)
+        }
+        
+        //populate priority dropdown
+        texts = ["-1 Negative", "0 Low", "1 Medium", "2 High", "3 Top"];
+        for (i = -1; i < texts.length - 1; i++) {
+            var opt = option.createObject();
+            opt.text = texts[i+1];
+            opt.value = i;
+            priorityDropDown.add(opt);
+        }
+    }
     
     ScrollView {
         accessibility.name: "Add/edit task scrollview"
-        scrollViewProperties {
-            scrollMode: ScrollMode.Vertical
-        }
+        scrollViewProperties { scrollMode: ScrollMode.Vertical }
+        
         Container {
-            layout: StackLayout {
-                orientation: LayoutOrientation.TopToBottom
-            }
+            layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
             topPadding: 20
             leftPadding: 20
             rightPadding: 20
@@ -239,7 +265,6 @@ Page {
                 bottomMargin: 30
                 visible: edit  //only show if we're editing a task, not adding a new one
             }
-            
             //title
             Container {
                 Label {
@@ -254,7 +279,6 @@ Page {
                     horizontalAlignment: HorizontalAlignment.Fill
                 }
             }
-            
             //note
             TextArea {
                 id: noteArea
@@ -262,13 +286,11 @@ Page {
                 horizontalAlignment: HorizontalAlignment.Fill
                 bottomMargin: 30
             }
-            
             //duedate
             Container {
                 bottomMargin: 30
-                layout: StackLayout {
-                    orientation: LayoutOrientation.LeftToRight
-                }
+                layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                
                 DateTimePicker {
                     id: duedatePicker
                     horizontalAlignment: HorizontalAlignment.Fill
@@ -280,12 +302,12 @@ Page {
                     id: duedateCheckbox
                     text: "None"
                     verticalAlignment: VerticalAlignment.Center
+                    layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     onCheckedChanged: {
                         duedatePicker.enabled = !checked;
                     }
                 }
             }
-            
             //folder
             DropDown {
                 id: folderDropDown
@@ -297,20 +319,16 @@ Page {
                     selected: true
                 }
             }
-            
             //advanced options stuff
             Container {
                 bottomMargin: 30
-                layout: StackLayout {
-                    orientation: LayoutOrientation.LeftToRight
-                }
+                layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                
                 Label {
                     text: "Additional Options"
                     textStyle.fontSize: FontSize.XLarge
                     verticalAlignment: VerticalAlignment.Center
-                    layoutProperties: StackLayoutProperties {
-                        spaceQuota: 1
-                    }
+                    layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                 }
                 ToggleButton {
                     id: advancedOptionsToggle
@@ -337,7 +355,6 @@ Page {
                         }
                     ]
                 }
-                
                 //goal
                 DropDown {
                     id: goalDropDown
@@ -350,7 +367,6 @@ Page {
                         }
                     ]
                 }
-                
                 //location
                 DropDown {
                     id: locationDropDown
@@ -363,30 +379,22 @@ Page {
                         }
                     ]
                 }
-                
                 //tag
                 Container {
                     bottomMargin: 30
-                    layout: StackLayout {
-                        orientation: LayoutOrientation.LeftToRight
-                    }
+                    layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                    
                     Label {
                         text: "Tags"
                         textStyle.fontSize: FontSize.XLarge
                         verticalAlignment: VerticalAlignment.Center
-                        layoutProperties: StackLayoutProperties {
-                            spaceQuota: 1
-                        }
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     }
                     TextField {
                         id: tagField
                         hintText: "Comma-separated tags for this task"
-                        layoutProperties: StackLayoutProperties {
-                            spaceQuota: 3
-                        }
                     }
                 }
-                
                 //duedatemod
                 Container {
                     bottomMargin: 30
@@ -397,16 +405,11 @@ Page {
                         text: "Due"
                         textStyle.fontSize: FontSize.XLarge
                         verticalAlignment: VerticalAlignment.Center
-                        layoutProperties: StackLayoutProperties {
-                            spaceQuota: 1
-                        }
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     }
                     DropDown {
                         id: duedatemodDropDown
                         accessibility.name: "Due date modifier dropdown"
-                        layoutProperties: StackLayoutProperties {
-                            spaceQuota: 3
-                        }
                         options: [
                             Option {
                                 text: "By Due Date"
@@ -427,9 +430,7 @@ Page {
                             }
                         ]
                     }
-                    
                 }
-                
                 //duetime
                 Container {
                     bottomMargin: 30
@@ -452,13 +453,11 @@ Page {
                         }
                     }
                 }
-                
                 //startdate
                 Container {
                     bottomMargin: 30
-                    layout: StackLayout {
-                        orientation: LayoutOrientation.LeftToRight
-                    }
+                    layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                    
                     DateTimePicker {
                         id: startdatePicker
                         horizontalAlignment: HorizontalAlignment.Fill
@@ -475,13 +474,11 @@ Page {
                         }
                     }
                 }
-                
                 //starttime
                 Container {
                     bottomMargin: 30
-                    layout: StackLayout {
-                        orientation: LayoutOrientation.LeftToRight
-                    }
+                    layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                    
                     DateTimePicker {
                         id: starttimePicker
                         horizontalAlignment: HorizontalAlignment.Fill
@@ -498,13 +495,11 @@ Page {
                         }
                     }
                 }
-                
                 //length
                 Container {
                     bottomMargin: 30
-                    layout: StackLayout {
-                        orientation: LayoutOrientation.LeftToRight
-                    }
+                    layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                    
                     DateTimePicker {
                         id: lengthPicker
                         horizontalAlignment: HorizontalAlignment.Fill
@@ -521,7 +516,6 @@ Page {
                         }
                     }
                 }
-                
                 //remind
                 DropDown {
                     id: remindDropDown
@@ -535,7 +529,6 @@ Page {
                         }
                     ]
                 }
-                
                 //repeat
                 DropDown {
                     id: repeatDropDown
@@ -543,7 +536,6 @@ Page {
                     bottomMargin: 30
                     //Populated in onCreationCompleted
                 }
-                
                 //status
                 DropDown {
                     id: statusDropDown
@@ -551,7 +543,6 @@ Page {
                     bottomMargin: 30
                     //Populated in onCreationCompleted
                 }
-                
                 //priority
                 DropDown {
                     id: priorityDropDown
@@ -559,76 +550,25 @@ Page {
                     bottomMargin: 30
                     //Populated in onCreationCompleted
                 }
-                
                 //star
                 Container {
                     bottomMargin: 30
-                    layout: StackLayout {
-                        orientation: LayoutOrientation.LeftToRight
-                    }
+                    layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                    
                     Label {
                         text: "Star"
                         textStyle.fontSize: FontSize.XLarge
                         verticalAlignment: VerticalAlignment.Center
-                        layoutProperties: StackLayoutProperties {
-                            spaceQuota: 1
-                        }
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     }
                     ToggleButton {
                         id: starToggle
                         accessibility.name: "Star toggle button"
                         verticalAlignment: VerticalAlignment.Center
-                        layoutProperties: StackLayoutProperties {
-                            spaceQuota: 1
-                        }
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     }
                 }
             }
-        }
-    }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            //Used to populate folder drop-down list
-            id: option
-            Option {}
-        }
-    ]
-    
-    onCreationCompleted: {
-        var texts, values, i;
-        
-        //Populate repeat dropdown
-        texts = ["Don't repeat", "Daily", "Weekly", "Biweekly", "Monthly",
-                    "Bimonthly", "Quarterly", "Semiannually", "Yearly"];
-        values = ["", "FREQ=DAILY", "FREQ=WEEKLY", "FREQ=WEEKLY;INTERVAL=2",
-                    "FREQ=MONTHLY", "FREQ=MONTHLY;INTERVAL=2", "FREQ=MONTHLY;INTERVAL=3",
-                    "FREQ=MONTHLY;INTERVAL=6", "YEARLY"];
-        for (i = 0; i < texts.length; i++) {
-            var opt = option.createObject();
-            opt.text = texts[i];
-            opt.value = values[i];
-            repeatDropDown.add(opt);
-        }
-        
-        
-        //Populate status dropdown
-        texts = ["None", "Next Action", "Planning", "Delegated", "Waiting",
-                    "Hold", "Postponed", "Someday", "Canceled", "Reference"];
-        for (i = 0; i < texts.length; i++) {
-            var opt = option.createObject();
-            opt.text = texts[i];
-            opt.value = i;
-            statusDropDown.add(opt)
-        }
-        
-        //populate priority dropdown
-        texts = ["-1 Negative", "0 Low", "1 Medium", "2 High", "3 Top"];
-        for (i = -1; i < texts.length - 1; i++) {
-            var opt = option.createObject();
-            opt.text = texts[i+1];
-            opt.value = i;
-            priorityDropDown.add(opt);
         }
     }
 }

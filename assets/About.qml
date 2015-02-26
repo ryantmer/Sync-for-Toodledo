@@ -2,13 +2,11 @@ import bb.cascades 1.2
 
 Sheet {
     id: aboutSheet
-    
     onClosed: {
         destroy();
     }
     
     Page {
-        
         titleBar: TitleBar {
             dismissAction: ActionItem {
                 title: "Close"
@@ -17,14 +15,27 @@ Sheet {
                 }
             }
         }
+        
         Container {
             layout: DockLayout {}
+            attachedObjects: [
+                Invocation {
+                    id: emailInvoke
+                    query.mimeType: "text/plain"
+                    query.invokeTargetId: "sys.pim.uib.email.hybridcomposer"
+                    query.invokeActionId: "bb.action.SENDEMAIL"
+                    onArmed: {
+                        emailInvoke.trigger(emailInvoke.query.invokeActionId);
+                    }
+                }
+            ]
             
             Container {
                 id: aboutContent
                 layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
                 verticalAlignment: VerticalAlignment.Center
                 horizontalAlignment: HorizontalAlignment.Center
+                
                 Label {
                     text: "Sync for Toodledo"
                     textStyle.fontSize: FontSize.XXLarge
@@ -51,7 +62,6 @@ Sheet {
                     verticalAlignment: VerticalAlignment.Center
                     horizontalAlignment: HorizontalAlignment.Center
                     bottomMargin: 30
-                    
                     onClicked: {
                         emailInvoke.query.uri = "mailto:syncfortoodledo@gmail.com?subject=Sync%20for%20Toodledo%20Help";
                         emailInvoke.query.updateQuery();
@@ -67,18 +77,6 @@ Sheet {
                     horizontalAlignment: HorizontalAlignment.Center
                     bottomMargin: 30
                 }
-                
-                attachedObjects: [
-                    Invocation {
-                        id: emailInvoke
-                        query.mimeType: "text/plain"
-                        query.invokeTargetId: "sys.pim.uib.email.hybridcomposer"
-                        query.invokeActionId: "bb.action.SENDEMAIL"
-                        onArmed: {
-                            emailInvoke.trigger(emailInvoke.query.invokeActionId);
-                        }
-                    }
-                ]
             }
         }
     }
