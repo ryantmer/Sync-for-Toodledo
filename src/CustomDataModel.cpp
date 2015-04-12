@@ -285,7 +285,7 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
                     encodedData.append(",\"" + iter.key() + "\":" + iter.value().toString());
                 } else {
                     //string values (extra quotation marks needed)
-                    encodedData.append(",\"" + iter.key() + "\":\"" + iter.value().toString() + "\"");
+                    encodedData.append(",\"" + iter.key() + "\":\"" + iter.value().toString().replace("\"", "'") + "\"");
                 }
             }
         }

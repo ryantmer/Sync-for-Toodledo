@@ -1,5 +1,5 @@
 1
-28
+27
 About.qml
 ActivityDialog.qml
 AddEditContext.qml
@@ -23,7 +23,6 @@ ListCompletedTasks.qml
 ListContexts.qml
 ListFolders.qml
 ListGoals.qml
-ListHotlist.qml
 ListLocations.qml
 ListTasks.qml
 Login.qml

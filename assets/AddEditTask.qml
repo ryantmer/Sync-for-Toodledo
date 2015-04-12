@@ -111,6 +111,7 @@ Page {
             priorityDropDown.add(opt);
         }
     }
+    
     //Called after creating the page to populate fields as required from the passed data
     function setup() {
         //Populate options in folder dropdown
@@ -156,12 +157,13 @@ Page {
             completedCheckbox.checked = data.completed;
             titleField.text = data.title;
             noteArea.text = data.note;
+            
             if (data.duedate == 0) {
                 duedateCheckbox.checked = true;
-                duedatePicker.enabled = false;
+                duedateCheckbox.checkedChanged(true);
             } else {
                 duedateCheckbox.checked = false;
-                duedatePicker.enabled = true;
+                duedateCheckbox.checkedChanged(false);
                 duedatePicker.value = app.unixTimeToDateTime(data.duedate);
             }
             for (index = 0; index < folders.length; index++) {
@@ -170,68 +172,76 @@ Page {
                 }
             }
             folderDropDown.setSelectedIndex(index);
+            
             for (index = 0; index < contexts.length; index++) {
                 if (data.context == contextDropDown.options[index].value) {
                     break;
                 }
             }
             contextDropDown.setSelectedIndex(index);
+            
             for (index = 0; index < goals.length; index++) {
                 if (data.goal == goalDropDown.options[index].value) {
                     break;
                 }
             }
             goalDropDown.setSelectedIndex(index);
+            
             for (index = 0; index < locations.length; index++) {
                 if (data.location == locationDropDown.options[index].value) {
                     break;
                 }
             }
             locationDropDown.setSelectedIndex(index);
+            
             tagField.text = data.tag;
             duedatemodDropDown.setSelectedIndex(data.duedatemod);
+            
             if (data.duetime != 0) {
                 duetimePicker.value = app.unixTimeToDateTimeNoOffset(data.duetime);
-                duetimeCheckbox.checked = false;
             } else {
                 duetimeCheckbox.checked = true;
             }
+            
             if (data.startdate != 0) {
                 startdatePicker.value = app.unixTimeToDateTime(data.startdate);
-                startdateCheckbox.checked = false;
             } else {
                 startdateCheckbox.checked = true;
             }
+            
             if (data.starttime != 0) {
                 starttimePicker.value = app.unixTimeToDateTimeNoOffset(data.starttime);
-                starttimeCheckbox.checked = false;
             } else {
                 starttimeCheckbox.checked = true;
             }
+            
             if (data.length != 0) {
                 lengthPicker.value = new Date(0, 0, 0, 0, data.length);
-                lengthCheckbox.checked = false;
             } else {
                 lengthCheckbox.checked = true;
             }
+            
             for (index = 0; index < remindDropDown.options.length; index++) {
                 if (data.remind == remindDropDown.options[index].value) {
                     break;
                 }
             }
             remindDropDown.setSelectedIndex(index);
+            
             for (index = 0; index < repeatDropDown.options.length; index++) {
                 if (data.repeat == repeatDropDown.options[index].value) {
                     break;
                 }
             }
             repeatDropDown.setSelectedIndex(index);
+            
             for (index = 0; index < statusDropDown.options.length; index++) {
                 if (data.status == statusDropDown.options[index].value) {
                     break;
                 }
             }
             statusDropDown.setSelectedIndex(index);
+            
             priorityDropDown.setSelectedIndex(data.priority + 1);
             starToggle.checked = data.star;
             
@@ -303,11 +313,8 @@ Page {
                 CheckBox {
                     id: duedateCheckbox
                     text: "None"
-                    layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     verticalAlignment: VerticalAlignment.Center
-                    onCheckedChanged: {
-                        duedatePicker.enabled = !checked;
-                    }
+                    layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                 }
             }
             //folder
@@ -328,7 +335,6 @@ Page {
                 
                 Label {
                     text: "Additional Options"
-                    textStyle.fontSize: FontSize.Large
                     verticalAlignment: VerticalAlignment.Center
                     layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                 }
@@ -387,7 +393,6 @@ Page {
                     
                     Label {
                         text: "Tags"
-                        textStyle.fontSize: FontSize.Medium
                         verticalAlignment: VerticalAlignment.Center
                     }
                     TextField {
@@ -403,7 +408,6 @@ Page {
                     }
                     Label {
                         text: "Due"
-                        textStyle.fontSize: FontSize.Medium
                         verticalAlignment: VerticalAlignment.Center
                         layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     }
@@ -449,9 +453,6 @@ Page {
                         text: "None"
                         verticalAlignment: VerticalAlignment.Center
                         layoutProperties: StackLayoutProperties { spaceQuota: 1 }
-                        onCheckedChanged: {
-                            duetimePicker.enabled = !checked;
-                        }
                     }
                 }
                 //startdate
@@ -471,9 +472,6 @@ Page {
                         text: "None"
                         verticalAlignment: VerticalAlignment.Center
                         layoutProperties: StackLayoutProperties { spaceQuota: 1 }
-                        onCheckedChanged: {
-                            startdatePicker.enabled = !checked;
-                        }
                     }
                 }
                 //starttime
@@ -493,9 +491,6 @@ Page {
                         text: "None"
                         verticalAlignment: VerticalAlignment.Center
                         layoutProperties: StackLayoutProperties { spaceQuota: 1 }
-                        onCheckedChanged: {
-                            starttimePicker.enabled = !checked;
-                        }
                     }
                 }
                 //length
@@ -515,9 +510,6 @@ Page {
                         text: "None"
                         verticalAlignment: VerticalAlignment.Center
                         layoutProperties: StackLayoutProperties { spaceQuota: 1 }
-                        onCheckedChanged: {
-                            lengthPicker.enabled = !checked;
-                        }
                     }
                 }
                 //remind
@@ -561,7 +553,6 @@ Page {
                     
                     Label {
                         text: "Star"
-                        textStyle.fontSize: FontSize.Medium
                         verticalAlignment: VerticalAlignment.Center
                         layoutProperties: StackLayoutProperties { spaceQuota: 1 }
                     }
