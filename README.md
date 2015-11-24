@@ -1,4 +1,4 @@
 Sync-for-Toodledo
 =================
 
-App to sync Toodledo with Blackberry 10. See details at http://www.mahler.ca/syncfortoodledo, or download it at http://appworld.blackberry.com/webstore/content/59942234!
+App to sync Toodledo with Blackberry 10. Downlad it at http://appworld.blackberry.com/webstore/content/59942234, or see http://mahler.ca/projects for more of my stuff.
