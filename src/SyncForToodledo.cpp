@@ -15,26 +15,24 @@
 using namespace bb::cascades;
 using namespace bb::system;
 
-SyncForToodledo::SyncForToodledo()
-:   QObject(),
-    _propertiesManager(PropertiesManager::getInstance()),
-    _networkManager(NetworkManager::getInstance()),
-    _loginManager(LoginManager::getInstance()),
-    _taskDataModel(new CustomDataModel(this, CustomDataModel::Task)),
-    _folderDataModel(new CustomDataModel(this, CustomDataModel::Folder)),
-    _completedTaskDataModel(new CustomDataModel(this, CustomDataModel::CompletedTask)),
-    _contextDataModel(new CustomDataModel(this, CustomDataModel::Context)),
-    _locationDataModel(new CustomDataModel(this, CustomDataModel::Location)),
-    _goalDataModel(new CustomDataModel(this, CustomDataModel::Goal)),
-    _accountInfo(new CustomDataModel(this, CustomDataModel::AccountInfo))
+SyncForToodledo::SyncForToodledo() :
+        QObject(), _propertiesManager(PropertiesManager::getInstance()), _networkManager(
+                NetworkManager::getInstance()), _loginManager(LoginManager::getInstance()), _taskDataModel(
+                new CustomDataModel(this, CustomDataModel::Task)), _folderDataModel(
+                new CustomDataModel(this, CustomDataModel::Folder)), _completedTaskDataModel(
+                new CustomDataModel(this, CustomDataModel::CompletedTask)), _contextDataModel(
+                new CustomDataModel(this, CustomDataModel::Context)), _locationDataModel(
+                new CustomDataModel(this, CustomDataModel::Location)), _goalDataModel(
+                new CustomDataModel(this, CustomDataModel::Goal)), _accountInfo(
+                new CustomDataModel(this, CustomDataModel::AccountInfo))
 {
-    qmlRegisterType<CustomDataModel>("DataModelUtil", 1, 0, "CustomDataModel");
+    qmlRegisterType < CustomDataModel > ("DataModelUtil", 1, 0, "CustomDataModel");
 
     //Create root QML document from main.qml and expose certain variables to QML
-    QmlDocument *qml = QmlDocument::create("asset:///ListTasks.qml").parent(this);
+    QmlDocument *qml = QmlDocument::create("asset:///MainTabbedPane.qml").parent(this);
     qml->setContextProperty("app", this);
     qml->setContextProperty("propertyManager", _propertiesManager);
-    _root = qml->createRootObject<NavigationPane>();
+    _root = qml->createRootObject<TabbedPane>();
     Application::instance()->setScene(_root);
 
     qml = QmlDocument::create("asset:///ActivityDialog.qml").parent(this);
@@ -47,8 +45,8 @@ SyncForToodledo::SyncForToodledo()
 
     //Login page, shown if required
     QmlDocument *loginQml = QmlDocument::create("asset:///Login.qml").parent(this);
-    _loginPage = loginQml->createRootObject<Page>();
-    _loginWebView = _loginPage->findChild<WebView*>("loginWebView");
+    _loginSheet = loginQml->createRootObject<Sheet>();
+    _loginWebView = _loginSheet->findChild<WebView*>("loginWebView");
 
     //Add cover QML for app
     QmlDocument *qmlCover = QmlDocument::create("asset:///Cover.qml").parent(this);
@@ -59,87 +57,86 @@ SyncForToodledo::SyncForToodledo()
     Application::instance()->setCover(cover);
 
     bool ok;
-    ok = connect(_networkManager, SIGNAL(accessTokenRefreshed(QString, qlonglong)),
-            this, SLOT(onAccessTokenRefreshed(QString, qlonglong)));
+    ok = connect(_networkManager, SIGNAL(accessTokenRefreshed(QString, qlonglong)), this,
+            SLOT(onAccessTokenRefreshed(QString, qlonglong)));
     Q_ASSERT(ok);
-    ok = connect(_networkManager, SIGNAL(networkRequestStarted()),
-            this, SLOT(onNetworkRequestStarted()));
+    ok = connect(_networkManager, SIGNAL(networkRequestStarted()), this,
+            SLOT(onNetworkRequestStarted()));
     Q_ASSERT(ok);
-    ok = connect(_networkManager, SIGNAL(networkRequestFinished()),
-            this, SLOT(onNetworkRequestFinished()));
+    ok = connect(_networkManager, SIGNAL(networkRequestFinished()), this,
+            SLOT(onNetworkRequestFinished()));
     Q_ASSERT(ok);
-    ok = connect(_loginWebView, SIGNAL(urlChanged(QUrl)),
-            this, SLOT(onWebViewUrlChanged(QUrl)));
+    ok = connect(_loginWebView, SIGNAL(urlChanged(QUrl)), this, SLOT(onWebViewUrlChanged(QUrl)));
     Q_ASSERT(ok);
-    ok = connect(_loginManager, SIGNAL(refreshTokenExpired()),
-            this, SLOT(onRefreshTokenExpired()));
+    ok = connect(_loginManager, SIGNAL(refreshTokenExpired()), this, SLOT(onRefreshTokenExpired()));
     Q_ASSERT(ok);
-    ok = connect(_networkManager, SIGNAL(networkStateChanged(bool)),
-            this, SLOT(onNetworkStateChanged(bool)));
+    ok = connect(_networkManager, SIGNAL(networkStateChanged(bool)), this,
+            SLOT(onNetworkStateChanged(bool)));
     Q_ASSERT(ok);
-    ok = connect(_accountInfo, SIGNAL(itemsChanged(bb::cascades::DataModelChangeType::Type)),
-            this, SLOT(onAccountInfoUpdated()));
+    ok = connect(_accountInfo, SIGNAL(itemsChanged(bb::cascades::DataModelChangeType::Type)), this,
+            SLOT(onAccountInfoUpdated()));
     Q_ASSERT(ok);
 
     //Logout signal
-    ok = connect(this, SIGNAL(loggedOut()),
-            _loginManager, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _loginManager, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()),
-            _propertiesManager, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _propertiesManager, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()),
-            _taskDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _taskDataModel, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()),
-            _folderDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _folderDataModel, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()),
-            _completedTaskDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _completedTaskDataModel, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()),
-            _contextDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _contextDataModel, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()),
-            _goalDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _goalDataModel, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()),
-            _locationDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _locationDataModel, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()),
-            _accountInfo, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _accountInfo, SLOT(onLogOut()));
     Q_ASSERT(ok);
 
     Q_UNUSED(ok);
 }
 
-SyncForToodledo::~SyncForToodledo() {};
+SyncForToodledo::~SyncForToodledo()
+{
+}
+;
 
-CustomDataModel *SyncForToodledo::taskDataModel() {
+CustomDataModel *SyncForToodledo::taskDataModel()
+{
     return _taskDataModel;
 }
 
-CustomDataModel *SyncForToodledo::folderDataModel() {
+CustomDataModel *SyncForToodledo::folderDataModel()
+{
     return _folderDataModel;
 }
 
-CustomDataModel *SyncForToodledo::completedTaskDataModel() {
+CustomDataModel *SyncForToodledo::completedTaskDataModel()
+{
     return _completedTaskDataModel;
 }
 
-CustomDataModel *SyncForToodledo::contextDataModel() {
+CustomDataModel *SyncForToodledo::contextDataModel()
+{
     return _contextDataModel;
 }
 
-CustomDataModel *SyncForToodledo::goalDataModel() {
+CustomDataModel *SyncForToodledo::goalDataModel()
+{
     return _goalDataModel;
 }
 
-CustomDataModel *SyncForToodledo::locationDataModel() {
+CustomDataModel *SyncForToodledo::locationDataModel()
+{
     return _locationDataModel;
 }
 
-void SyncForToodledo::showToast(QString message) {
+void SyncForToodledo::showToast(QString message)
+{
     SystemToast *toast = new SystemToast(this);
     toast->setBody(message);
     toast->setPosition(SystemUiPosition::MiddleCenter);
@@ -149,15 +146,18 @@ void SyncForToodledo::showToast(QString message) {
 /*
  * Q_INVOKABLE functions begin
  */
-QDateTime SyncForToodledo::unixTimeToDateTime(uint unixTime) {
+QDateTime SyncForToodledo::unixTimeToDateTime(uint unixTime)
+{
     return QDateTime::fromTime_t(unixTime);
 }
 
-uint SyncForToodledo::dateTimeToUnixTime(QDateTime dateTime) {
+uint SyncForToodledo::dateTimeToUnixTime(QDateTime dateTime)
+{
     return dateTime.toTime_t();
 }
 
-QDateTime SyncForToodledo::unixTimeToDateTimeNoOffset(uint unixTime) {
+QDateTime SyncForToodledo::unixTimeToDateTimeNoOffset(uint unixTime)
+{
     //Calculate offset in timestamp, and remove it
     QDateTime dt1 = QDateTime::currentDateTime();
     QDateTime dt2 = dt1.toUTC();
@@ -167,7 +167,8 @@ QDateTime SyncForToodledo::unixTimeToDateTimeNoOffset(uint unixTime) {
     return QDateTime::fromTime_t(unixTime - offset);
 }
 
-uint SyncForToodledo::dateTimeToUnixTimeNoOffset(QDateTime dateTime) {
+uint SyncForToodledo::dateTimeToUnixTimeNoOffset(QDateTime dateTime)
+{
     QDateTime dt1 = QDateTime::currentDateTime();
     QDateTime dt2 = dt1.toUTC();
     dt1.setTimeSpec(Qt::UTC);
@@ -176,21 +177,24 @@ uint SyncForToodledo::dateTimeToUnixTimeNoOffset(QDateTime dateTime) {
     return dateTime.toTime_t() + offset;
 }
 
-uint SyncForToodledo::getLengthValue(QDateTime dateTime) {
+uint SyncForToodledo::getLengthValue(QDateTime dateTime)
+{
     return dateTime.time().hour() * 60 + dateTime.time().minute();
 }
 
-QString SyncForToodledo::getVersionNumber() {
+QString SyncForToodledo::getVersionNumber()
+{
     bb::PackageInfo pi;
     return pi.version();
 }
 
-void SyncForToodledo::getLocation() {
+void SyncForToodledo::getLocation()
+{
     QGeoPositionInfoSource *src = QGeoPositionInfoSource::createDefaultSource(this);
     src->setPreferredPositioningMethods(QGeoPositionInfoSource::AllPositioningMethods);
 
-    bool ok = connect(src, SIGNAL(positionUpdated(const QGeoPositionInfo &)),
-            this, SLOT(onPositionUpdated(const QGeoPositionInfo &)));
+    bool ok = connect(src, SIGNAL(positionUpdated(const QGeoPositionInfo &)), this,
+            SLOT(onPositionUpdated(const QGeoPositionInfo &)));
     if (ok) {
         src->requestUpdate();
     } else {
@@ -198,7 +202,8 @@ void SyncForToodledo::getLocation() {
     }
 }
 
-void SyncForToodledo::logout() {
+void SyncForToodledo::logout()
+{
     emit loggedOut();
 }
 /*
@@ -208,7 +213,8 @@ void SyncForToodledo::logout() {
 /*
  * Slots begin
  */
-void SyncForToodledo::onPositionUpdated(const QGeoPositionInfo &pos) {
+void SyncForToodledo::onPositionUpdated(const QGeoPositionInfo &pos)
+{
     double lat = pos.coordinate().latitude();
     double lon = pos.coordinate().longitude();
     qDebug() << Q_FUNC_INFO << "Got location:" << lat << lon;
@@ -223,7 +229,8 @@ void SyncForToodledo::onPositionUpdated(const QGeoPositionInfo &pos) {
     field->setText(QString::number(lon));
 }
 
-void SyncForToodledo::onNetworkStateChanged(bool connected) {
+void SyncForToodledo::onNetworkStateChanged(bool connected)
+{
     if (connected) {
         qDebug() << Q_FUNC_INFO << "Network connection established";
         _accountInfo->refresh();
@@ -233,30 +240,32 @@ void SyncForToodledo::onNetworkStateChanged(bool connected) {
     }
 }
 
-void SyncForToodledo::onWebViewUrlChanged(QUrl url) {
+void SyncForToodledo::onWebViewUrlChanged(QUrl url)
+{
     if (url.hasQueryItem("code") && url.hasQueryItem("state")) {
         if (url.queryItemValue("state") == _loginManager->getState()) {
             //Get authCode from webview's URL
             QString authCode = url.queryItemValue("code");
             //Start access token request
             _loginManager->refreshRefreshToken(authCode);
-            //Remove webview from nav pane
-            _root->pop();
+            _loginSheet->close();
         } else {
             qWarning() << Q_FUNC_INFO << "State didn't match";
         }
     }
 }
 
-void SyncForToodledo::onRefreshTokenExpired() {
+void SyncForToodledo::onRefreshTokenExpired()
+{
     //emitted by LoginManager when refresh token is no longer valid (30-day expiry)
     //when this occurs, user has to log in again
     showToast("Please log in!");
-    _root->push(_loginPage);
+    _loginSheet->open();
     _loginWebView->setUrl(_loginManager->getAuthorizeUrl().toString());
 }
 
-void SyncForToodledo::onAccessTokenRefreshed(QString newToken, qlonglong expiresIn) {
+void SyncForToodledo::onAccessTokenRefreshed(QString newToken, qlonglong expiresIn)
+{
     //access token is automatically refreshed when it expires using refresh token
     //When a new access token is received, refresh account info
     Q_UNUSED(newToken);
@@ -264,17 +273,20 @@ void SyncForToodledo::onAccessTokenRefreshed(QString newToken, qlonglong expires
     _accountInfo->refresh();
 }
 
-void SyncForToodledo::onNetworkRequestStarted(QString message) {
+void SyncForToodledo::onNetworkRequestStarted(QString message)
+{
     Label *activityText = _activityDialog->findChild<Label*>("activityText");
     activityText->setText(message);
     _activityDialog->open();
 }
 
-void SyncForToodledo::onNetworkRequestFinished() {
+void SyncForToodledo::onNetworkRequestFinished()
+{
     _activityDialog->close();
 }
 
-void SyncForToodledo::onAccountInfoUpdated() {
+void SyncForToodledo::onAccountInfoUpdated()
+{
     //When logout is called, first() ends up getting called on an empty list,
     //so avoid that here
     if (_accountInfo->getInternalList().length() <= 0) {
@@ -291,38 +303,37 @@ void SyncForToodledo::onAccountInfoUpdated() {
     int old_lastedit_goal = oldInfo.value("lastedit_goal").toInt(NULL);
     int old_lastedit_location = oldInfo.value("lastedit_location").toInt(NULL);
 
-    if (old_lastedit_task < newInfo.value("lastedit_task").toInt(NULL) ||
-            old_lastdelete_task < newInfo.value("lastdelete_task").toInt(NULL) ||
-            old_lastedit_task == 0 || old_lastdelete_task == 0) {
+    if (old_lastedit_task < newInfo.value("lastedit_task").toInt(NULL)
+            || old_lastdelete_task < newInfo.value("lastdelete_task").toInt(NULL)
+            || old_lastedit_task == 0 || old_lastdelete_task == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Tasks";
         _taskDataModel->refresh();
         _completedTaskDataModel->refresh();
     } else {
         qDebug() << Q_FUNC_INFO << "No changes to tasks on server since last update";
     }
-    if (old_lastedit_folder < newInfo.value("lastedit_folder").toInt(NULL) ||
-            old_lastedit_folder == 0) {
+    if (old_lastedit_folder < newInfo.value("lastedit_folder").toInt(NULL)
+            || old_lastedit_folder == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Folders";
         _folderDataModel->refresh();
     } else {
         qDebug() << Q_FUNC_INFO << "No changes to folders on server since last update";
     }
-    if (old_lastedit_context < newInfo.value("lastedit_context").toInt(NULL) ||
-            old_lastedit_context == 0) {
+    if (old_lastedit_context < newInfo.value("lastedit_context").toInt(NULL)
+            || old_lastedit_context == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Contexts";
         _contextDataModel->refresh();
     } else {
         qDebug() << Q_FUNC_INFO << "No changes to contexts on server since last update";
     }
-    if (old_lastedit_goal < newInfo.value("lastedit_goal").toInt(NULL) ||
-            old_lastedit_goal == 0) {
+    if (old_lastedit_goal < newInfo.value("lastedit_goal").toInt(NULL) || old_lastedit_goal == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Goals";
         _goalDataModel->refresh();
     } else {
         qDebug() << Q_FUNC_INFO << "No changes to goals on server since last update";
     }
-    if (old_lastedit_location < newInfo.value("lastedit_location").toInt(NULL) ||
-            old_lastedit_location == 0) {
+    if (old_lastedit_location < newInfo.value("lastedit_location").toInt(NULL)
+            || old_lastedit_location == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Locations";
         _locationDataModel->refresh();
     } else {
@@ -332,7 +343,8 @@ void SyncForToodledo::onAccountInfoUpdated() {
     _propertiesManager->accountInfo = newInfo;
 }
 
-void SyncForToodledo::onToast(QString message) {
+void SyncForToodledo::onToast(QString message)
+{
     showToast(message);
 }
 /*

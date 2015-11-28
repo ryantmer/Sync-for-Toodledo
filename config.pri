@@ -49,8 +49,10 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/ListFolders.qml) \
         $$quote($$BASEDIR/assets/ListGoals.qml) \
         $$quote($$BASEDIR/assets/ListLocations.qml) \
+        $$quote($$BASEDIR/assets/ListPage.qml) \
         $$quote($$BASEDIR/assets/ListTasks.qml) \
         $$quote($$BASEDIR/assets/Login.qml) \
+        $$quote($$BASEDIR/assets/MainTabbedPane.qml) \
         $$quote($$BASEDIR/assets/Settings.qml) \
         $$quote($$BASEDIR/assets/images/all_tasks.png) \
         $$quote($$BASEDIR/assets/images/ic_add.png) \

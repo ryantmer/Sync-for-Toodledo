@@ -4,9 +4,9 @@
 #include <QObject>
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
-#include <bb/cascades/NavigationPane>
+#include <bb/cascades/TabbedPane>
 #include <bb/cascades/Container>
-#include <bb/cascades/Page>
+#include <bb/cascades/Sheet>
 #include <bb/cascades/WebView>
 #include <bb/cascades/ScrollView>
 #include <bb/cascades/Dialog>
@@ -34,6 +34,8 @@ public:
 
     SyncForToodledo();
     virtual ~SyncForToodledo();
+
+    CustomDataModel *dataModel(QString type);
     CustomDataModel *taskDataModel();
     CustomDataModel *folderDataModel();
     CustomDataModel *completedTaskDataModel();
@@ -70,6 +72,7 @@ private:
     PropertiesManager *_propertiesManager;
     NetworkManager *_networkManager;
     LoginManager *_loginManager;
+
     CustomDataModel *_taskDataModel;
     CustomDataModel *_folderDataModel;
     CustomDataModel *_completedTaskDataModel;
@@ -78,9 +81,9 @@ private:
     CustomDataModel *_goalDataModel;
     CustomDataModel *_accountInfo;
 
-    NavigationPane *_root;
+    TabbedPane *_root;
     Container *_coverRoot;
-    Page *_loginPage;
+    Sheet *_loginSheet;
     WebView *_loginWebView;
     Dialog *_activityDialog;
 };
