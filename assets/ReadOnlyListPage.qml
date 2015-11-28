@@ -1,3 +1,8 @@
+/*
+ * ListView page which does not allow for adding/deleting. When an item is 
+ * selected, it filters the underlying data model based on the selection.
+ */
+
 import bb.cascades 1.4
 import bb.data 1.0
 import bb.system 1.2
@@ -48,7 +53,7 @@ NavigationPane {
                                 orientation: LayoutOrientation.LeftToRight
                             }
                             leftPadding: 10.0
-
+                            
                             StandardListItem {
                                 title: ListItemData.title
                                 description: ListItemData.description

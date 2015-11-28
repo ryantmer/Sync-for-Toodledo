@@ -36,6 +36,7 @@ TabbedPane {
 
     Tab {
         title: "All Tasks"
+        imageSource: "asset:///images/checkmark.png"
         EditableListPage {
             listTitle: "All Tasks"
             backingDataType: "task"
@@ -43,26 +44,27 @@ TabbedPane {
         }
     }
 
-    Tab {
-        title: "Hotlist"
-        EditableListPage {
-            listTitle: "Hotlist"
-            backingDataType: "task"
-            backingData: app.hotlist
-        }
-    }
+//    Tab {
+//        title: "Hotlist"
+//        EditableListPage {
+//            listTitle: "Hotlist"
+//            backingDataType: "task"
+//            backingData: app.hotlist
+//        }
+//    }
 
-    Tab {
-        title: "Recently Completed"
-        EditableListPage {
-            listTitle: "Recently Completed"
-            backingDataType: "task"
-            backingData: app.completedTasks
-        }
-    }
+//    Tab {
+//        title: "Recently Completed"
+//        EditableListPage {
+//            listTitle: "Recently Completed"
+//            backingDataType: "task"
+//            backingData: app.completedTasks
+//        }
+//    }
 
     Tab {
         title: "Folders"
+        imageSource: "asset:///images/ic_folders.png"
         ReadOnlyListPage {
             listTitle: "Folders"
             backingDataType: "folder"
@@ -72,6 +74,7 @@ TabbedPane {
 
     Tab {
         title: "Locations"
+        imageSource: "asset:///images/ic_locations.png"
         ReadOnlyListPage {
             listTitle: "Locations"
             backingDataType: "location"
@@ -81,6 +84,7 @@ TabbedPane {
 
     Tab {
         title: "Contexts"
+        imageSource: "asset:///images/ic_contexts.png"
         ReadOnlyListPage {
             listTitle: "Contexts"
             backingDataType: "context"
@@ -90,6 +94,7 @@ TabbedPane {
 
     Tab {
         title: "Goals"
+        imageSource: "asset:///images/ic_goals.png"
         ReadOnlyListPage {
             listTitle: "Goals"
             backingDataType: "goal"

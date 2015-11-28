@@ -357,9 +357,9 @@ void CustomDataModel::onGetReply(int replyDataType, QVariantList dataList) {
             QString note = data["note"].toString();
             int lineBreak = note.indexOf("\n");
             if (lineBreak > -1) {
-                data["description"] = note.mid(0, lineBreak);
+                data.insert("description", note.mid(0, lineBreak));
             } else {
-                data["description"] = note;
+                data.insert("description", note);
             }
         }
 

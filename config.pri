@@ -47,8 +47,8 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/ReadOnlyListPage.qml) \
         $$quote($$BASEDIR/assets/Settings.qml) \
         $$quote($$BASEDIR/assets/images/all_tasks.png) \
+        $$quote($$BASEDIR/assets/images/checkmark.png) \
         $$quote($$BASEDIR/assets/images/ic_add.png) \
-        $$quote($$BASEDIR/assets/images/ic_completed.png) \
         $$quote($$BASEDIR/assets/images/ic_contexts.png) \
         $$quote($$BASEDIR/assets/images/ic_folders.png) \
         $$quote($$BASEDIR/assets/images/ic_goals.png) \

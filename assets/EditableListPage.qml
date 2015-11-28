@@ -1,5 +1,5 @@
 /*
- * ListView page which has an Add button, Delete context action, and opens an 
+ * ListView page which has an Add button, Delete context action, and opens an
  * edit page for an item when it is selected.
  */
 
@@ -53,6 +53,7 @@ NavigationPane {
             ListView {
                 id: listView
                 property alias backingDataType: listNavPane.backingDataType
+                property alias backingData: listNavPane.backingData
                 layout: StackListLayout {
                 }
                 horizontalAlignment: HorizontalAlignment.Fill
@@ -74,6 +75,36 @@ NavigationPane {
                                 orientation: LayoutOrientation.LeftToRight
                             }
                             leftPadding: 10.0
+
+                            // Checkbox to complete tasks from the listview. Only shown if a task view
+                            CheckBox {
+                                checked: ListItemData.completed
+                                verticalAlignment: VerticalAlignment.Center
+                                visible: "task" == itemContainer.ListItem.view.backingDataType
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        var oldData = {
+                                            "id": parseInt(ListItemData.id),
+                                            "completed": ListItemData.completed
+                                        };
+                                        var newData = {
+                                            "id": parseInt(ListItemData.id),
+                                            "completed": Math.floor((new Date()).getTime() / 1000)
+                                        };
+                                        app.tasks.edit(oldData, newData);
+                                    } else {
+                                        var oldData = {
+                                            "id": parseInt(ListItemData.id),
+                                            "completed": ListItemData.completed
+                                        };
+                                        var newData = {
+                                            "id": parseInt(ListItemData.id),
+                                            "completed": 0
+                                        };
+                                        app.tasks.edit(oldData, newData);
+                                    }
+                                }
+                            }
 
                             StandardListItem {
                                 title: ListItemData.title
@@ -99,7 +130,7 @@ NavigationPane {
                                         cancelButton.enabled: true
                                         onFinished: {
                                             if (result == SystemUiResult.ConfirmButtonSelection) {
-                                                backingData.remove(ListItemData.id);
+                                                app.tasks.remove({ id: ListItemData.id });
                                             }
                                         }
                                     }

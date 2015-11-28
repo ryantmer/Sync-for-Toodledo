@@ -7,8 +7,8 @@ Cover.qml
 EditableListPage.qml
 EditPage.qml
 images/all_tasks.png
+images/checkmark.png
 images/ic_add.png
-images/ic_completed.png
 images/ic_contexts.png
 images/ic_folders.png
 images/ic_goals.png

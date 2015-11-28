@@ -18,15 +18,15 @@ Page {
             imageSource: "asset:///images/ic_add.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
-                if (! nameField.text) {
-                    nameRequiredLabel.visible = true;
+                if (! titleField.text) {
+                    titleRequiredLabel.visible = true;
                     return;
                 }
 
                 var data = {
                 };
 
-                data.title = nameField.text;
+                data.title = titleField.text;
                 data.note = noteArea.text;
 
                 app.tasks.add(data);
@@ -59,7 +59,7 @@ Page {
                 bottomMargin: 30
 
                 Label {
-                    id: nameRequiredLabel
+                    id: titleRequiredLabel
                     text: "Required"
                     textStyle.color: Color.Red
                     visible: false
