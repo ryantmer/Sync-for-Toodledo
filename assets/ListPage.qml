@@ -35,6 +35,9 @@ NavigationPane {
                 imageSource: "asset:///images/ic_add.png"
                 onTriggered: {
                     var page = addPageDefinition.createObject();
+                    page.backingDataType = backingDataType;
+                    page.backingData = backingData;
+                    page.setup();
                     listNavPane.push(page);
                 }
             }
@@ -49,7 +52,7 @@ NavigationPane {
 
         Container {
             Label {
-                text: "You don't have any " + backingDataType + "s!"
+                text: "Hm, didn't find anything... Add one below!"
                 visible: listView.dataModel.empty
                 horizontalAlignment: HorizontalAlignment.Center
             }
@@ -63,8 +66,9 @@ NavigationPane {
                 onTriggered: {
                     var item = dataModel.data(indexPath);
                     var page = editPageDefinition.createObject();
+                    page.backingDataType = backingDataType;
                     page.data = item;
-                    page.setup(backingDataType);
+                    page.setup();
                     listNavPane.push(page);
                 }
                 listItemComponents: [
@@ -113,7 +117,8 @@ NavigationPane {
                 attachedObjects: [
                     ComponentDefinition {
                         id: editPageDefinition
-                        content: EditPage {}
+                        content: EditPage {
+                        }
                     }
                 ]
             }

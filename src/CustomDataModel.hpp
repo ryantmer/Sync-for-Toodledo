@@ -16,8 +16,9 @@ public:
     enum DataType {
         UndefinedType,
         Task,
-        Folder,
+        Hotlist,
         CompletedTask,
+        Folder,
         Context,
         Goal,
         Location,

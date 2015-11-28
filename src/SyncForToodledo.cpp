@@ -17,12 +17,13 @@ using namespace bb::system;
 
 SyncForToodledo::SyncForToodledo() :
         QObject(), _propertiesManager(PropertiesManager::getInstance()), _networkManager(
-                NetworkManager::getInstance()), _loginManager(LoginManager::getInstance()), _taskDataModel(
-                new CustomDataModel(this, CustomDataModel::Task)), _folderDataModel(
-                new CustomDataModel(this, CustomDataModel::Folder)), _completedTaskDataModel(
-                new CustomDataModel(this, CustomDataModel::CompletedTask)), _contextDataModel(
-                new CustomDataModel(this, CustomDataModel::Context)), _locationDataModel(
-                new CustomDataModel(this, CustomDataModel::Location)), _goalDataModel(
+                NetworkManager::getInstance()), _loginManager(LoginManager::getInstance()), _tasks(
+                new CustomDataModel(this, CustomDataModel::Task)), _hotlist(
+                new CustomDataModel(this, CustomDataModel::Hotlist)), _completedTasks(
+                new CustomDataModel(this, CustomDataModel::CompletedTask)), _folders(
+                new CustomDataModel(this, CustomDataModel::Folder)), _contexts(
+                new CustomDataModel(this, CustomDataModel::Context)), _locations(
+                new CustomDataModel(this, CustomDataModel::Location)), _goals(
                 new CustomDataModel(this, CustomDataModel::Goal)), _accountInfo(
                 new CustomDataModel(this, CustomDataModel::AccountInfo))
 {
@@ -82,17 +83,19 @@ SyncForToodledo::SyncForToodledo() :
     Q_ASSERT(ok);
     ok = connect(this, SIGNAL(loggedOut()), _propertiesManager, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()), _taskDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _tasks, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()), _folderDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _hotlist, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()), _completedTaskDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _completedTasks, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()), _contextDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _folders, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()), _goalDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _contexts, SLOT(onLogOut()));
     Q_ASSERT(ok);
-    ok = connect(this, SIGNAL(loggedOut()), _locationDataModel, SLOT(onLogOut()));
+    ok = connect(this, SIGNAL(loggedOut()), _goals, SLOT(onLogOut()));
+    Q_ASSERT(ok);
+    ok = connect(this, SIGNAL(loggedOut()), _locations, SLOT(onLogOut()));
     Q_ASSERT(ok);
     ok = connect(this, SIGNAL(loggedOut()), _accountInfo, SLOT(onLogOut()));
     Q_ASSERT(ok);
@@ -104,34 +107,39 @@ SyncForToodledo::~SyncForToodledo()
 {
 }
 
-CustomDataModel *SyncForToodledo::taskDataModel()
+CustomDataModel *SyncForToodledo::tasks()
 {
-    return _taskDataModel;
+    return _tasks;
 }
 
-CustomDataModel *SyncForToodledo::folderDataModel()
+CustomDataModel *SyncForToodledo::hotlist()
 {
-    return _folderDataModel;
+    return _hotlist;
 }
 
-CustomDataModel *SyncForToodledo::completedTaskDataModel()
+CustomDataModel *SyncForToodledo::completedTasks()
 {
-    return _completedTaskDataModel;
+    return _completedTasks;
 }
 
-CustomDataModel *SyncForToodledo::contextDataModel()
+CustomDataModel *SyncForToodledo::folders()
 {
-    return _contextDataModel;
+    return _folders;
 }
 
-CustomDataModel *SyncForToodledo::goalDataModel()
+CustomDataModel *SyncForToodledo::contexts()
 {
-    return _goalDataModel;
+    return _contexts;
 }
 
-CustomDataModel *SyncForToodledo::locationDataModel()
+CustomDataModel *SyncForToodledo::goals()
 {
-    return _locationDataModel;
+    return _goals;
+}
+
+CustomDataModel *SyncForToodledo::locations()
+{
+    return _locations;
 }
 
 void SyncForToodledo::showToast(QString message)
@@ -306,35 +314,36 @@ void SyncForToodledo::onAccountInfoUpdated()
             || old_lastdelete_task < newInfo.value("lastdelete_task").toInt(NULL)
             || old_lastedit_task == 0 || old_lastdelete_task == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Tasks";
-        _taskDataModel->refresh();
-        _completedTaskDataModel->refresh();
+        _tasks->refresh();
+        _hotlist->refresh();
+        _completedTasks->refresh();
     } else {
         qDebug() << Q_FUNC_INFO << "No changes to tasks on server since last update";
     }
     if (old_lastedit_folder < newInfo.value("lastedit_folder").toInt(NULL)
             || old_lastedit_folder == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Folders";
-        _folderDataModel->refresh();
+        _folders->refresh();
     } else {
         qDebug() << Q_FUNC_INFO << "No changes to folders on server since last update";
     }
     if (old_lastedit_context < newInfo.value("lastedit_context").toInt(NULL)
             || old_lastedit_context == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Contexts";
-        _contextDataModel->refresh();
+        _contexts->refresh();
     } else {
         qDebug() << Q_FUNC_INFO << "No changes to contexts on server since last update";
     }
     if (old_lastedit_goal < newInfo.value("lastedit_goal").toInt(NULL) || old_lastedit_goal == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Goals";
-        _goalDataModel->refresh();
+        _goals->refresh();
     } else {
         qDebug() << Q_FUNC_INFO << "No changes to goals on server since last update";
     }
     if (old_lastedit_location < newInfo.value("lastedit_location").toInt(NULL)
             || old_lastedit_location == 0) {
         qDebug() << Q_FUNC_INFO << "Refreshing Locations";
-        _locationDataModel->refresh();
+        _locations->refresh();
     } else {
         qDebug() << Q_FUNC_INFO << "No changes to locations on server since last update";
     }

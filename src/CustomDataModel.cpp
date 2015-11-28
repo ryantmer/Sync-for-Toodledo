@@ -1,11 +1,12 @@
 #include "CustomDataModel.hpp"
 #include <bb/data/JsonDataAccess>
 
-const char * CustomDataModel::DataTypeStrings[8] = {
+const char * CustomDataModel::DataTypeStrings[9] = {
     "UndefinedType",
     "Task",
-    "Folder",
+    "Hotlist",
     "CompletedTask",
+    "Folder",
     "Context",
     "Goal",
     "Location",
@@ -27,6 +28,7 @@ CustomDataModel::CustomDataModel(QObject *parent, DataType dataType)
 
     switch (_dataType) {
         case Task:
+        case Hotlist:
         case CompletedTask:
             getUrl = _netMan->getUrl.arg("tasks");
             addUrl = _netMan->addUrl.arg("tasks");
@@ -165,7 +167,7 @@ bool compareLocations(QVariant &a, QVariant &b) {
 void CustomDataModel::sort() {
     if (_dataType == AccountInfo) {
         return;
-    } else if (_dataType == Task) {
+    } else if (_dataType == Task || _dataType == Hotlist) {
         qSort(_internalDB.begin(), _internalDB.end(), compareTasks);
     } else if (_dataType == CompletedTask) {
         qSort(_internalDB.begin(), _internalDB.end(), compareCompletedTasks);
@@ -186,7 +188,7 @@ void CustomDataModel::get() {
     QUrl urlData;
 
     url.setUrl(getUrl);
-    if (_dataType == Task) {
+    if (_dataType == Task || _dataType == Hotlist) {
         //incomplete tasks only
         urlData.addQueryItem("comp", QString::number(0));
         //fields id, title, modified, completed come automatically
@@ -219,7 +221,7 @@ void CustomDataModel::add(QVariantMap data) {
     QVariantMap::iterator iter;
 
     url.setUrl(addUrl);
-    if (_dataType == Task || _dataType == CompletedTask) {
+    if (_dataType == Task || _dataType == CompletedTask || _dataType == Hotlist) {
         //Build task data string from user's input
         QString encodedData = QString("[{");
         for (iter = data.begin(); iter != data.end(); ++iter) {
@@ -272,7 +274,7 @@ void CustomDataModel::edit(QVariantMap oldData, QVariantMap newData) {
     QVariantMap::iterator iter;
 
     url.setUrl(editUrl);
-    if (_dataType == Task || _dataType == CompletedTask) {
+    if (_dataType == Task || _dataType == CompletedTask || _dataType == Hotlist) {
         QString encodedData = QString("[{");
         encodedData.append("\"id\":" + oldData["id"].toString());
         for (iter = newData.begin(); iter != newData.end(); ++iter) {
@@ -320,7 +322,7 @@ void CustomDataModel::remove(QVariantMap data) {
     QUrl urlData;
 
     url.setUrl(removeUrl);
-    if (_dataType == Task || _dataType == CompletedTask) {
+    if (_dataType == Task || _dataType == CompletedTask || _dataType == Hotlist) {
         urlData.addQueryItem("tasks", "[\"" + data["id"].toString() + "\"]");
     } else {
         urlData.addQueryItem("id", data["id"].toString());
@@ -404,7 +406,7 @@ void CustomDataModel::onEditReply(int replyDataType, QVariantList dataList) {
                 }
                 _internalDB.replace(i, amalgamatedData);
 
-                if (_dataType == Task) {
+                if (_dataType == Task || _dataType == Hotlist) {
                     //Special case for a task that is set to complete; remove from CDM
                     if (_internalDB.value(i).toMap().value("completed").toLongLong(NULL) != 0) {
                         _internalDB.removeAt(i);
@@ -439,7 +441,7 @@ void CustomDataModel::onRemoveReply(int replyDataType, QVariantList dataList) {
         QVariantMap data = v.toMap();
         qlonglong removeId = 0;
 
-        if (_dataType == Task || _dataType == CompletedTask) {
+        if (_dataType == Task || _dataType == CompletedTask || _dataType == Hotlist) {
             removeId = data.value("id").toLongLong(NULL);
         } else {
             removeId = data.value("deleted").toLongLong(NULL);

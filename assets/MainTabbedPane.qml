@@ -23,11 +23,13 @@ TabbedPane {
         attachedObjects: [
             ComponentDefinition {
                 id: settingsSheetDefinition
-                content: Settings {}
+                content: Settings {
+                }
             },
             ComponentDefinition {
                 id: aboutSheetDefinition
-                content: About {}
+                content: About {
+                }
             }
         ]
     }
@@ -37,16 +39,61 @@ TabbedPane {
         ListPage {
             listTitle: "All Tasks"
             backingDataType: "task"
-            backingData: app.taskDataModel
+            backingData: app.tasks
         }
     }
-
+    
+    Tab {
+        title: "Hotlist"
+        ListPage {
+            listTitle: "Hotlist"
+            backingDataType: "task"
+            backingData: app.hotlist
+        }
+    }
+    
+    Tab {
+        title: "Recently Completed"
+        ListPage {
+            listTitle: "Recently Completed"
+            backingDataType: "task"
+            backingData: app.completedTasks
+        }
+    }
+    
     Tab {
         title: "Folders"
         ListPage {
             listTitle: "Folders"
             backingDataType: "folder"
-            backingData: app.folderDataModel
+            backingData: app.folders
+        }
+    }
+    
+    Tab {
+        title: "Locations"
+        ListPage {
+            listTitle: "Locations"
+            backingDataType: "location"
+            backingData: app.locations
+        }
+    }
+    
+    Tab {
+        title: "Contexts"
+        ListPage {
+            listTitle: "Contexts"
+            backingDataType: "context"
+            backingData: app.contexts
+        }
+    }
+    
+    Tab {
+        title: "Goals"
+        ListPage {
+            listTitle: "Goals"
+            backingDataType: "goal"
+            backingData: app.goals
         }
     }
 }

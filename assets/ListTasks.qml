@@ -25,41 +25,49 @@ NavigationPane {
     attachedObjects: [
         ComponentDefinition {
             id: addEditTaskDefinition
-            content: AddEditTask{}
+            content: AddEditTask {
+            }
         },
         ComponentDefinition {
             id: completedTasksDefinition
-            content: ListCompletedTasks {}
+            content: ListCompletedTasks {
+            }
         },
         ComponentDefinition {
             id: foldersDefinition
-            content: ListFolders {}
+            content: ListFolders {
+            }
         },
         ComponentDefinition {
             id: contextsDefinition
-            content: ListContexts{}
+            content: ListContexts {
+            }
         },
         ComponentDefinition {
             id: goalsDefinition
-            content: ListGoals{}
+            content: ListGoals {
+            }
         },
         ComponentDefinition {
             id: locationsDefinition
-            content: ListLocations{}
+            content: ListLocations {
+            }
         },
         ComponentDefinition {
             id: settingsSheetDefinition
-            content: Settings {}
+            content: Settings {
+            }
         },
         ComponentDefinition {
             id: aboutSheetDefinition
-            content: About {}
+            content: About {
+            }
         }
     ]
     onPopTransitionEnded: {
         page.destroy();
     }
-    
+
     Page {
         titleBar: TitleBar {
             title: "Sync for Toodledo - All Tasks"
@@ -130,7 +138,7 @@ NavigationPane {
                 }
             }
         ]
-        
+
         Container {
             Label {
                 text: "You don't have any tasks!"
@@ -139,7 +147,8 @@ NavigationPane {
             }
             ListView {
                 id: listView
-                layout: StackListLayout {}
+                layout: StackListLayout {
+                }
                 horizontalAlignment: HorizontalAlignment.Fill
                 dataModel: app.taskDataModel
                 onTriggered: {
@@ -155,32 +164,42 @@ NavigationPane {
                         type: "item"
                         Container {
                             id: itemContainer
-                            layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                            layout: StackLayout {
+                                orientation: LayoutOrientation.LeftToRight
+                            }
                             leftPadding: 10.0
-                            
+
                             CheckBox {
                                 checked: ListItemData.completed
                                 verticalAlignment: VerticalAlignment.Center
                                 onCheckedChanged: {
                                     if (checked) {
-                                        var oldData = {"id": parseInt(ListItemData.id),
-                                            "completed": ListItemData.completed};
-                                        var newData = {"id": parseInt(ListItemData.id),
-                                            "completed": Math.floor((new Date()).getTime() / 1000)};
+                                        var oldData = {
+                                            "id": parseInt(ListItemData.id),
+                                            "completed": ListItemData.completed
+                                        };
+                                        var newData = {
+                                            "id": parseInt(ListItemData.id),
+                                            "completed": Math.floor((new Date()).getTime() / 1000)
+                                        };
                                         app.taskDataModel.edit(oldData, newData);
                                     } else {
-                                        var oldData = {"id": parseInt(ListItemData.id),
-                                            "completed": ListItemData.completed};
-                                        var newData = {"id": parseInt(ListItemData.id),
-                                            "completed": 0};
+                                        var oldData = {
+                                            "id": parseInt(ListItemData.id),
+                                            "completed": ListItemData.completed
+                                        };
+                                        var newData = {
+                                            "id": parseInt(ListItemData.id),
+                                            "completed": 0
+                                        };
                                         app.taskDataModel.edit(oldData, newData);
                                     }
                                 }
                             }
                             StandardListItem {
                                 title: ListItemData.title
-                                status: itemContainer.ListItem.view.status(ListItemData.duedate);
-                                description: itemContainer.ListItem.view.description(ListItemData.note);
+                                status: itemContainer.ListItem.view.status(ListItemData.duedate)
+                                description: itemContainer.ListItem.view.description(ListItemData.note)
                                 textFormat: TextFormat.Auto
                                 contextActions: [
                                     ActionSet {
@@ -202,7 +221,9 @@ NavigationPane {
                                         cancelButton.enabled: true
                                         onFinished: {
                                             if (result == SystemUiResult.ConfirmButtonSelection) {
-                                                var taskData = {"id": ListItemData.id}
+                                                var taskData = {
+                                                    "id": ListItemData.id
+                                                }
                                                 app.taskDataModel.remove(taskData);
                                             }
                                         }
@@ -219,7 +240,7 @@ NavigationPane {
                     var month = d.getMonth();
                     month += 1;
                     var year = d.getFullYear();
-                    
+
                     if (propertyManager.dateFormat == 1) {
                         // M/D/Y
                         formattedDate = month + "/" + day + "/" + year;
@@ -232,7 +253,7 @@ NavigationPane {
                     } else {
                         formattedDate = d.toDateString();
                     }
-                    
+
                     if (dueDate == 0) {
                         return "No due date";
                     } else if (dueDate <= Math.floor((new Date()).getTime() / 1000)) {

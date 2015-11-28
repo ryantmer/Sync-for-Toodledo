@@ -25,22 +25,24 @@ class SyncForToodledo : public QObject {
     Q_OBJECT
 
 public:
-    Q_PROPERTY(CustomDataModel *taskDataModel READ taskDataModel CONSTANT);
-    Q_PROPERTY(CustomDataModel *folderDataModel READ folderDataModel CONSTANT);
-    Q_PROPERTY(CustomDataModel *completedTaskDataModel READ completedTaskDataModel CONSTANT);
-    Q_PROPERTY(CustomDataModel *contextDataModel READ contextDataModel CONSTANT);
-    Q_PROPERTY(CustomDataModel *goalDataModel READ goalDataModel CONSTANT);
-    Q_PROPERTY(CustomDataModel *locationDataModel READ locationDataModel CONSTANT);
+    Q_PROPERTY(CustomDataModel *tasks READ tasks CONSTANT);
+    Q_PROPERTY(CustomDataModel *hotlist READ hotlist CONSTANT);
+    Q_PROPERTY(CustomDataModel *completedTasks READ completedTasks CONSTANT);
+    Q_PROPERTY(CustomDataModel *folders READ folders CONSTANT);
+    Q_PROPERTY(CustomDataModel *contexts READ contexts CONSTANT);
+    Q_PROPERTY(CustomDataModel *goals READ goals CONSTANT);
+    Q_PROPERTY(CustomDataModel *locations READ locations CONSTANT);
 
     SyncForToodledo();
     virtual ~SyncForToodledo();
 
-    CustomDataModel *taskDataModel();
-    CustomDataModel *folderDataModel();
-    CustomDataModel *completedTaskDataModel();
-    CustomDataModel *contextDataModel();
-    CustomDataModel *goalDataModel();
-    CustomDataModel *locationDataModel();
+    CustomDataModel *tasks();
+    CustomDataModel *hotlist();
+    CustomDataModel *completedTasks();
+    CustomDataModel *folders();
+    CustomDataModel *contexts();
+    CustomDataModel *goals();
+    CustomDataModel *locations();
 
     Q_INVOKABLE QDateTime unixTimeToDateTime(uint unixTime);
     Q_INVOKABLE uint dateTimeToUnixTime(QDateTime dateTime);
@@ -72,12 +74,13 @@ private:
     NetworkManager *_networkManager;
     LoginManager *_loginManager;
 
-    CustomDataModel *_taskDataModel;
-    CustomDataModel *_folderDataModel;
-    CustomDataModel *_completedTaskDataModel;
-    CustomDataModel *_contextDataModel;
-    CustomDataModel *_locationDataModel;
-    CustomDataModel *_goalDataModel;
+    CustomDataModel *_tasks;
+    CustomDataModel *_hotlist;
+    CustomDataModel *_completedTasks;
+    CustomDataModel *_folders;
+    CustomDataModel *_contexts;
+    CustomDataModel *_locations;
+    CustomDataModel *_goals;
     CustomDataModel *_accountInfo;
 
     TabbedPane *_root;
