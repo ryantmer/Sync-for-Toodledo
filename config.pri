@@ -43,7 +43,9 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/AddEditGoal.qml) \
         $$quote($$BASEDIR/assets/AddEditLocation.qml) \
         $$quote($$BASEDIR/assets/AddEditTask.qml) \
+        $$quote($$BASEDIR/assets/AddSheet.qml) \
         $$quote($$BASEDIR/assets/Cover.qml) \
+        $$quote($$BASEDIR/assets/EditSheet.qml) \
         $$quote($$BASEDIR/assets/ListCompletedTasks.qml) \
         $$quote($$BASEDIR/assets/ListContexts.qml) \
         $$quote($$BASEDIR/assets/ListFolders.qml) \

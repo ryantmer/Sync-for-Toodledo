@@ -1,5 +1,5 @@
 1
-29
+31
 About.qml
 ActivityDialog.qml
 AddEditContext.qml
@@ -7,7 +7,9 @@ AddEditFolder.qml
 AddEditGoal.qml
 AddEditLocation.qml
 AddEditTask.qml
+AddSheet.qml
 Cover.qml
+EditSheet.qml
 images/all_tasks.png
 images/ic_add.png
 images/ic_completed.png

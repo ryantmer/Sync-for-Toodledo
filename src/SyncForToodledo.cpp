@@ -103,7 +103,6 @@ SyncForToodledo::SyncForToodledo() :
 SyncForToodledo::~SyncForToodledo()
 {
 }
-;
 
 CustomDataModel *SyncForToodledo::taskDataModel()
 {

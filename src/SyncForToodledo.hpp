@@ -35,7 +35,6 @@ public:
     SyncForToodledo();
     virtual ~SyncForToodledo();
 
-    CustomDataModel *dataModel(QString type);
     CustomDataModel *taskDataModel();
     CustomDataModel *folderDataModel();
     CustomDataModel *completedTaskDataModel();
