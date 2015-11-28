@@ -1,3 +1,8 @@
+/*
+ * ListView page which has an Add button, Delete context action, and opens an 
+ * edit page for an item when it is selected.
+ */
+
 import bb.cascades 1.4
 import bb.data 1.0
 import bb.system 1.2
@@ -9,14 +14,6 @@ NavigationPane {
     property variant backingData
 
     Page {
-        paneProperties: NavigationPaneProperties {
-            backButton: ActionItem {
-                title: "Cancel"
-                onTriggered: {
-                    listNavPane.pop();
-                }
-            }
-        }
         titleBar: TitleBar {
             title: "Sync for Toodledo - " + listTitle
         }
@@ -35,9 +32,6 @@ NavigationPane {
                 imageSource: "asset:///images/ic_add.png"
                 onTriggered: {
                     var page = addPageDefinition.createObject();
-                    page.backingDataType = backingDataType;
-                    page.backingData = backingData;
-                    page.setup();
                     listNavPane.push(page);
                 }
             }

@@ -36,61 +36,61 @@ TabbedPane {
 
     Tab {
         title: "All Tasks"
-        ListPage {
+        EditableListPage {
             listTitle: "All Tasks"
             backingDataType: "task"
             backingData: app.tasks
         }
     }
-    
+
     Tab {
         title: "Hotlist"
-        ListPage {
+        EditableListPage {
             listTitle: "Hotlist"
             backingDataType: "task"
             backingData: app.hotlist
         }
     }
-    
+
     Tab {
         title: "Recently Completed"
-        ListPage {
+        EditableListPage {
             listTitle: "Recently Completed"
             backingDataType: "task"
             backingData: app.completedTasks
         }
     }
-    
+
     Tab {
         title: "Folders"
-        ListPage {
+        ReadOnlyListPage {
             listTitle: "Folders"
             backingDataType: "folder"
             backingData: app.folders
         }
     }
-    
+
     Tab {
         title: "Locations"
-        ListPage {
+        ReadOnlyListPage {
             listTitle: "Locations"
             backingDataType: "location"
             backingData: app.locations
         }
     }
-    
+
     Tab {
         title: "Contexts"
-        ListPage {
+        ReadOnlyListPage {
             listTitle: "Contexts"
             backingDataType: "context"
             backingData: app.contexts
         }
     }
-    
+
     Tab {
         title: "Goals"
-        ListPage {
+        ReadOnlyListPage {
             listTitle: "Goals"
             backingDataType: "goal"
             backingData: app.goals

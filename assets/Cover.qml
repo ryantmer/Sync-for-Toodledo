@@ -6,7 +6,7 @@ Container {
         id: coverListView
         layout: StackListLayout {}
         horizontalAlignment: HorizontalAlignment.Fill
-        dataModel: app.taskDataModel
+        dataModel: app.tasks
         listItemComponents: [
             ListItemComponent {
                 type: "item"
