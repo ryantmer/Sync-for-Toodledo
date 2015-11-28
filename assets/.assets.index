@@ -7,9 +7,9 @@ AddEditFolder.qml
 AddEditGoal.qml
 AddEditLocation.qml
 AddEditTask.qml
-AddSheet.qml
+AddPage.qml
 Cover.qml
-EditSheet.qml
+EditPage.qml
 images/all_tasks.png
 images/ic_add.png
 images/ic_completed.png

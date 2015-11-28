@@ -346,6 +346,21 @@ void CustomDataModel::onGetReply(int replyDataType, QVariantList dataList) {
 
     foreach (QVariant v, dataList) {
         QVariantMap data = v.toMap();
+
+        if (data["title"].isNull()) {
+            data["title"] = data["name"].toString();
+        }
+
+        if (data["description"].isNull()) {
+            QString note = data["note"].toString();
+            int lineBreak = note.indexOf("\n");
+            if (lineBreak > -1) {
+                data["description"] = note.mid(0, lineBreak);
+            } else {
+                data["description"] = note;
+            }
+        }
+
         _internalDB.append(data);
         sort();
         qDebug() << Q_FUNC_INFO << "New data inserted into" << DataTypeStrings[_dataType] << ":" << data;
