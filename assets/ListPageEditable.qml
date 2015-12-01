@@ -61,7 +61,6 @@ NavigationPane {
                 onTriggered: {
                     var item = dataModel.data(indexPath);
                     var page = editPageDefinition.createObject();
-                    page.backingDataType = backingDataType;
                     page.data = item;
                     page.setup();
                     listNavPane.push(page);

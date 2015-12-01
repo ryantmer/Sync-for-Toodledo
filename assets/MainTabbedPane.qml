@@ -37,25 +37,27 @@ TabbedPane {
     Tab {
         title: "All Tasks"
         imageSource: "asset:///images/checkmark.png"
-        EditableListPage {
+        ListPageEditable {
             listTitle: "All Tasks"
             backingDataType: "task"
             backingData: app.tasks
         }
     }
 
+//    Not yet implemented on the backend
 //    Tab {
 //        title: "Hotlist"
-//        EditableListPage {
+//        ListPageEditable {
 //            listTitle: "Hotlist"
 //            backingDataType: "task"
 //            backingData: app.hotlist
 //        }
 //    }
-
+    
+//    Not yet implemented on the backend
 //    Tab {
 //        title: "Recently Completed"
-//        EditableListPage {
+//        ListPageEditable {
 //            listTitle: "Recently Completed"
 //            backingDataType: "task"
 //            backingData: app.completedTasks
@@ -65,7 +67,7 @@ TabbedPane {
     Tab {
         title: "Folders"
         imageSource: "asset:///images/ic_folders.png"
-        ReadOnlyListPage {
+        ListPageReadOnly {
             listTitle: "Folders"
             backingDataType: "folder"
             backingData: app.folders
@@ -75,7 +77,7 @@ TabbedPane {
     Tab {
         title: "Locations"
         imageSource: "asset:///images/ic_locations.png"
-        ReadOnlyListPage {
+        ListPageReadOnly {
             listTitle: "Locations"
             backingDataType: "location"
             backingData: app.locations
@@ -85,7 +87,7 @@ TabbedPane {
     Tab {
         title: "Contexts"
         imageSource: "asset:///images/ic_contexts.png"
-        ReadOnlyListPage {
+        ListPageReadOnly {
             listTitle: "Contexts"
             backingDataType: "context"
             backingData: app.contexts
@@ -95,7 +97,7 @@ TabbedPane {
     Tab {
         title: "Goals"
         imageSource: "asset:///images/ic_goals.png"
-        ReadOnlyListPage {
+        ListPageReadOnly {
             listTitle: "Goals"
             backingDataType: "goal"
             backingData: app.goals
