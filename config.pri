@@ -40,6 +40,7 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/ActivityDialog.qml) \
         $$quote($$BASEDIR/assets/AddPage.qml) \
         $$quote($$BASEDIR/assets/Cover.qml) \
+        $$quote($$BASEDIR/assets/DataModelTest.qml) \
         $$quote($$BASEDIR/assets/EditPage.qml) \
         $$quote($$BASEDIR/assets/ListPageEditable.qml) \
         $$quote($$BASEDIR/assets/ListPageReadOnly.qml) \
@@ -62,6 +63,7 @@ config_pri_assets {
 config_pri_source_group1 {
     SOURCES += \
         $$quote($$BASEDIR/src/CustomDataModel.cpp) \
+        $$quote($$BASEDIR/src/FilterDataModel.cpp) \
         $$quote($$BASEDIR/src/LoginManager.cpp) \
         $$quote($$BASEDIR/src/NetworkManager.cpp) \
         $$quote($$BASEDIR/src/PropertiesManager.cpp) \
@@ -70,6 +72,7 @@ config_pri_source_group1 {
 
     HEADERS += \
         $$quote($$BASEDIR/src/CustomDataModel.hpp) \
+        $$quote($$BASEDIR/src/FilterDataModel.hpp) \
         $$quote($$BASEDIR/src/LoginManager.hpp) \
         $$quote($$BASEDIR/src/NetworkManager.hpp) \
         $$quote($$BASEDIR/src/PropertiesManager.hpp) \

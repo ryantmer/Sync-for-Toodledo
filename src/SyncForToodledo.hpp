@@ -15,6 +15,7 @@
 
 #include "PropertiesManager.hpp"
 #include "CustomDataModel.hpp"
+#include "FilterDataModel.hpp"
 #include "NetworkManager.hpp"
 #include "LoginManager.hpp"
 
@@ -25,6 +26,7 @@ class SyncForToodledo : public QObject {
     Q_OBJECT
 
 public:
+    Q_PROPERTY(FilterDataModel *data READ data CONSTANT);
     Q_PROPERTY(CustomDataModel *tasks READ tasks CONSTANT);
     Q_PROPERTY(CustomDataModel *hotlist READ hotlist CONSTANT);
     Q_PROPERTY(CustomDataModel *completedTasks READ completedTasks CONSTANT);
@@ -36,6 +38,7 @@ public:
     SyncForToodledo();
     virtual ~SyncForToodledo();
 
+    FilterDataModel *data();
     CustomDataModel *tasks();
     CustomDataModel *hotlist();
     CustomDataModel *completedTasks();
@@ -74,6 +77,7 @@ private:
     NetworkManager *_networkManager;
     LoginManager *_loginManager;
 
+    FilterDataModel *_data;
     CustomDataModel *_tasks;
     CustomDataModel *_hotlist;
     CustomDataModel *_completedTasks;

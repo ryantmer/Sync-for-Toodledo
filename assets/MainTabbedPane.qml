@@ -43,6 +43,12 @@ TabbedPane {
             backingData: app.tasks
         }
     }
+    
+    Tab {
+        title: "Data Model test"
+        DataModelTest {
+        }
+    }
 
 //    Not yet implemented on the backend
 //    Tab {

@@ -17,7 +17,8 @@ using namespace bb::system;
 
 SyncForToodledo::SyncForToodledo() :
         QObject(), _propertiesManager(PropertiesManager::getInstance()), _networkManager(
-                NetworkManager::getInstance()), _loginManager(LoginManager::getInstance()), _tasks(
+                NetworkManager::getInstance()), _loginManager(LoginManager::getInstance()), _data(
+                new FilterDataModel(this)), _tasks(
                 new CustomDataModel(this, CustomDataModel::Task)), _hotlist(
                 new CustomDataModel(this, CustomDataModel::Hotlist)), _completedTasks(
                 new CustomDataModel(this, CustomDataModel::CompletedTask)), _folders(
@@ -28,6 +29,7 @@ SyncForToodledo::SyncForToodledo() :
                 new CustomDataModel(this, CustomDataModel::AccountInfo))
 {
     qmlRegisterType < CustomDataModel > ("DataModelUtil", 1, 0, "CustomDataModel");
+    qmlRegisterType < FilterDataModel > ("DataModelUtil", 1, 0, "FilterDataModel");
 
     //Create root QML document from main.qml and expose certain variables to QML
     QmlDocument *qml = QmlDocument::create("asset:///MainTabbedPane.qml").parent(this);
@@ -105,6 +107,11 @@ SyncForToodledo::SyncForToodledo() :
 
 SyncForToodledo::~SyncForToodledo()
 {
+}
+
+FilterDataModel *SyncForToodledo::data()
+{
+    return _data;
 }
 
 CustomDataModel *SyncForToodledo::tasks()

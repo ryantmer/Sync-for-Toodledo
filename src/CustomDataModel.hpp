@@ -7,22 +7,16 @@
 #include "NetworkManager.hpp"
 #include "LoginManager.hpp"
 
-class CustomDataModel : public bb::cascades::DataModel {
+class CustomDataModel: public bb::cascades::DataModel
+{
     Q_OBJECT
 
     Q_PROPERTY(bool empty READ empty NOTIFY emptyChanged);
 
 public:
-    enum DataType {
-        UndefinedType,
-        Task,
-        Hotlist,
-        CompletedTask,
-        Folder,
-        Context,
-        Goal,
-        Location,
-        AccountInfo
+    enum DataType
+    {
+        UndefinedType, Task, Hotlist, CompletedTask, Folder, Context, Goal, Location, AccountInfo
     };
 
     static const char * DataTypeStrings[];
@@ -30,17 +24,19 @@ public:
     CustomDataModel(QObject *parent = 0, DataType dataType = UndefinedType);
     virtual ~CustomDataModel();
     //Called by the UI through QML; initiate network stuff
-    Q_INVOKABLE void refresh();
-    Q_INVOKABLE void add(QVariantMap data);
-    Q_INVOKABLE void edit(QVariantMap oldData, QVariantMap newData);
-    Q_INVOKABLE void remove(QVariantMap data);
-    Q_INVOKABLE QVariantList getInternalList();
+    Q_INVOKABLE
+    void refresh();Q_INVOKABLE
+    void add(QVariantMap data);Q_INVOKABLE
+    void edit(QVariantMap oldData, QVariantMap newData);Q_INVOKABLE
+    void remove(QVariantMap data);Q_INVOKABLE
+    QVariantList getInternalList();
 
     //Required by bb::cascades::DataModel
-    Q_INVOKABLE virtual int childCount(const QVariantList &indexPath);
-    Q_INVOKABLE virtual bool hasChildren(const QVariantList &indexPath);
-    Q_INVOKABLE virtual QString itemType(const QVariantList &indexPath);
-    Q_INVOKABLE virtual QVariant data(const QVariantList &indexPath);
+    Q_INVOKABLE
+    virtual int childCount(const QVariantList &indexPath);Q_INVOKABLE
+    virtual bool hasChildren(const QVariantList &indexPath);Q_INVOKABLE
+    virtual QString itemType(const QVariantList &indexPath);Q_INVOKABLE
+    virtual QVariant data(const QVariantList &indexPath);
 
 private:
     void sort();
@@ -59,7 +55,7 @@ private:
     QString addUrl;
     QString removeUrl;
 
-signals:
+    signals:
     void emptyChanged(bool empty);
 
 public slots:
