@@ -6,12 +6,15 @@
 import bb.cascades 1.4
 import bb.data 1.0
 import bb.system 1.2
+import DataModelUtil 1.0
 
 NavigationPane {
     id: listNavPane
     property string listTitle
-    property string backingDataType
-    property variant backingData
+    
+    function setFilter(newFilter) {
+        dataModel.filter = newFilter;
+    }
 
     Page {
         titleBar: TitleBar {
@@ -23,7 +26,7 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    backingData.refresh();
+                    dataModel.refresh();
                 }
             }
         ]
@@ -31,16 +34,18 @@ NavigationPane {
         Container {
             Label {
                 text: "Hm, didn't find anything..."
-                visible: listView.dataModel.empty
+                visible: dataModel.empty
                 horizontalAlignment: HorizontalAlignment.Center
             }
             ListView {
                 id: listView
-                property alias backingDataType: listNavPane.backingDataType
                 layout: StackListLayout {
                 }
                 horizontalAlignment: HorizontalAlignment.Fill
-                dataModel: backingData
+                dataModel: FilterDataModel {
+                    id: dataModel
+                    filterOn: "type"
+                }
                 onTriggered: {
                     console.log("Open " + indexPath);
                 }

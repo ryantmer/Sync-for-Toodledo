@@ -40,7 +40,6 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/ActivityDialog.qml) \
         $$quote($$BASEDIR/assets/AddPage.qml) \
         $$quote($$BASEDIR/assets/Cover.qml) \
-        $$quote($$BASEDIR/assets/DataModelTest.qml) \
         $$quote($$BASEDIR/assets/EditPage.qml) \
         $$quote($$BASEDIR/assets/ListPageEditable.qml) \
         $$quote($$BASEDIR/assets/ListPageReadOnly.qml) \

@@ -6,12 +6,15 @@
 import bb.cascades 1.4
 import bb.data 1.0
 import bb.system 1.2
+import DataModelUtil 1.0
 
 NavigationPane {
     id: listNavPane
     property string listTitle
-    property string backingDataType
-    property variant backingData
+    
+    function setFilter(newFilter) {
+        dataModel.filter = newFilter;
+    }
 
     Page {
         titleBar: TitleBar {
@@ -23,7 +26,7 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    backingData.refresh();
+                    dataModel.refresh();
                 }
             },
             ActionItem {
@@ -47,17 +50,18 @@ NavigationPane {
         Container {
             Label {
                 text: "Hm, didn't find anything... Add one below!"
-                visible: listView.dataModel.empty
+                visible: false // TODO: use dataModel.empty to power this
                 horizontalAlignment: HorizontalAlignment.Center
             }
             ListView {
                 id: listView
-                property alias backingDataType: listNavPane.backingDataType
-                property alias backingData: listNavPane.backingData
                 layout: StackListLayout {
                 }
                 horizontalAlignment: HorizontalAlignment.Fill
-                dataModel: backingData
+                dataModel: FilterDataModel {
+                    id: dataModel
+                    filterOn: "type"
+                }
                 onTriggered: {
                     var item = dataModel.data(indexPath);
                     var page = editPageDefinition.createObject();
@@ -75,11 +79,10 @@ NavigationPane {
                             }
                             leftPadding: 10.0
 
-                            // Checkbox to complete tasks from the listview. Only shown if a task view
                             CheckBox {
                                 checked: ListItemData.completed
                                 verticalAlignment: VerticalAlignment.Center
-                                visible: "task" == itemContainer.ListItem.view.backingDataType
+                                visible: dataModel.filter == "Task"
                                 onCheckedChanged: {
                                     if (checked) {
                                         var oldData = {
@@ -122,14 +125,14 @@ NavigationPane {
                                     SystemDialog {
                                         id: deleteConfirmDialog
                                         title: "Delete " + itemContainer.ListItem.view.backingDataType
-                                        body: "Are you sure you want to delete this " + itemContainer.ListItem.view.backingDataType + "?"
+                                        body: "Are you sure?"
                                         confirmButton.label: "Do it!"
                                         confirmButton.enabled: true
                                         cancelButton.label: "Cancel"
                                         cancelButton.enabled: true
                                         onFinished: {
                                             if (result == SystemUiResult.ConfirmButtonSelection) {
-                                                app.tasks.remove({ id: ListItemData.id });
+                                                dataModel.remove({ id: ListItemData.id });
                                             }
                                         }
                                     }

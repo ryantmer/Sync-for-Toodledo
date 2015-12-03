@@ -38,45 +38,23 @@ TabbedPane {
         title: "All Tasks"
         imageSource: "asset:///images/checkmark.png"
         ListPageEditable {
+            id: taskListPage
             listTitle: "All Tasks"
-            backingDataType: "task"
-            backingData: app.tasks
+        }
+        onTriggered: {
+            taskListPage.setFilter("Task");
         }
     }
-    
-    Tab {
-        title: "Data Model test"
-        DataModelTest {
-        }
-    }
-
-//    Not yet implemented on the backend
-//    Tab {
-//        title: "Hotlist"
-//        ListPageEditable {
-//            listTitle: "Hotlist"
-//            backingDataType: "task"
-//            backingData: app.hotlist
-//        }
-//    }
-    
-//    Not yet implemented on the backend
-//    Tab {
-//        title: "Recently Completed"
-//        ListPageEditable {
-//            listTitle: "Recently Completed"
-//            backingDataType: "task"
-//            backingData: app.completedTasks
-//        }
-//    }
 
     Tab {
         title: "Folders"
         imageSource: "asset:///images/ic_folders.png"
         ListPageReadOnly {
+            id: folderListPage
             listTitle: "Folders"
-            backingDataType: "folder"
-            backingData: app.folders
+        }
+        onTriggered: {
+            folderListPage.setFilter("Folder");
         }
     }
 
@@ -84,9 +62,11 @@ TabbedPane {
         title: "Locations"
         imageSource: "asset:///images/ic_locations.png"
         ListPageReadOnly {
+            id: locationListPage
             listTitle: "Locations"
-            backingDataType: "location"
-            backingData: app.locations
+        }
+        onTriggered: {
+            locationListPage.setFilter("Location");
         }
     }
 
@@ -94,9 +74,11 @@ TabbedPane {
         title: "Contexts"
         imageSource: "asset:///images/ic_contexts.png"
         ListPageReadOnly {
+            id: contextListPage
             listTitle: "Contexts"
-            backingDataType: "context"
-            backingData: app.contexts
+        }
+        onTriggered: {
+            contextListPage.setFilter("Context");
         }
     }
 
@@ -104,9 +86,11 @@ TabbedPane {
         title: "Goals"
         imageSource: "asset:///images/ic_goals.png"
         ListPageReadOnly {
+            id: goalListPage
             listTitle: "Goals"
-            backingDataType: "goal"
-            backingData: app.goals
+        }
+        onTriggered: {
+            goalListPage.setFilter("Goal");
         }
     }
 }
