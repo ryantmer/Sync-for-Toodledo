@@ -10,14 +10,13 @@ using namespace bb::cascades;
 using namespace bb::data;
 
 FilterDataModel::FilterDataModel(QObject *parent) :
-        GroupDataModel(parent),
-        _netAccMan(new QNetworkAccessManager(this)),
-        _filter(""), _filterOn(""), _firstRun(true),
-        _loginMan(LoginManager::getInstance()),
-        _propMan(PropertiesManager::getInstance())
+        GroupDataModel(parent), _netAccMan(new QNetworkAccessManager(this)), _filter(""), _filterOn(
+                ""), _loginMan(LoginManager::getInstance()), _propMan(
+                PropertiesManager::getInstance()), _fullDM(new QMapListDataModel())
 {
     bool ok;
-    ok = connect(_netAccMan, SIGNAL(finished(QNetworkReply*)), this, SLOT(onFinished(QNetworkReply*)));
+    ok = connect(_netAccMan, SIGNAL(finished(QNetworkReply*)), this,
+            SLOT(onFinished(QNetworkReply*)));
     Q_ASSERT(ok);
     Q_UNUSED(ok);
 }
@@ -54,33 +53,29 @@ QString FilterDataModel::filter()
 
 void FilterDataModel::setFilter(QString filter)
 {
-    // Keep the full set of unfiltered data
-    if (_firstRun) {
-        QList<QVariantMap> items = toListOfMaps();
-        _originalItems = items;
-        _firstRun = false;
-    }
-
-    // In any case, re-insert all the items into the data model
-    clear();
-    insertList(_originalItems);
-
     _filter = filter;
 
-    QVariantMap item;
-    QList<QVariantMap> filteredItems;
-
+    qWarning() << "Filtering down to just" << filter;
     clear();
 
+    qWarning() << this;
+
+    qWarning() << "Sizes before" << size() << _fullDM->size();
+
+    QVariantMap item;
     // Then filter out the ones we don't want
-    foreach(item, _originalItems){
-    QString filterOnValue = item[_filterOn].value<QString>();
-    if(filterOnValue.contains(_filter, Qt::CaseInsensitive)) {
-        insert(item);
+    for (int i = 0; i < _fullDM->size(); ++i) {
+        qWarning() << item["type"];
+        item = _fullDM->value(i);
+        QString filterOnValue = item[_filterOn].value<QString>();
+        if(filterOnValue.contains(_filter, Qt::CaseInsensitive)) {
+            insert(item);
+        }
     }
-}
-emit
-    itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+
+    qWarning() << "Sizes after" << size() << _fullDM->size();
+
+    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
 }
 
 QString FilterDataModel::filterOn()
@@ -125,7 +120,8 @@ void FilterDataModel::refresh()
     get("location");
 }
 
-void FilterDataModel::get(QString type) {
+void FilterDataModel::get(QString type)
+{
     QUrl url;
     QUrl data;
 
@@ -135,7 +131,8 @@ void FilterDataModel::get(QString type) {
         // Incomplete tasks only
         data.addQueryItem("comp", QString::number(0));
         // id, title, modified, completed all come automatically
-        data.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,duedatemod,startdate,starttime,remind,repeat,status,length,context,goal,location");
+        data.addEncodedQueryItem("fields",
+                "duedate,note,folder,star,tag,priority,duetime,duedatemod,startdate,starttime,remind,repeat,status,length,context,goal,location");
     }
 
     data.addQueryItem("access_token", _propMan->accessToken);
@@ -174,22 +171,22 @@ void FilterDataModel::onFinished(QNetworkReply *reply)
                 dataList.pop_front();
             }
 
-            foreach (QVariant v, dataList) {
-                QVariantMap data = v.toMap();
+            foreach (QVariant v, dataList){
+            QVariantMap data = v.toMap();
 
-                data["type"] = replyDataType;
-                // Some use title (maybe just task?), some use name
-                if (data["title"].isNull()) {
-                    data["title"] = data["name"].toString();
-                }
-
-                insert(data);
-                qDebug() << Q_FUNC_INFO << "Inserted a" << data["type"].toString() << "called" << data["title"].toString();
+            data["type"] = replyDataType;
+            // Some use title (maybe just task?), some use name
+            if (data["title"].isNull()) {
+                data["title"] = data["name"].toString();
             }
+
+            _fullDM->append(data);
+            qDebug() << Q_FUNC_INFO << "Inserted a" << data["type"].toString() << "called" << data["title"].toString();
         }
-    } else {
-        qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error" << reply->errorString();
     }
+} else {
+    qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error" << reply->errorString();
+}
 
     reply->deleteLater();
     // Tells UI to hide activity indicator

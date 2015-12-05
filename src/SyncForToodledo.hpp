@@ -26,25 +26,11 @@ class SyncForToodledo : public QObject {
 
 public:
     Q_PROPERTY(FilterDataModel *data READ data CONSTANT);
-    Q_PROPERTY(CustomDataModel *tasks READ tasks CONSTANT);
-    Q_PROPERTY(CustomDataModel *hotlist READ hotlist CONSTANT);
-    Q_PROPERTY(CustomDataModel *completedTasks READ completedTasks CONSTANT);
-    Q_PROPERTY(CustomDataModel *folders READ folders CONSTANT);
-    Q_PROPERTY(CustomDataModel *contexts READ contexts CONSTANT);
-    Q_PROPERTY(CustomDataModel *goals READ goals CONSTANT);
-    Q_PROPERTY(CustomDataModel *locations READ locations CONSTANT);
 
     SyncForToodledo();
     virtual ~SyncForToodledo();
 
     FilterDataModel *data();
-    CustomDataModel *tasks();
-    CustomDataModel *hotlist();
-    CustomDataModel *completedTasks();
-    CustomDataModel *folders();
-    CustomDataModel *contexts();
-    CustomDataModel *goals();
-    CustomDataModel *locations();
 
     Q_INVOKABLE QDateTime unixTimeToDateTime(uint unixTime);
     Q_INVOKABLE uint dateTimeToUnixTime(QDateTime dateTime);
@@ -76,13 +62,6 @@ private:
     LoginManager *_loginManager;
 
     FilterDataModel *_data;
-    CustomDataModel *_tasks;
-    CustomDataModel *_hotlist;
-    CustomDataModel *_completedTasks;
-    CustomDataModel *_folders;
-    CustomDataModel *_contexts;
-    CustomDataModel *_locations;
-    CustomDataModel *_goals;
     CustomDataModel *_accountInfo;
 
     TabbedPane *_root;

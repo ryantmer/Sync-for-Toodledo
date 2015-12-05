@@ -4,10 +4,13 @@
 #include <QtNetwork>
 #include <QtCore/QObject>
 #include <bb/cascades/GroupDataModel>
+#include <bb/cascades/QListDataModel>
 #include "LoginManager.hpp"
 #include "PropertiesManager.hpp"
 
-class FilterDataModel: public bb::cascades::GroupDataModel
+using namespace bb::cascades;
+
+class FilterDataModel: public GroupDataModel
 {
     Q_OBJECT
     Q_PROPERTY(QString filter READ filter WRITE setFilter NOTIFY filterChanged FINAL)
@@ -49,11 +52,9 @@ private:
     QNetworkAccessManager *_netAccMan;
     QString _filter;
     QString _filterOn;
-    bool _firstRun;
     LoginManager *_loginMan;
     PropertiesManager *_propMan;
-    bb::cascades::DataModel *_fullDM;
-    QList<QVariantMap> _originalItems;
+    QMapListDataModel *_fullDM;
     int _count;
 };
 
