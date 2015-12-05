@@ -11,7 +11,7 @@ using namespace bb::data;
 
 FilterDataModel::FilterDataModel(QObject *parent) :
         GroupDataModel(parent), _netAccMan(new QNetworkAccessManager(this)), _filter(""), _filterOn(
-                ""), _loginMan(LoginManager::getInstance()), _propMan(
+                "type"), _loginMan(LoginManager::getInstance()), _propMan(
                 PropertiesManager::getInstance()), _fullDM(new QMapListDataModel())
 {
     bool ok;
@@ -58,22 +58,15 @@ void FilterDataModel::setFilter(QString filter)
     qWarning() << "Filtering down to just" << filter;
     clear();
 
-    qWarning() << this;
-
-    qWarning() << "Sizes before" << size() << _fullDM->size();
-
     QVariantMap item;
     // Then filter out the ones we don't want
     for (int i = 0; i < _fullDM->size(); ++i) {
-        qWarning() << item["type"];
         item = _fullDM->value(i);
         QString filterOnValue = item[_filterOn].value<QString>();
-        if(filterOnValue.contains(_filter, Qt::CaseInsensitive)) {
+        if (filterOnValue.contains(_filter, Qt::CaseInsensitive)) {
             insert(item);
         }
     }
-
-    qWarning() << "Sizes after" << size() << _fullDM->size();
 
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
 }

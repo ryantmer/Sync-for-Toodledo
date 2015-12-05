@@ -13,7 +13,7 @@ NavigationPane {
     property string listTitle
     
     function setFilter(newFilter) {
-        dataModel.filter = newFilter;
+        listView.dataModel.filter = newFilter;
     }
 
     Page {
@@ -26,7 +26,7 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    dataModel.refresh();
+                    listView.dataModel.refresh();
                 }
             }
         ]
@@ -42,10 +42,7 @@ NavigationPane {
                 layout: StackListLayout {
                 }
                 horizontalAlignment: HorizontalAlignment.Fill
-                dataModel: FilterDataModel {
-                    id: dataModel
-                    filterOn: "type"
-                }
+                dataModel: app.data
                 onTriggered: {
                     console.log("Open " + indexPath);
                 }

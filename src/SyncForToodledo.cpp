@@ -17,7 +17,7 @@ using namespace bb::system;
 
 SyncForToodledo::SyncForToodledo() :
         QObject(), _propertiesManager(PropertiesManager::getInstance()), _loginManager(
-                LoginManager::getInstance()), _data(FilterDataModel::getInstance()), _accountInfo(
+                LoginManager::getInstance()), _data(new FilterDataModel(this)), _accountInfo(
                 new CustomDataModel(this, CustomDataModel::AccountInfo))
 {
     qmlRegisterType < CustomDataModel > ("DataModelUtil", 1, 0, "CustomDataModel");

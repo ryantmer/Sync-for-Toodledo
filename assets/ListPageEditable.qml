@@ -13,7 +13,7 @@ NavigationPane {
     property string listTitle
     
     function setFilter(newFilter) {
-        dataModel.filter = newFilter;
+        listView.dataModel.filter = newFilter;
     }
 
     Page {
@@ -26,7 +26,7 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    dataModel.refresh();
+                    listView.dataModel.refresh();
                 }
             },
             ActionItem {
@@ -58,10 +58,7 @@ NavigationPane {
                 layout: StackListLayout {
                 }
                 horizontalAlignment: HorizontalAlignment.Fill
-                dataModel: FilterDataModel {
-                    id: dataModel
-                    filterOn: "type"
-                }
+                dataModel: app.data
                 onTriggered: {
                     var item = dataModel.data(indexPath);
                     var page = editPageDefinition.createObject();
@@ -93,7 +90,7 @@ NavigationPane {
                                             "id": parseInt(ListItemData.id),
                                             "completed": Math.floor((new Date()).getTime() / 1000)
                                         };
-                                        app.tasks.edit(oldData, newData);
+//                                        app.tasks.edit(oldData, newData);
                                     } else {
                                         var oldData = {
                                             "id": parseInt(ListItemData.id),
@@ -103,7 +100,7 @@ NavigationPane {
                                             "id": parseInt(ListItemData.id),
                                             "completed": 0
                                         };
-                                        app.tasks.edit(oldData, newData);
+//                                        app.tasks.edit(oldData, newData);
                                     }
                                 }
                             }
@@ -132,7 +129,7 @@ NavigationPane {
                                         cancelButton.enabled: true
                                         onFinished: {
                                             if (result == SystemUiResult.ConfirmButtonSelection) {
-                                                dataModel.remove({ id: ListItemData.id });
+                                                listView.dataModel.remove({ id: ListItemData.id });
                                             }
                                         }
                                     }
