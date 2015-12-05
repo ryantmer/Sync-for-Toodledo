@@ -82,7 +82,7 @@ NavigationPane {
                             CheckBox {
                                 checked: ListItemData.completed
                                 verticalAlignment: VerticalAlignment.Center
-                                visible: dataModel.filter == "Task"
+                                visible: false // dataModel.filter == "task"
                                 onCheckedChanged: {
                                     if (checked) {
                                         var oldData = {

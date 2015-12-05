@@ -1,36 +1,23 @@
+#include <bb/data/JsonDataAccess>
 #include "FilterDataModel.hpp"
 
-const char * FilterDataModel::DataTypeStrings[9] = {
-    "UndefinedType",
-    "Task",
-    "Hotlist",
-    "CompletedTask",
-    "Folder",
-    "Context",
-    "Goal",
-    "Location",
-    "AccountInfo"
-};
+const QString FilterDataModel::getUrl = QString("http://api.toodledo.com/3/%1s/get.php");
+const QString FilterDataModel::addUrl = QString("http://api.toodledo.com/3/%1s/add.php");
+const QString FilterDataModel::editUrl = QString("http://api.toodledo.com/3/%1s/edit.php");
+const QString FilterDataModel::deleteUrl = QString("http://api.toodledo.com/3/%1s/delete.php");
 
 using namespace bb::cascades;
+using namespace bb::data;
 
 FilterDataModel::FilterDataModel(QObject *parent) :
-        GroupDataModel(parent), _filter(""), _filterOn(""), _firstRun(true),
-        _netMan(NetworkManager::getInstance()), _loginMan(LoginManager::getInstance()),
-                _propMan(PropertiesManager::getInstance())
+        GroupDataModel(parent),
+        _netAccMan(new QNetworkAccessManager(this)),
+        _filter(""), _filterOn(""), _firstRun(true),
+        _loginMan(LoginManager::getInstance()),
+        _propMan(PropertiesManager::getInstance())
 {
     bool ok;
-    ok = connect(_netMan, SIGNAL(addReply(int, QVariantList)), this,
-            SLOT(onRemoveReply(int, QVariantList)));
-    Q_ASSERT(ok);
-    ok = connect(_netMan, SIGNAL(editReply(int, QVariantList)), this,
-            SLOT(onEditReply(int, QVariantList)));
-    Q_ASSERT(ok);
-    ok = connect(_netMan, SIGNAL(getReply(int, QVariantList)), this,
-            SLOT(onGetReply(int, QVariantList)));
-    Q_ASSERT(ok);
-    ok = connect(_netMan, SIGNAL(removeReply(int, QVariantList)), this,
-            SLOT(onRemoveReply(int, QVariantList)));
+    ok = connect(_netAccMan, SIGNAL(finished(QNetworkReply*)), this, SLOT(onFinished(QNetworkReply*)));
     Q_ASSERT(ok);
     Q_UNUSED(ok);
 }
@@ -124,108 +111,89 @@ bool FilterDataModel::isFiltered(const QVariantList& indexPath)
  */
 void FilterDataModel::refresh()
 {
-    if (!_netMan->isConnected()) {
-        qWarning() << Q_FUNC_INFO << "NetworkManager indicated no network connection";
-        return;
-    }
     if (!_loginMan->isLoggedIn()) {
         qWarning() << Q_FUNC_INFO << "LoginManager indicated not logged in";
+        return;
     }
 
     clear();
 
-    get("tasks");
-    get("folders");
-    get("contexts");
-    get("goals");
-    get("locations");
+    get("task");
+    get("folder");
+    get("context");
+    get("goal");
+    get("location");
 }
 
 void FilterDataModel::get(QString type) {
     QUrl url;
-    QUrl urlData;
+    QUrl data;
 
-    url.setUrl(_netMan->getUrl.arg(type));
+    url.setUrl(getUrl.arg(type));
 
-    if ("tasks" == type) {
+    if ("task" == type) {
         // Incomplete tasks only
-        urlData.addQueryItem("comp", QString::number(0));
+        data.addQueryItem("comp", QString::number(0));
         // id, title, modified, completed all come automatically
-        urlData.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,duedatemod,startdate,starttime,remind,repeat,status,length,context,goal,location");
+        data.addEncodedQueryItem("fields", "duedate,note,folder,star,tag,priority,duetime,duedatemod,startdate,starttime,remind,repeat,status,length,context,goal,location");
     }
 
-    urlData.addQueryItem("access_token", _propMan->accessToken);
+    data.addQueryItem("access_token", _propMan->accessToken);
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    req.setAttribute(QNetworkRequest::User, QVariant(type));
-    _netMan->sendRequest(req, urlData.encodedQuery());
+    req.setAttribute(QNetworkRequest::User, QString(type));
+
+    //Tells UI to show activity indicator
+    emit networkRequestStarted();
+    qDebug() << Q_FUNC_INFO << "Sending" << data.encodedQuery() << "to" << req.url().toString();
+    _netAccMan->post(req, data.encodedQuery());
 }
 
 /*
  * Slots
  */
-void FilterDataModel::onAddReply(int replyDataType, QVariantList dataList)
+void FilterDataModel::onFinished(QNetworkReply *reply)
 {
-    qDebug() << Q_FUNC_INFO << "Received" << DataTypeStrings[replyDataType] << "data";
+    QString response = reply->readAll();
+    QString replyDataType = reply->request().attribute(QNetworkRequest::User).toString();
+    qDebug() << Q_FUNC_INFO << "Received" << replyDataType << response;
 
-    foreach (QVariant v, dataList) {
-        QVariantMap data = v.toMap();
+    JsonDataAccess jda;
+    QVariantList dataList = jda.loadFromBuffer(response).value<QVariantList>();
+    if (jda.hasError()) {
+        qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+        return;
+    }
 
-        data["type"] = DataTypeStrings[replyDataType];
-        if (data["title"].isNull()) {
-            data["title"] = data["name"].toString();
+    if (reply->error() == QNetworkReply::NoError) {
+        QString replyUrl = reply->url().toString(QUrl::RemoveQuery);
+
+        if (replyUrl.contains("get")) {
+            if (dataList.length() > 0 && replyDataType == "task") {
+                // Discard summary item (only comes with tasks)
+                dataList.pop_front();
+            }
+
+            foreach (QVariant v, dataList) {
+                QVariantMap data = v.toMap();
+
+                data["type"] = replyDataType;
+                // Some use title (maybe just task?), some use name
+                if (data["title"].isNull()) {
+                    data["title"] = data["name"].toString();
+                }
+
+                insert(data);
+                qDebug() << Q_FUNC_INFO << "Inserted a" << data["type"].toString() << "called" << data["title"].toString();
+            }
         }
-
-        insert(data);
-        qDebug() << Q_FUNC_INFO << "Added a" << data["type"].toString() << "called" << data["title"].toString() << "into everything:" << data;
+    } else {
+        qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error" << reply->errorString();
     }
-    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-}
-void FilterDataModel::onEditReply(int replyDataType, QVariantList dataList)
-{
-    qDebug() << Q_FUNC_INFO << "Received" << DataTypeStrings[replyDataType] << "data";
 
-    foreach (QVariant v, dataList) {
-        QVariantMap data = v.toMap();
-
-        data["type"] = DataTypeStrings[replyDataType];
-        if (data["title"].isNull()) {
-            data["title"] = data["name"].toString();
-        }
-
-        insert(data);
-        qDebug() << Q_FUNC_INFO << "Edited a" << data["type"].toString() << "called" << data["title"].toString() << "into everything:" << data;
-    }
-    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-}
-void FilterDataModel::onGetReply(int replyDataType, QVariantList dataList)
-{
-    qDebug() << Q_FUNC_INFO << "Received" << DataTypeStrings[replyDataType] << "data";
-
-    foreach (QVariant v, dataList) {
-        QVariantMap data = v.toMap();
-
-        data["type"] = DataTypeStrings[replyDataType];
-        if (data["title"].isNull()) {
-            data["title"] = data["name"].toString();
-        }
-
-        insert(data);
-        qDebug() << Q_FUNC_INFO << "Got a" << data["type"].toString() << "called" << data["title"].toString() << "into everything:" << data;
-    }
-    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-}
-
-void FilterDataModel::onRemoveReply(int replyDataType, QVariantList dataList)
-{
-    qDebug() << Q_FUNC_INFO << "Received" << DataTypeStrings[replyDataType] << "data";
-
-    foreach (QVariant v, dataList) {
-        QVariantMap data = v.toMap();
-        remove(data);
-        qDebug() << Q_FUNC_INFO << "Removed a" << data["type"].toString() << "called" << data["title"].toString() << "into everything:" << data;
-    }
-    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+    reply->deleteLater();
+    // Tells UI to hide activity indicator
+    emit networkRequestFinished();
 }
 
 void FilterDataModel::onLogOut()

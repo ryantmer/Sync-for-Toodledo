@@ -42,7 +42,7 @@ TabbedPane {
             listTitle: "All Tasks"
         }
         onTriggered: {
-            taskListPage.setFilter("Task");
+            taskListPage.setFilter("task");
         }
     }
 
@@ -54,7 +54,7 @@ TabbedPane {
             listTitle: "Folders"
         }
         onTriggered: {
-            folderListPage.setFilter("Folder");
+            folderListPage.setFilter("folder");
         }
     }
 
@@ -66,7 +66,7 @@ TabbedPane {
             listTitle: "Locations"
         }
         onTriggered: {
-            locationListPage.setFilter("Location");
+            locationListPage.setFilter("location");
         }
     }
 
@@ -78,7 +78,7 @@ TabbedPane {
             listTitle: "Contexts"
         }
         onTriggered: {
-            contextListPage.setFilter("Context");
+            contextListPage.setFilter("context");
         }
     }
 
@@ -90,7 +90,7 @@ TabbedPane {
             listTitle: "Goals"
         }
         onTriggered: {
-            goalListPage.setFilter("Goal");
+            goalListPage.setFilter("goal");
         }
     }
 }

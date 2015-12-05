@@ -1,9 +1,9 @@
 #ifndef FILTERDATAMODEL_HPP_
 #define FILTERDATAMODEL_HPP_
 
+#include <QtNetwork>
 #include <QtCore/QObject>
 #include <bb/cascades/GroupDataModel>
-#include "NetworkManager.hpp"
 #include "LoginManager.hpp"
 #include "PropertiesManager.hpp"
 
@@ -14,10 +14,10 @@ class FilterDataModel: public bb::cascades::GroupDataModel
     Q_PROPERTY(QString filterOn READ filterOn WRITE setFilterOn NOTIFY filterOnChanged FINAL)
 
 public:
-    enum DataType
-    {
-        UndefinedType, Task, Hotlist, CompletedTask, Folder, Context, Goal, Location, AccountInfo
-    };
+    static const QString getUrl;
+    static const QString addUrl;
+    static const QString editUrl;
+    static const QString deleteUrl;
 
     FilterDataModel(QObject *parent = 0);
     virtual ~FilterDataModel();
@@ -33,24 +33,23 @@ public:
     void get(QString type);
 
     bool isFiltered(const QVariantList& indexPath);
-    static const char * DataTypeStrings[];
 
 signals:
+    void networkRequestStarted();
+    void networkRequestFinished();
     void filterChanged(QString filter);
     void filterOnChanged(QString filterOn);
+    void toast(QString message);
 
 public slots:
+    void onFinished(QNetworkReply *reply);
     void onLogOut();
-    void onAddReply(int replyDataType, QVariantList dataList);
-    void onEditReply(int replyDataType, QVariantList dataList);
-    void onGetReply(int replyDataType, QVariantList dataList);
-    void onRemoveReply(int replyDataType, QVariantList dataList);
 
 private:
+    QNetworkAccessManager *_netAccMan;
     QString _filter;
     QString _filterOn;
     bool _firstRun;
-    NetworkManager *_netMan;
     LoginManager *_loginMan;
     PropertiesManager *_propMan;
     bb::cascades::DataModel *_fullDM;

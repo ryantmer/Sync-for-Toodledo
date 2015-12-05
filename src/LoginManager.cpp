@@ -156,19 +156,24 @@ void LoginManager::onFinished(QNetworkReply *reply)
     qDebug() << Q_FUNC_INFO << "LoginManager received" << response;
 
     JsonDataAccess jda;
-    QVariantMap replyData = jda.loadFromBuffer(response).value<QVariantMap>();
+    QVariantMap dataMap = jda.loadFromBuffer(response).value<QVariantMap>();
     if (jda.hasError()) {
         qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
         return;
     }
 
-    qDebug() << Q_FUNC_INFO << "New refresh token received:" << replyData.value("refresh_token").toString();
-    qDebug() << Q_FUNC_INFO << "New access token received:" << replyData.value("access_token").toString();
-    _propMan->setAccessToken(replyData.value("access_token").toString(), replyData.value("expires_in").toLongLong(NULL));
-    _propMan->setRefreshToken(replyData.value("refresh_token").toString());
-    _loggedIn = true;
-    _accessTokenTimer->start((_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
+    if (reply->error() == QNetworkReply::NoError) {
+        qDebug() << Q_FUNC_INFO << "New refresh token received:" << dataMap.value("refresh_token").toString();
+        qDebug() << Q_FUNC_INFO << "New access token received:" << dataMap.value("access_token").toString();
+        _propMan->setAccessToken(dataMap.value("access_token").toString(), dataMap.value("expires_in").toLongLong(NULL));
+        _propMan->setRefreshToken(dataMap.value("refresh_token").toString());
+        _loggedIn = true;
+        _accessTokenTimer->start((_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
+    } else {
+        qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error" << reply->errorString();
+    }
 
+    reply->deleteLater();
     // Tells UI to hide activity indicator
     emit networkRequestFinished();
 }
