@@ -50,7 +50,7 @@ NavigationPane {
         Container {
             Label {
                 text: "Hm, didn't find anything... Add one below!"
-                visible: false // TODO: use dataModel.empty to power this
+                visible: listView.dataModel.empty
                 horizontalAlignment: HorizontalAlignment.Center
             }
             ListView {
@@ -79,7 +79,7 @@ NavigationPane {
                             CheckBox {
                                 checked: ListItemData.completed
                                 verticalAlignment: VerticalAlignment.Center
-                                visible: false // dataModel.filter == "task"
+                                visible: itemContainer.ListItem.view.dataModel.filter == "task"
                                 onCheckedChanged: {
                                     if (checked) {
                                         var oldData = {
@@ -90,7 +90,7 @@ NavigationPane {
                                             "id": parseInt(ListItemData.id),
                                             "completed": Math.floor((new Date()).getTime() / 1000)
                                         };
-//                                        app.tasks.edit(oldData, newData);
+                                        // TODO: Send the edit request
                                     } else {
                                         var oldData = {
                                             "id": parseInt(ListItemData.id),
@@ -100,7 +100,7 @@ NavigationPane {
                                             "id": parseInt(ListItemData.id),
                                             "completed": 0
                                         };
-//                                        app.tasks.edit(oldData, newData);
+                                        // TODO: Send the edit request
                                     }
                                 }
                             }
@@ -121,7 +121,7 @@ NavigationPane {
                                 attachedObjects: [
                                     SystemDialog {
                                         id: deleteConfirmDialog
-                                        title: "Delete " + itemContainer.ListItem.view.backingDataType
+                                        title: "Delete " + itemContainer.ListItem.view.dataModel.filter
                                         body: "Are you sure?"
                                         confirmButton.label: "Do it!"
                                         confirmButton.enabled: true
@@ -129,7 +129,7 @@ NavigationPane {
                                         cancelButton.enabled: true
                                         onFinished: {
                                             if (result == SystemUiResult.ConfirmButtonSelection) {
-                                                listView.dataModel.remove({ id: ListItemData.id });
+                                                itemContainer.ListItem.view.dataModel.remove({ id: ListItemData.id });
                                             }
                                         }
                                     }

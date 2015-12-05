@@ -15,6 +15,7 @@ class FilterDataModel: public GroupDataModel
     Q_OBJECT
     Q_PROPERTY(QString filter READ filter WRITE setFilter NOTIFY filterChanged FINAL)
     Q_PROPERTY(QString filterOn READ filterOn WRITE setFilterOn NOTIFY filterOnChanged FINAL)
+    Q_PROPERTY(bool empty READ empty NOTIFY emptyChanged);
 
 public:
     static const QString getUrl;
@@ -31,6 +32,7 @@ public:
     void setFilterOn(QString filterOn);
     QString filter();
     QString filterOn();
+    bool empty();
     Q_INVOKABLE
     void refresh();
     void get(QString type);
@@ -42,6 +44,7 @@ signals:
     void networkRequestFinished();
     void filterChanged(QString filter);
     void filterOnChanged(QString filterOn);
+    void emptyChanged(bool empty);
     void toast(QString message);
 
 public slots:

@@ -55,7 +55,6 @@ void FilterDataModel::setFilter(QString filter)
 {
     _filter = filter;
 
-    qWarning() << "Filtering down to just" << filter;
     clear();
 
     QVariantMap item;
@@ -68,6 +67,7 @@ void FilterDataModel::setFilter(QString filter)
         }
     }
 
+    emit emptyChanged(empty());
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
 }
 
@@ -92,6 +92,11 @@ bool FilterDataModel::isFiltered(const QVariantList& indexPath)
 
     QString str = dataMap[_filterOn].value<QString>();
     return str.contains(_filter, Qt::CaseInsensitive);
+}
+
+bool FilterDataModel::empty()
+{
+    return size() == 0;
 }
 
 /*
@@ -164,30 +169,35 @@ void FilterDataModel::onFinished(QNetworkReply *reply)
                 dataList.pop_front();
             }
 
-            foreach (QVariant v, dataList){
-            QVariantMap data = v.toMap();
+            QVariantMap data;
+            for (int i = 0; i < dataList.size(); ++i) {
+                data = dataList.value(i).toMap();
 
-            data["type"] = replyDataType;
-            // Some use title (maybe just task?), some use name
-            if (data["title"].isNull()) {
-                data["title"] = data["name"].toString();
+                data["type"] = replyDataType;
+                // Some use title (maybe just task?), some use name
+                if (data["title"].isNull()) {
+                    data["title"] = data["name"].toString();
+                }
+
+                _fullDM->append(data);
+                qDebug() << Q_FUNC_INFO << "Inserted a" << data["type"].toString() << "called"
+                        << data["title"].toString();
             }
-
-            _fullDM->append(data);
-            qDebug() << Q_FUNC_INFO << "Inserted a" << data["type"].toString() << "called" << data["title"].toString();
         }
+    } else {
+        qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error"
+                << reply->errorString();
     }
-} else {
-    qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error" << reply->errorString();
-}
 
     reply->deleteLater();
     // Tells UI to hide activity indicator
     emit networkRequestFinished();
+    emit emptyChanged(empty());
 }
 
 void FilterDataModel::onLogOut()
 {
     clear();
+    emit emptyChanged(empty());
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
 }

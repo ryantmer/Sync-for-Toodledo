@@ -34,7 +34,7 @@ NavigationPane {
         Container {
             Label {
                 text: "Hm, didn't find anything..."
-                visible: false // TODO: use datamodel.empty to power this
+                visible: listView.dataModel.empty
                 horizontalAlignment: HorizontalAlignment.Center
             }
             ListView {
