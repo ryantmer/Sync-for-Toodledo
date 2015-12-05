@@ -44,78 +44,71 @@ Page {
     ]
 
     function setup() {
+        var index = 0;
+
         titleField.text = data.title;
         noteArea.text = data.note;
+        tagField.text = data.tag;
+        duedatemodDropdown.setSelectedIndex(data.duedatemod);
+        priorityDropdown.setSelectedIndex(data.priority + 1);
+        starToggle.checked = data.star;
 
-        if (data.duedate == 0) {
-            duedateCheckbox.checked = false;
-            duedateCheckbox.checkedChanged(false);
-        } else {
+        if (data.duedate != 0) {
+            duedatePicker.value = app.unixTimeToDateTime(data.duedate);
             duedateCheckbox.checked = true;
             duedateCheckbox.checkedChanged(true);
-            duedatePicker.value = app.unixTimeToDateTime(data.duedate);
         }
 
-        var selectedIndex = 0;
-        // Populate FGCL dropdowns dynamically
-        var folders = app.folders.getInternalList();
-        for (var x = 0; x < folders.length; ++ x) {
-            if (folders[x].archived == 0) {
-                var opt = option.createObject();
-                opt.text = folders[x].name;
-                opt.value = folders[x].id;
-                folderDropdown.add(opt);
-                
-                if (data.folder == folders[x].id) {
-                    selectedIndex = x;
+        if (data.duetime != 0) {
+            duetimePicker.value = app.unixTimeToDateTimeNoOffset(data.duetime);
+            duetimeCheckbox.checked = true;
+            duetimeCheckbox.checkedChanged(true);
+        }
+
+        if (data.startdate != 0) {
+            startdatePicker.value = app.unixTimeToDateTime(data.startdate);
+            startdateCheckbox.checked = true;
+            startdateCheckbox.checkedChanged(true);
+        }
+
+        if (data.starttime != 0) {
+            starttimePicker.value = app.unixTimeToDateTimeNoOffset(data.starttime);
+            starttimeCheckbox.checked = true;
+            starttimeCheckbox.checkedChanged(true);
+        }
+
+        if (data.length != 0) {
+            lengthPicker.value = new Date(0, 0, 0, 0, data.length);
+            lengthCheckbox.checked = true;
+            lengthCheckbox.checkedChanged(true);
+        }
+
+        if (data.remind != 0) {
+            for (index = 0; index < remindDropdown.options.length; ++ index) {
+                if (data.remind == remindDropdown.options[index].value) {
+                    remindDropdown.setSelectedIndex(index);
+                    break;
                 }
             }
         }
-        folderDropdown.setSelectedIndex(x);
 
-        selectedIndex = 0;
-        var goals = app.goals.getInternalList();
-        for (var x = 0; x < goals.length; ++ x) {
-            if (goals[x].archived == 0) {
-                var opt = option.createObject();
-                opt.text = goals[x].name;
-                opt.value = goals[x].id;
-                goalDropdown.add(opt);
-                
-                if (data.goal == goals[x].id) {
-                    selectedIndex = x;
+        if (data.repeat != 0) {
+            for (index = 0; index < repeatDropdown.options.length; ++ index) {
+                if (data.repeat == repeatDropdown.options[index].value) {
+                    repeatDropdown.setSelectedIndex(index);
+                    break;
                 }
             }
         }
-        goalDropdown.setSelectedIndex(selectedIndex);
-        
-        selectedIndex = 0;
-        var contexts = app.contexts.getInternalList();
-        for (var x = 0; x < contexts.length; ++ x) {
-            var opt = option.createObject();
-            opt.text = contexts[x].name;
-            opt.value = contexts[x].id;
-            contextDropdown.add(opt);
-            
-            if (data.context == contexts[x].id) {
-                selectedIndex = x;
+
+        if (data.status != 0) {
+            for (index = 0; index < statusDropdown.options.length; ++ index) {
+                if (data.status == statusDropdown.options[index].value) {
+                    statusDropdown.setSelectedIndex(index);
+                    break;
+                }
             }
         }
-        contextDropdown.setSelectedIndex(selectedIndex);
-        
-        selectedIndex = 0;
-        var locations = app.locations.getInternalList();
-        for (var x = 0; x < locations.length; ++ x) {
-            var opt = option.createObject();
-            opt.text = locations[x].name;
-            opt.value = locations[x].id;
-            locationDropdown.add(opt);
-            
-            if (data.location == locations[x].id) {
-                selectedIndex = x;
-            }
-        }
-        locationDropdown.setSelectedIndex(selectedIndex);
     }
 
     ScrollView {
@@ -175,6 +168,7 @@ Page {
                 DateTimePicker {
                     id: duedatePicker
                     title: "Due Date"
+                    enabled: false
                 }
             }
             // folder
@@ -310,6 +304,7 @@ Page {
                         id: duetimePicker
                         title: "Due Time"
                         mode: DateTimePickerMode.Time
+                        enabled: false
                     }
                 }
                 // startdate
@@ -328,6 +323,7 @@ Page {
                     DateTimePicker {
                         id: startdatePicker
                         title: "Start Date"
+                        enabled: false
                     }
                 }
                 // starttime
@@ -347,6 +343,7 @@ Page {
                         id: starttimePicker
                         title: "Start Time"
                         mode: DateTimePickerMode.Time
+                        enabled: false
                     }
                 }
                 // length
@@ -366,6 +363,7 @@ Page {
                         id: lengthPicker
                         title: "Task Length"
                         mode: DateTimePickerMode.Timer
+                        enabled: false
                     }
                 }
                 // remind
@@ -373,11 +371,18 @@ Page {
                     id: remindDropdown
                     title: "Reminder"
                     bottomMargin: 30
-                    // Other length reminders are a premium-only feature
-                    Option {
-                        text: "60 minutes"
-                        value: 60
-                    }
+                    options: [
+                        Option {
+                            text: "None"
+                            value: 0
+                            selected: true
+                        },
+                        // Other length reminders are a premium-only feature
+                        Option {
+                            text: "60 minutes"
+                            value: 60
+                        }
+                    ]
                 }
                 // repeat
                 DropDown {
@@ -388,6 +393,7 @@ Page {
                         Option {
                             text: "Don't repeat"
                             value: ""
+                            selected: true
                         },
                         Option {
                             text: "Daily"
@@ -432,6 +438,7 @@ Page {
                         Option {
                             text: "None"
                             value: 0
+                            selected: true
                         },
                         Option {
                             text: "Next Action"
@@ -484,6 +491,7 @@ Page {
                         Option {
                             text: "0 Low"
                             value: 0
+                            selected: true
                         },
                         Option {
                             text: "1 Medium"
