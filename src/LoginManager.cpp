@@ -46,7 +46,7 @@ LoginManager::LoginManager(QObject *parent)
     //Who the hell keeps an app open for 30 days straight?
 
     bool ok;
-    ok = connect(_accessTokenTimer, SIGNAL(timeout()), this, SLOT(refreshAccessToken()));
+    ok = connect(_accessTokenTimer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     Q_ASSERT(ok);
     ok = connect(_netConfMan, SIGNAL(onlineStateChanged(bool)), this, SLOT(onOnlineStateChanged(bool)));
     Q_ASSERT(ok);
@@ -137,6 +137,12 @@ void LoginManager::refreshAccessToken() {
 /*
  * Slots
  */
+void LoginManager::onTimeout()
+{
+    // Triggered when timer for access token runs out
+    refreshAccessToken();
+}
+
 void LoginManager::onOnlineStateChanged(bool online)
 {
     qDebug() << Q_FUNC_INFO << "Network changed to" << online;
