@@ -26,7 +26,6 @@ public:
 public slots:
     void onOnlineStateChanged(bool online);
     void onFinished(QNetworkReply *reply);
-    void onTimeout();
     void onLogOut();
 
 signals:
