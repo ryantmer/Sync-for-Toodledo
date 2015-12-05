@@ -6,6 +6,8 @@
 #include "PropertiesManager.hpp"
 
 const QString LoginManager::_credentials = QString("ToodleDo10:api53ed061e20f0f");
+const QString LoginManager::authorizeUrl = QString("https://api.toodledo.com/3/account/authorize.php");
+const QString LoginManager::tokenUrl = QString("https://api.toodledo.com/3/account/token.php");
 
 using namespace bb::data;
 
@@ -24,8 +26,10 @@ LoginManager *LoginManager::getInstance() {
 
 LoginManager::LoginManager(QObject *parent)
 :   QObject(parent),
+    _netConfMan(new QNetworkConfigurationManager(this)),
+    _netAccMan(new QNetworkAccessManager(this)),
     _loggedIn(false),
-    _netMan(NetworkManager::getInstance()),
+    _connected(false),
     _propMan(PropertiesManager::getInstance()),
     _accessTokenTimer(new QTimer(this)),
     _appState(QString::null)
@@ -42,14 +46,11 @@ LoginManager::LoginManager(QObject *parent)
     //Who the hell keeps an app open for 30 days straight?
 
     bool ok;
-    ok = connect(this, SIGNAL(accessTokenExpired()),
-            this, SLOT(onAccessTokenExpired()));
+    ok = connect(_accessTokenTimer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     Q_ASSERT(ok);
-    ok = connect(_accessTokenTimer, SIGNAL(timeout()),
-            this, SLOT(onAccessTokenExpired()));
+    ok = connect(_netConfMan, SIGNAL(onlineStateChanged(bool)), this, SLOT(onOnlineStateChanged(bool)));
     Q_ASSERT(ok);
-    ok = connect(_netMan, SIGNAL(accessTokenRefreshed(QString, qlonglong)),
-            this, SLOT(onAccessTokenRefreshed(QString, qlonglong)));
+    ok = connect(_netAccMan, SIGNAL(finished(QNetworkReply*)), this, SLOT(onFinished(QNetworkReply*)));
     Q_ASSERT(ok);
     Q_UNUSED(ok);
 }
@@ -57,18 +58,26 @@ LoginManager::LoginManager(QObject *parent)
 LoginManager::~LoginManager() {}
 
 bool LoginManager::isLoggedIn() {
+    if (!_connected) {
+        return false;
+    }
+
     if (_propMan->accessTokenExpiry < QDateTime::currentDateTimeUtc().toTime_t()) {
         if (_propMan->refreshTokenExpiry < QDateTime::currentDateTimeUtc().toTime_t()) {
-            emit refreshTokenExpired(); //implicitly refreshes access token as well
+            // Let the UI know that we need to log in again (implicitly refreshes access token as well)
+            qWarning() << Q_FUNC_INFO << "Refresh token expired (30 days)";
+            emit refreshTokenExpired();
         } else {
-            emit accessTokenExpired();
+            // Automatically refresh access token using refresh token
+            qWarning() << Q_FUNC_INFO << "Access token expired (2 hours)";
+            refreshAccessToken();
         }
     }
     return _loggedIn;
 }
 
 QUrl LoginManager::getAuthorizeUrl() {
-    QUrl url(_netMan->authorizeUrl);
+    QUrl url(authorizeUrl);
     url.addQueryItem("response_type", "code");
     url.addQueryItem("client_id", "ToodleDo10");
     url.addQueryItem("state", getState());
@@ -86,7 +95,7 @@ QString LoginManager::getState() {
 
 void LoginManager::refreshRefreshToken(QString authCode) {
     //Gets called when user clicks "Authorize" in the login WebView
-    QUrl url(_netMan->tokenUrl);
+    QUrl url(tokenUrl);
     QNetworkRequest req(url);
 
     QUrl data;
@@ -99,45 +108,72 @@ void LoginManager::refreshRefreshToken(QString authCode) {
     req.setRawHeader(QByteArray("Authorization"), auth.toAscii());
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-    _netMan->sendRequest(req, data.encodedQuery());
+    //Tells UI to show activity indicator
+    emit networkRequestStarted();
+    qDebug() << Q_FUNC_INFO << "Sending" << data.encodedQuery() << "to" << req.url().toString();
+    _netAccMan->post(req, data.encodedQuery());
 }
 
 void LoginManager::refreshAccessToken() {
     //Gets called automatically whenever the access token expires
-    QUrl url(_netMan->tokenUrl);
+    QUrl url(tokenUrl);
     QNetworkRequest req(url);
 
-    QUrl urlData;
-    urlData.addQueryItem("grant_type", "refresh_token");
-    urlData.addQueryItem("refresh_token", PropertiesManager::getInstance()->refreshToken);
-    urlData.addQueryItem("version", QString::number(1));
+    QUrl data;
+    data.addQueryItem("grant_type", "refresh_token");
+    data.addQueryItem("refresh_token", PropertiesManager::getInstance()->refreshToken);
+    data.addQueryItem("version", QString::number(1));
 
     QString auth = QString("Basic " + _credentials.toAscii().toBase64());
     req.setRawHeader("Authorization", auth.toAscii());
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-    qDebug() << Q_FUNC_INFO << url;
-    qDebug() << Q_FUNC_INFO << urlData;
+    //Tells UI to show activity indicator
+    emit networkRequestStarted();
+    qDebug() << Q_FUNC_INFO << "Sending" << data.encodedQuery() << "to" << req.url().toString();
+    _netAccMan->post(req, data.encodedQuery());
+}
 
-    _netMan->sendRequest(req, urlData.encodedQuery());
+/*
+ * Slots
+ */
+void LoginManager::onTimeout()
+{
+    // Triggered when timer for access token runs out
+    refreshAccessToken();
+}
+
+void LoginManager::onOnlineStateChanged(bool online)
+{
+    qDebug() << Q_FUNC_INFO << "Network changed to" << online;
+    _connected = online;
+    emit networkStateChanged(_connected);
+}
+
+void LoginManager::onFinished(QNetworkReply *reply)
+{
+    QString response = reply->readAll();
+    qDebug() << Q_FUNC_INFO << "LoginManager received" << response;
+
+    JsonDataAccess jda;
+    QVariantMap replyData = jda.loadFromBuffer(response).value<QVariantMap>();
+    if (jda.hasError()) {
+        qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+        return;
+    }
+
+    qDebug() << Q_FUNC_INFO << "New refresh token received:" << replyData.value("refresh_token").toString();
+    qDebug() << Q_FUNC_INFO << "New access token received:" << replyData.value("access_token").toString();
+    _propMan->setAccessToken(replyData.value("access_token").toString(), replyData.value("expires_in").toLongLong(NULL));
+    _propMan->setRefreshToken(replyData.value("refresh_token").toString());
+    _loggedIn = true;
+    _accessTokenTimer->start((_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
+
+    // Tells UI to hide activity indicator
+    emit networkRequestFinished();
 }
 
 void LoginManager::onLogOut() {
     _loggedIn = false;
     emit toast("Logged out");
-}
-
-void LoginManager::onAccessTokenExpired() {
-    //Automatically refresh access token using refresh token
-    qWarning() << Q_FUNC_INFO << "Access token expired (2 hours)";
-    refreshAccessToken();
-}
-
-void LoginManager::onAccessTokenRefreshed(QString newToken, qlonglong expiresIn) {
-    //Restart access token timer for 2 hours
-    _loggedIn = true;
-    _accessTokenTimer->start(
-            (_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
-    Q_UNUSED(newToken);
-    Q_UNUSED(expiresIn);
 }

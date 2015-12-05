@@ -16,7 +16,6 @@
 #include "PropertiesManager.hpp"
 #include "CustomDataModel.hpp"
 #include "FilterDataModel.hpp"
-#include "NetworkManager.hpp"
 #include "LoginManager.hpp"
 
 using namespace bb::cascades;
@@ -74,7 +73,6 @@ public slots:
 
 private:
     PropertiesManager *_propertiesManager;
-    NetworkManager *_networkManager;
     LoginManager *_loginManager;
 
     FilterDataModel *_data;

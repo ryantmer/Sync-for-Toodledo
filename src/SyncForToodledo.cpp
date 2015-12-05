@@ -16,9 +16,8 @@ using namespace bb::cascades;
 using namespace bb::system;
 
 SyncForToodledo::SyncForToodledo() :
-        QObject(), _propertiesManager(PropertiesManager::getInstance()), _networkManager(
-                NetworkManager::getInstance()), _loginManager(LoginManager::getInstance()), _data(
-                new FilterDataModel(this)), _tasks(
+        QObject(), _propertiesManager(PropertiesManager::getInstance()), _loginManager(
+                LoginManager::getInstance()), _data(new FilterDataModel(this)), _tasks(
                 new CustomDataModel(this, CustomDataModel::Task)), _hotlist(
                 new CustomDataModel(this, CustomDataModel::Hotlist)), _completedTasks(
                 new CustomDataModel(this, CustomDataModel::CompletedTask)), _folders(
@@ -60,21 +59,9 @@ SyncForToodledo::SyncForToodledo() :
     Application::instance()->setCover(cover);
 
     bool ok;
-    ok = connect(_networkManager, SIGNAL(accessTokenRefreshed(QString, qlonglong)), this,
-            SLOT(onAccessTokenRefreshed(QString, qlonglong)));
-    Q_ASSERT(ok);
-    ok = connect(_networkManager, SIGNAL(networkRequestStarted()), this,
-            SLOT(onNetworkRequestStarted()));
-    Q_ASSERT(ok);
-    ok = connect(_networkManager, SIGNAL(networkRequestFinished()), this,
-            SLOT(onNetworkRequestFinished()));
-    Q_ASSERT(ok);
     ok = connect(_loginWebView, SIGNAL(urlChanged(QUrl)), this, SLOT(onWebViewUrlChanged(QUrl)));
     Q_ASSERT(ok);
     ok = connect(_loginManager, SIGNAL(refreshTokenExpired()), this, SLOT(onRefreshTokenExpired()));
-    Q_ASSERT(ok);
-    ok = connect(_networkManager, SIGNAL(networkStateChanged(bool)), this,
-            SLOT(onNetworkStateChanged(bool)));
     Q_ASSERT(ok);
     ok = connect(_accountInfo, SIGNAL(itemsChanged(bb::cascades::DataModelChangeType::Type)), this,
             SLOT(onAccountInfoUpdated()));
