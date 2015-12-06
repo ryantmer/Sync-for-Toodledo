@@ -19,7 +19,6 @@ SyncForToodledo::SyncForToodledo() :
         QObject(), _propertiesManager(PropertiesManager::getInstance()), _loginManager(
                 LoginManager::getInstance()), _data(new FilterDataModel(this))
 {
-    qmlRegisterType < CustomDataModel > ("DataModelUtil", 1, 0, "CustomDataModel");
     qmlRegisterType < FilterDataModel > ("DataModelUtil", 1, 0, "FilterDataModel");
 
     //Create root QML document from main.qml and expose certain variables to QML

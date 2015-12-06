@@ -14,7 +14,6 @@
 #include <QtLocationSubset/QGeoPositionInfoSource>
 
 #include "PropertiesManager.hpp"
-#include "CustomDataModel.hpp"
 #include "FilterDataModel.hpp"
 #include "LoginManager.hpp"
 

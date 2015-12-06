@@ -61,19 +61,15 @@ config_pri_assets {
 
 config_pri_source_group1 {
     SOURCES += \
-        $$quote($$BASEDIR/src/CustomDataModel.cpp) \
         $$quote($$BASEDIR/src/FilterDataModel.cpp) \
         $$quote($$BASEDIR/src/LoginManager.cpp) \
-        $$quote($$BASEDIR/src/NetworkManager.cpp) \
         $$quote($$BASEDIR/src/PropertiesManager.cpp) \
         $$quote($$BASEDIR/src/SyncForToodledo.cpp) \
         $$quote($$BASEDIR/src/main.cpp)
 
     HEADERS += \
-        $$quote($$BASEDIR/src/CustomDataModel.hpp) \
         $$quote($$BASEDIR/src/FilterDataModel.hpp) \
         $$quote($$BASEDIR/src/LoginManager.hpp) \
-        $$quote($$BASEDIR/src/NetworkManager.hpp) \
         $$quote($$BASEDIR/src/PropertiesManager.hpp) \
         $$quote($$BASEDIR/src/SyncForToodledo.hpp)
 }
