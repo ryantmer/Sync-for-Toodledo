@@ -53,7 +53,6 @@ public slots:
     void onNetworkRequestFinished();
     void onWebViewUrlChanged(QUrl url);
     void onRefreshTokenExpired();
-    void onAccessTokenRefreshed(QString newToken, qlonglong expiresIn);
     void onAccountInfoUpdated();
     void onToast(QString message);
 
@@ -62,7 +61,6 @@ private:
     LoginManager *_loginManager;
 
     FilterDataModel *_data;
-    CustomDataModel *_accountInfo;
 
     TabbedPane *_root;
     Container *_coverRoot;

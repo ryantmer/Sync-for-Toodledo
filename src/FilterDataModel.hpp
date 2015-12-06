@@ -34,9 +34,10 @@ public:
     QString filterOn();
     bool empty();
     Q_INVOKABLE
-    void refresh();
-    void get(QString type);
+    void refresh(QString type);
 
+    void clearByType(QString type);
+    void get(QString type);
     bool isFiltered(const QVariantList& indexPath);
 
 signals:
@@ -48,6 +49,7 @@ signals:
     void toast(QString message);
 
 public slots:
+    void onNetworkStateChanged(bool online);
     void onFinished(QNetworkReply *reply);
     void onLogOut();
 

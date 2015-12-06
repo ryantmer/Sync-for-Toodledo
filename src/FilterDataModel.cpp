@@ -1,10 +1,10 @@
 #include <bb/data/JsonDataAccess>
 #include "FilterDataModel.hpp"
 
-const QString FilterDataModel::getUrl = QString("http://api.toodledo.com/3/%1s/get.php");
-const QString FilterDataModel::addUrl = QString("http://api.toodledo.com/3/%1s/add.php");
-const QString FilterDataModel::editUrl = QString("http://api.toodledo.com/3/%1s/edit.php");
-const QString FilterDataModel::deleteUrl = QString("http://api.toodledo.com/3/%1s/delete.php");
+const QString FilterDataModel::getUrl = QString("http://api.toodledo.com/3/%1/get.php");
+const QString FilterDataModel::addUrl = QString("http://api.toodledo.com/3/%1/add.php");
+const QString FilterDataModel::editUrl = QString("http://api.toodledo.com/3/%1/edit.php");
+const QString FilterDataModel::deleteUrl = QString("http://api.toodledo.com/3/%1/delete.php");
 
 using namespace bb::cascades;
 using namespace bb::data;
@@ -17,6 +17,9 @@ FilterDataModel::FilterDataModel(QObject *parent) :
     bool ok;
     ok = connect(_netAccMan, SIGNAL(finished(QNetworkReply*)), this,
             SLOT(onFinished(QNetworkReply*)));
+    Q_ASSERT(ok);
+    ok = connect(_loginMan, SIGNAL(networkStateChanged(bool)), this,
+            SLOT(onNetworkStateChanged(bool)));
     Q_ASSERT(ok);
     Q_UNUSED(ok);
 }
@@ -43,6 +46,21 @@ QVariant FilterDataModel::data(const QVariantList& indexPath)
     return QVariant::Invalid;
 }
 
+void FilterDataModel::clearByType(QString type)
+{
+    QVariantMap item;
+    // Remove all entries that have the type we're looking for
+    for (int i = _fullDM->size() - 1; i >= 0; --i) {
+        item = _fullDM->value(i);
+        QString itemType = item["type"].value<QString>();
+        qWarning() << "ITER" << i << itemType;
+        if (itemType == type) {
+            _fullDM->removeAt(i);
+        }
+    }
+    emit emptyChanged(empty());
+}
+
 /*
  * Q_PROPERTY functions
  */
@@ -58,7 +76,7 @@ void FilterDataModel::setFilter(QString filter)
     clear();
 
     QVariantMap item;
-    // Then filter out the ones we don't want
+    // Insert only the items from the full DM that match our criteria
     for (int i = 0; i < _fullDM->size(); ++i) {
         item = _fullDM->value(i);
         QString filterOnValue = item[_filterOn].value<QString>();
@@ -102,20 +120,17 @@ bool FilterDataModel::empty()
 /*
  * Q_INVOKABLE functions
  */
-void FilterDataModel::refresh()
+void FilterDataModel::refresh(QString type)
 {
     if (!_loginMan->isLoggedIn()) {
-        qWarning() << Q_FUNC_INFO << "LoginManager indicated not logged in";
+        qWarning() << Q_FUNC_INFO << "Can't update" << type
+                << "because LoginManager indicated not logged in";
         return;
     }
 
-    clear();
+    clearByType(type);
 
-    get("task");
-    get("folder");
-    get("context");
-    get("goal");
-    get("location");
+    get(type);
 }
 
 void FilterDataModel::get(QString type)
@@ -125,7 +140,7 @@ void FilterDataModel::get(QString type)
 
     url.setUrl(getUrl.arg(type));
 
-    if ("task" == type) {
+    if ("tasks" == type) {
         // Incomplete tasks only
         data.addQueryItem("comp", QString::number(0));
         // id, title, modified, completed all come automatically
@@ -156,37 +171,59 @@ void FilterDataModel::onFinished(QNetworkReply *reply)
     JsonDataAccess jda;
     QVariantList dataList = jda.loadFromBuffer(response).value<QVariantList>();
     if (jda.hasError()) {
-        qWarning() << Q_FUNC_INFO << "Error reading network response into JSON:" << jda.error();
+        qWarning() << Q_FUNC_INFO << "Error reading network response into list:" << jda.error();
         return;
     }
 
     if (reply->error() == QNetworkReply::NoError) {
         QString replyUrl = reply->url().toString(QUrl::RemoveQuery);
 
-        if (replyUrl.contains("get")) {
-            if (dataList.length() > 0 && replyDataType == "task") {
+        if (replyDataType == "account") {
+            // We've updated the account info; now check and see what needs to be updated
+
+            QVariantMap oldInfo = _propMan->accountInfo;
+
+            // Account info comes as a map, not a list of maps
+            QVariantMap newInfo = jda.loadFromBuffer(response).value<QVariantMap>();
+            if (jda.hasError()) {
+                qWarning() << Q_FUNC_INFO << "Error reading network response into map:" << jda.error();
+                return;
+            }
+
+            refresh("tasks");
+            refresh("folders");
+            refresh("contexts");
+            refresh("goals");
+            refresh("locations");
+        } else if (replyDataType == "tasks") {
+            if (dataList.length() > 0) {
                 // Discard summary item (only comes with tasks)
                 dataList.pop_front();
             }
 
-            QVariantMap data;
-            for (int i = 0; i < dataList.size(); ++i) {
-                data = dataList.value(i).toMap();
-
-                data["type"] = replyDataType;
-                // Some use title (maybe just task?), some use name
-                if (data["title"].isNull()) {
-                    data["title"] = data["name"].toString();
+            if (replyUrl.contains("get")) {
+                QVariantMap data;
+                for (int i = 0; i < dataList.size(); ++i) {
+                    data = dataList.value(i).toMap();
+                    data["type"] = replyDataType;
+                    _fullDM->append(data);
+                    qDebug() << Q_FUNC_INFO << "Inserted a" << data["type"].toString() << "called" << data["title"].toString();
                 }
-
-                _fullDM->append(data);
-                qDebug() << Q_FUNC_INFO << "Inserted a" << data["type"].toString() << "called"
-                        << data["title"].toString();
+            }
+        } else {
+            if (replyUrl.contains("get")) {
+                QVariantMap data;
+                for (int i = 0; i < dataList.size(); ++i) {
+                    data = dataList.value(i).toMap();
+                    data["type"] = replyDataType;
+                    data["title"] = data["name"].toString();
+                    _fullDM->append(data);
+                    qDebug() << Q_FUNC_INFO << "Inserted a" << data["type"].toString() << "called" << data["title"].toString();
+                }
             }
         }
     } else {
-        qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error"
-                << reply->errorString();
+        qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error" << reply->errorString();
     }
 
     reply->deleteLater();
@@ -200,4 +237,11 @@ void FilterDataModel::onLogOut()
     clear();
     emit emptyChanged(empty());
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+}
+
+void FilterDataModel::onNetworkStateChanged(bool online)
+{
+    if (online) {
+        refresh("account");
+    }
 }

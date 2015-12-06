@@ -26,7 +26,7 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    listView.dataModel.refresh();
+                    listView.dataModel.refresh(listView.dataModel.filter);
                 }
             },
             ActionItem {
