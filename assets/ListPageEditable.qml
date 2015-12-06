@@ -35,6 +35,7 @@ NavigationPane {
                 imageSource: "asset:///images/ic_add.png"
                 onTriggered: {
                     var page = addPageDefinition.createObject();
+                    page.type = listView.dataModel.filter
                     listNavPane.push(page);
                 }
             }
@@ -79,29 +80,14 @@ NavigationPane {
                             CheckBox {
                                 checked: ListItemData.completed
                                 verticalAlignment: VerticalAlignment.Center
-                                visible: itemContainer.ListItem.view.dataModel.filter == "task"
+                                visible: itemContainer.ListItem.view.dataModel.filter == "tasks"
                                 onCheckedChanged: {
-                                    if (checked) {
-                                        var oldData = {
-                                            "id": parseInt(ListItemData.id),
-                                            "completed": ListItemData.completed
-                                        };
-                                        var newData = {
-                                            "id": parseInt(ListItemData.id),
-                                            "completed": Math.floor((new Date()).getTime() / 1000)
-                                        };
-                                        // TODO: Send the edit request
-                                    } else {
-                                        var oldData = {
-                                            "id": parseInt(ListItemData.id),
-                                            "completed": ListItemData.completed
-                                        };
-                                        var newData = {
-                                            "id": parseInt(ListItemData.id),
-                                            "completed": 0
-                                        };
-                                        // TODO: Send the edit request
-                                    }
+                                    var data = {
+                                        id: parseInt(ListItemData.id),
+                                        completed: checked ? Math.floor((new Date()).getTime() / 1000) : 0
+                                    };
+                                    itemContainer.ListItem.view.dataModel.editItem("tasks", data);
+                                    console.log("hey it happened");
                                 }
                             }
 
@@ -129,7 +115,7 @@ NavigationPane {
                                         cancelButton.enabled: true
                                         onFinished: {
                                             if (result == SystemUiResult.ConfirmButtonSelection) {
-                                                itemContainer.ListItem.view.dataModel.remove({ id: ListItemData.id });
+                                                itemContainer.ListItem.view.dataModel.removeItem({ id: ListItemData.id });
                                             }
                                         }
                                     }

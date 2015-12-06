@@ -52,7 +52,6 @@ public slots:
     void onNetworkRequestFinished();
     void onWebViewUrlChanged(QUrl url);
     void onRefreshTokenExpired();
-    void onAccountInfoUpdated();
     void onToast(QString message);
 
 private:

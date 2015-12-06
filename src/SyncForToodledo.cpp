@@ -58,6 +58,14 @@ SyncForToodledo::SyncForToodledo() :
     Q_ASSERT(ok);
     ok = connect(this, SIGNAL(loggedOut()), _propertiesManager, SLOT(onLogOut()));
     Q_ASSERT(ok);
+    ok = connect(_loginManager, SIGNAL(networkRequestStarted()), this, SLOT(onNetworkRequestStarted()));
+    Q_ASSERT(ok);
+    ok = connect(_loginManager, SIGNAL(networkRequestFinished()), this, SLOT(onNetworkRequestFinished()));
+    Q_ASSERT(ok);
+    ok = connect(_data, SIGNAL(networkRequestStarted()), this, SLOT(onNetworkRequestStarted()));
+    Q_ASSERT(ok);
+    ok = connect(_data, SIGNAL(networkRequestFinished()), this, SLOT(onNetworkRequestFinished()));
+    Q_ASSERT(ok);
     Q_UNUSED(ok);
 }
 
@@ -209,58 +217,6 @@ void SyncForToodledo::onNetworkRequestStarted(QString message)
 void SyncForToodledo::onNetworkRequestFinished()
 {
     _activityDialog->close();
-}
-
-void SyncForToodledo::onAccountInfoUpdated()
-{
-    //When logout is called, first() ends up getting called on an empty list,
-    //so avoid that here
-//    if (_accountInfo->getInternalList().length() <= 0) {
-//        return;
-//    }
-//    //Go through new account info and update things as required
-//    QVariantMap newInfo = _accountInfo->getInternalList().first().value<QVariantMap>();
-//    QVariantMap oldInfo = _propertiesManager->accountInfo;
-//
-//    int old_lastedit_task = oldInfo.value("lastedit_task").toInt(NULL);
-//    int old_lastdelete_task = oldInfo.value("lastdelete_task").toInt(NULL);
-//    int old_lastedit_folder = oldInfo.value("lastedit_folder").toInt(NULL);
-//    int old_lastedit_context = oldInfo.value("lastedit_context").toInt(NULL);
-//    int old_lastedit_goal = oldInfo.value("lastedit_goal").toInt(NULL);
-//    int old_lastedit_location = oldInfo.value("lastedit_location").toInt(NULL);
-//
-//    if (old_lastedit_task < newInfo.value("lastedit_task").toInt(NULL)
-//            || old_lastdelete_task < newInfo.value("lastdelete_task").toInt(NULL)
-//            || old_lastedit_task == 0 || old_lastdelete_task == 0) {
-//        qDebug() << Q_FUNC_INFO << "Refreshing Tasks";
-//    } else {
-//        qDebug() << Q_FUNC_INFO << "No changes to tasks on server since last update";
-//    }
-//    if (old_lastedit_folder < newInfo.value("lastedit_folder").toInt(NULL)
-//            || old_lastedit_folder == 0) {
-//        qDebug() << Q_FUNC_INFO << "Refreshing Folders";
-//    } else {
-//        qDebug() << Q_FUNC_INFO << "No changes to folders on server since last update";
-//    }
-//    if (old_lastedit_context < newInfo.value("lastedit_context").toInt(NULL)
-//            || old_lastedit_context == 0) {
-//        qDebug() << Q_FUNC_INFO << "Refreshing Contexts";
-//    } else {
-//        qDebug() << Q_FUNC_INFO << "No changes to contexts on server since last update";
-//    }
-//    if (old_lastedit_goal < newInfo.value("lastedit_goal").toInt(NULL) || old_lastedit_goal == 0) {
-//        qDebug() << Q_FUNC_INFO << "Refreshing Goals";
-//    } else {
-//        qDebug() << Q_FUNC_INFO << "No changes to goals on server since last update";
-//    }
-//    if (old_lastedit_location < newInfo.value("lastedit_location").toInt(NULL)
-//            || old_lastedit_location == 0) {
-//        qDebug() << Q_FUNC_INFO << "Refreshing Locations";
-//    } else {
-//        qDebug() << Q_FUNC_INFO << "No changes to locations on server since last update";
-//    }
-//
-//    _propertiesManager->accountInfo = newInfo;
 }
 
 void SyncForToodledo::onToast(QString message)

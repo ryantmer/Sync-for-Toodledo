@@ -2,6 +2,7 @@ import bb.cascades 1.4
 
 Page {
     id: addTaskPage
+    property string type
 
     paneProperties: NavigationPaneProperties {
         backButton: ActionItem {
