@@ -115,7 +115,7 @@ NavigationPane {
                                         cancelButton.enabled: true
                                         onFinished: {
                                             if (result == SystemUiResult.ConfirmButtonSelection) {
-                                                itemContainer.ListItem.view.dataModel.removeItem({ id: ListItemData.id });
+                                                app.data.removeItem(itemContainer.ListItem.view.dataModel.filter, { id: ListItemData.id });
                                             }
                                         }
                                     }

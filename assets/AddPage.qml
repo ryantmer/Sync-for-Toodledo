@@ -30,7 +30,7 @@ Page {
                 data.title = titleField.text;
                 data.note = noteArea.text;
 
-                app.tasks.add(data);
+                app.data.addItem(type, data);
 
                 listNavPane.pop();
             }
