@@ -169,6 +169,7 @@ void LoginManager::onFinished(QNetworkReply *reply)
         _propMan->setRefreshToken(dataMap.value("refresh_token").toString());
         _loggedIn = true;
         _accessTokenTimer->start((_propMan->accessTokenExpiry - QDateTime::currentDateTimeUtc().toTime_t()) * 1000);
+        emit accessTokenRefreshed();
     } else {
         qWarning() << Q_FUNC_INFO << "Reply from" << reply->url() << "contains error" << reply->errorString();
     }

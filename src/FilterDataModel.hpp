@@ -56,6 +56,7 @@ signals:
 
 public slots:
     void onNetworkStateChanged(bool online);
+    void onAccessTokenRefreshed();
     void onFinished(QNetworkReply *reply);
     void onLogOut();
 

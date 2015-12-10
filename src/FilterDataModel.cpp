@@ -15,11 +15,11 @@ FilterDataModel::FilterDataModel(QObject *parent) :
                 PropertiesManager::getInstance()), _fullDM(new QMapListDataModel())
 {
     bool ok;
-    ok = connect(_netAccMan, SIGNAL(finished(QNetworkReply*)), this,
-            SLOT(onFinished(QNetworkReply*)));
+    ok = connect(_netAccMan, SIGNAL(finished(QNetworkReply*)), this, SLOT(onFinished(QNetworkReply*)));
     Q_ASSERT(ok);
-    ok = connect(_loginMan, SIGNAL(networkStateChanged(bool)), this,
-            SLOT(onNetworkStateChanged(bool)));
+    ok = connect(_loginMan, SIGNAL(networkStateChanged(bool)), this, SLOT(onNetworkStateChanged(bool)));
+    Q_ASSERT(ok);
+    ok = connect(_loginMan, SIGNAL(accessTokenRefreshed()), this, SLOT(onAccessTokenRefreshed()));
     Q_ASSERT(ok);
     Q_UNUSED(ok);
 }
@@ -403,4 +403,9 @@ void FilterDataModel::onNetworkStateChanged(bool online)
     if (online) {
         refresh("account");
     }
+}
+
+void FilterDataModel::onAccessTokenRefreshed()
+{
+    refresh("account");
 }

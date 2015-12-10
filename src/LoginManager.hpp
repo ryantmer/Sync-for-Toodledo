@@ -31,6 +31,7 @@ public slots:
 
 signals:
     void refreshTokenExpired();
+    void accessTokenRefreshed();
     void networkRequestStarted();
     void networkRequestFinished();
     void networkStateChanged(bool online);
