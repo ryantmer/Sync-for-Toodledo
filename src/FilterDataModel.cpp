@@ -10,8 +10,7 @@ using namespace bb::cascades;
 using namespace bb::data;
 
 FilterDataModel::FilterDataModel(QObject *parent) :
-        GroupDataModel(parent), _netAccMan(new QNetworkAccessManager(this)), _filter(""), _filterOn(
-                "type"), _loginMan(LoginManager::getInstance()), _propMan(
+        GroupDataModel(parent), _netAccMan(new QNetworkAccessManager(this)), _filter(), _loginMan(LoginManager::getInstance()), _propMan(
                 PropertiesManager::getInstance()), _fullDM(new QMapListDataModel())
 {
     setGrouping(ItemGrouping::ByFullValue);
@@ -51,14 +50,22 @@ QVariant FilterDataModel::data(const QVariantList& indexPath)
 
     QVariant data = GroupDataModel::data(indexPath);
 
-    if (_filter == NULL || _filter == "") {
+    if (_filter.isEmpty()) {
         return data;
     }
 
     QVariantMap dataMap = data.toMap();
-    QString filterOnValue = dataMap[_filterOn].value<QString>();
 
-    if (filterOnValue.contains(_filter, Qt::CaseInsensitive)) {
+    // Need to verify that the data matches all our current filters
+    bool matches = true;
+    for (QVariantMap::const_iterator iter = _filter.begin(); iter != _filter.end(); ++iter) {
+        QString value = dataMap[iter.key()].value<QString>();
+        if (!value.contains(iter.value().toString(), Qt::CaseInsensitive)) {
+            matches = false;
+        }
+    }
+
+    if (matches) {
         return data;
     }
 
@@ -96,52 +103,38 @@ void FilterDataModel::groupItems(bool group)
     }
 }
 
-QString FilterDataModel::filter()
+QVariantMap FilterDataModel::filter()
 {
     return _filter;
 }
 
-void FilterDataModel::setFilter(QString filter)
+void FilterDataModel::setFilter(QVariantMap filter)
 {
     _filter = filter;
 
     clear();
 
     QVariantMap item;
+    bool matches = true;
     // Insert only the items from the full DM that match our criteria
     for (int i = 0; i < _fullDM->size(); ++i) {
         item = _fullDM->value(i);
-        QString filterOnValue = item[_filterOn].value<QString>();
-        if (filterOnValue.contains(_filter, Qt::CaseInsensitive)) {
+        matches = true;
+
+        for (QVariantMap::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
+            // Check each key in the filters, make sure the item in the DM has a matching value at that key
+            QString value = item[iter.key()].value<QString>();
+            if (!value.contains(iter.value().toString(), Qt::CaseInsensitive)) {
+                matches = false;
+            }
+        }
+        if (matches) {
             insert(item);
         }
     }
 
     emit emptyChanged(empty());
     emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
-}
-
-QString FilterDataModel::filterOn()
-{
-    return _filterOn;
-}
-
-void FilterDataModel::setFilterOn(QString filterOn)
-{
-    _filterOn = filterOn;
-}
-
-bool FilterDataModel::isFiltered(const QVariantList& indexPath)
-{
-    if (_filter == NULL || _filter == "") {
-        return true;
-    }
-
-    QVariant data = _fullDM->data(indexPath);
-    QVariantMap dataMap = data.toMap();
-
-    QString str = dataMap[_filterOn].value<QString>();
-    return str.contains(_filter, Qt::CaseInsensitive);
 }
 
 bool FilterDataModel::empty()

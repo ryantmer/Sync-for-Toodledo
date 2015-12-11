@@ -15,8 +15,7 @@ class FilterDataModel: public GroupDataModel
 Q_OBJECT
 
 Q_PROPERTY(bool itemsGrouped READ itemsGrouped WRITE groupItems FINAL)
-Q_PROPERTY(QString filter READ filter WRITE setFilter NOTIFY filterChanged FINAL)
-Q_PROPERTY(QString filterOn READ filterOn WRITE setFilterOn NOTIFY filterOnChanged FINAL)
+Q_PROPERTY(QVariantMap filter READ filter WRITE setFilter NOTIFY filterChanged FINAL)
 Q_PROPERTY(bool empty READ empty NOTIFY emptyChanged)
 
 public:
@@ -31,26 +30,26 @@ public:
     virtual QVariant data(const QVariantList& indexPath);
 
     void groupItems(bool grouping);
-    void setFilter(QString filter);
-    void setFilterOn(QString filterOn);
+    void setFilter(QVariantMap filter);
     bool itemsGrouped();
-    QString filter();
-    QString filterOn();
-    bool empty();Q_INVOKABLE
-    void refresh(QString type);Q_INVOKABLE
-    void addItem(QString type, QVariantMap data);Q_INVOKABLE
-    void editItem(QString type, QVariantMap data);Q_INVOKABLE
+    QVariantMap filter();
+    bool empty();
+    Q_INVOKABLE
+    void refresh(QString type);
+    Q_INVOKABLE
+    void addItem(QString type, QVariantMap data);
+    Q_INVOKABLE
+    void editItem(QString type, QVariantMap data);
+    Q_INVOKABLE
     void removeItem(QString type, QVariantMap data);
 
     void clearByType(QString type);
     void get(QString type);
-    bool isFiltered(const QVariantList& indexPath);
 
 signals:
     void networkRequestStarted();
     void networkRequestFinished();
-    void filterChanged(QString filter);
-    void filterOnChanged(QString filterOn);
+    void filterChanged(QVariantMap filter);
     void emptyChanged(bool empty);
     void toast(QString message);
 
@@ -62,8 +61,7 @@ public slots:
 
 private:
     QNetworkAccessManager *_netAccMan;
-    QString _filter;
-    QString _filterOn;
+    QVariantMap _filter;
     LoginManager *_loginMan;
     PropertiesManager *_propMan;
     QMapListDataModel *_fullDM;
