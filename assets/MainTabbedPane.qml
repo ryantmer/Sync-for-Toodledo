@@ -58,7 +58,7 @@ TabbedPane {
         }
         onTriggered: {
             folderListPage.setFilter({
-                type: "locations"
+                type: "folders"
             });
             taskListPage.setGrouping(false);
         }

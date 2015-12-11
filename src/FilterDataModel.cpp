@@ -34,21 +34,20 @@ FilterDataModel::~FilterDataModel()
 
 QVariant FilterDataModel::data(const QVariantList& indexPath)
 {
+    QVariant data = GroupDataModel::data(indexPath);
+
     // It's a header, so return custom header text ("Due in ...")
     if (hasChildren(indexPath)) {
-        QVariant dueDateCategory = GroupDataModel::data(indexPath);
-        if (dueDateCategory.toInt() == (uint) 9999999999) {
+        if (data.toInt() == (uint) 9999999999) {
             return "No Due Date";
         }
 
-        QDateTime datetime = QDateTime::fromTime_t(dueDateCategory.toInt());
+        QDateTime datetime = QDateTime::fromTime_t(data.toInt());
         QString dateString = datetime.toString("dddd MMMM d yyyy");
 
         QString headerText = "Due " + dateString;
         return QVariant(headerText);
     }
-
-    QVariant data = GroupDataModel::data(indexPath);
 
     if (_filter.isEmpty()) {
         return data;
@@ -124,6 +123,7 @@ void FilterDataModel::setFilter(QVariantMap filter)
         for (QVariantMap::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
             // Check each key in the filters, make sure the item in the DM has a matching value at that key
             QString value = item[iter.key()].value<QString>();
+
             if (!value.contains(iter.value().toString(), Qt::CaseInsensitive)) {
                 matches = false;
             }

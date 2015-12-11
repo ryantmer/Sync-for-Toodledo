@@ -2,7 +2,6 @@ import bb.cascades 1.4
 
 Page {
     id: addTaskPage
-    property string type
 
     paneProperties: NavigationPaneProperties {
         backButton: ActionItem {
@@ -30,7 +29,7 @@ Page {
                 data.title = titleField.text;
                 data.note = noteArea.text;
 
-                app.data.addItem(type, data);
+                app.data.addItem("task", data);
 
                 listNavPane.pop();
             }

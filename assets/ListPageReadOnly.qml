@@ -44,7 +44,14 @@ NavigationPane {
                 horizontalAlignment: HorizontalAlignment.Fill
                 dataModel: app.data
                 onTriggered: {
-                    console.log("Open " + indexPath);
+                    var data = dataModel.data(indexPath);
+                    dataModel.filter = {
+                        type: "task",
+                        folder: data.folder
+                    };
+                    
+                    var page = pagething.createObject();
+                    listNavPane.push(page);
                 }
                 listItemComponents: [
                     ListItemComponent {
@@ -61,6 +68,13 @@ NavigationPane {
                                 description: ListItemData.description
                                 textFormat: TextFormat.Auto
                             }
+                        }
+                    }
+                ]
+                attachedObjects: [
+                    ComponentDefinition {
+                        id: pagething
+                        content: ListPageNoNav {
                         }
                     }
                 ]

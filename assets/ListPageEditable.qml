@@ -39,7 +39,6 @@ NavigationPane {
                 imageSource: "asset:///images/ic_add.png"
                 onTriggered: {
                     var page = addPageDefinition.createObject();
-                    page.type = listView.dataModel.filter
                     listNavPane.push(page);
                 }
             }

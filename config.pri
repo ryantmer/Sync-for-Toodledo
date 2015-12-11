@@ -42,6 +42,7 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/Cover.qml) \
         $$quote($$BASEDIR/assets/EditPage.qml) \
         $$quote($$BASEDIR/assets/ListPageEditable.qml) \
+        $$quote($$BASEDIR/assets/ListPageNoNav.qml) \
         $$quote($$BASEDIR/assets/ListPageReadOnly.qml) \
         $$quote($$BASEDIR/assets/Login.qml) \
         $$quote($$BASEDIR/assets/MainTabbedPane.qml) \
