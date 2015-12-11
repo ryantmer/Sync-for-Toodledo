@@ -14,10 +14,15 @@ FilterDataModel::FilterDataModel(QObject *parent) :
                 "type"), _loginMan(LoginManager::getInstance()), _propMan(
                 PropertiesManager::getInstance()), _fullDM(new QMapListDataModel())
 {
+    setGrouping(ItemGrouping::ByFullValue);
+    setSortingKeys(QStringList() << "sortingKey");
+
     bool ok;
-    ok = connect(_netAccMan, SIGNAL(finished(QNetworkReply*)), this, SLOT(onFinished(QNetworkReply*)));
+    ok = connect(_netAccMan, SIGNAL(finished(QNetworkReply*)), this,
+            SLOT(onFinished(QNetworkReply*)));
     Q_ASSERT(ok);
-    ok = connect(_loginMan, SIGNAL(networkStateChanged(bool)), this, SLOT(onNetworkStateChanged(bool)));
+    ok = connect(_loginMan, SIGNAL(networkStateChanged(bool)), this,
+            SLOT(onNetworkStateChanged(bool)));
     Q_ASSERT(ok);
     ok = connect(_loginMan, SIGNAL(accessTokenRefreshed()), this, SLOT(onAccessTokenRefreshed()));
     Q_ASSERT(ok);
@@ -30,6 +35,20 @@ FilterDataModel::~FilterDataModel()
 
 QVariant FilterDataModel::data(const QVariantList& indexPath)
 {
+    // It's a header, so return custom header text ("Due in ...")
+    if (hasChildren(indexPath)) {
+        QVariant dueDateCategory = GroupDataModel::data(indexPath);
+        if (dueDateCategory.toInt() == (uint) 9999999999) {
+            return "No Due Date";
+        }
+
+        QDateTime datetime = QDateTime::fromTime_t(dueDateCategory.toInt());
+        QString dateString = datetime.toString("dddd MMMM d yyyy");
+
+        QString headerText = "Due " + dateString;
+        return QVariant(headerText);
+    }
+
     QVariant data = GroupDataModel::data(indexPath);
 
     if (_filter == NULL || _filter == "") {
@@ -63,6 +82,20 @@ void FilterDataModel::clearByType(QString type)
 /*
  * Q_PROPERTY functions
  */
+bool FilterDataModel::itemsGrouped()
+{
+    return grouping() == ItemGrouping::ByFullValue;
+}
+
+void FilterDataModel::groupItems(bool group)
+{
+    if (group) {
+        setGrouping(ItemGrouping::ByFullValue);
+    } else {
+        setGrouping(ItemGrouping::None);
+    }
+}
+
 QString FilterDataModel::filter()
 {
     return _filter;
@@ -184,9 +217,9 @@ void FilterDataModel::addItem(QString type, QVariantMap data)
         }
     }
     encodedData.append("}]");
-    encodedData.remove(2, 1);  // Remove initial comma YES THIS IS MESSY I KNOW STOP YELLING.
-    encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");  // Sanitization required by API
-    encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");  // Sanitization required by API
+    encodedData.remove(2, 1); // Remove initial comma YES THIS IS MESSY I KNOW STOP YELLING.
+    encodedData = encodedData.replace("\n", "\\n").replace(" ", "+"); // Sanitization required by API
+    encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", ""); // Sanitization required by API
 
     urlData.addEncodedQueryItem("tasks", encodedData.toAscii());
     urlData.addQueryItem("fields", "folder,tag,startdate,duedate,duedatemod,starttime,"
@@ -228,9 +261,9 @@ void FilterDataModel::editItem(QString type, QVariantMap data)
         }
     }
     encodedData.append("}]");
-    encodedData.remove(2, 1);  // Remove initial comma YES THIS IS MESSY I KNOW STOP YELLING.
-    encodedData = encodedData.replace("\n", "\\n").replace(" ", "+");  // Sanitization required by API
-    encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", "");  // Sanitization required by API
+    encodedData.remove(2, 1); // Remove initial comma YES THIS IS MESSY I KNOW STOP YELLING.
+    encodedData = encodedData.replace("\n", "\\n").replace(" ", "+"); // Sanitization required by API
+    encodedData = QUrl::toPercentEncoding(encodedData, "\"{}[]+\\,:", ""); // Sanitization required by API
 
     urlData.addEncodedQueryItem("tasks", encodedData.toAscii());
     urlData.addQueryItem("fields", "folder,tag,startdate,duedate,duedatemod,starttime,"
@@ -342,6 +375,14 @@ void FilterDataModel::onFinished(QNetworkReply *reply)
             for (int i = 0; i < dataList.size(); ++i) {
                 data = dataList.value(i).toMap();
                 data["type"] = replyDataType;
+
+                // This is ridiculous and weird, but it's an easy way to
+                // a) make tasks without due dates go to the bottom of the list, and
+                // b) group tasks by the day they're due
+                int dueDate = data["duedate"].toInt(0);
+                data["sortingKey"] = dueDate - (dueDate % 86400);
+                data["sortingKey"] = dueDate > 0 ? dueDate : 9999999999;
+
                 _fullDM->append(data);
                 qDebug() << Q_FUNC_INFO << "Inserted a" << data["type"].toString() << "called"
                         << data["title"].toString();

@@ -12,10 +12,12 @@ using namespace bb::cascades;
 
 class FilterDataModel: public GroupDataModel
 {
-    Q_OBJECT
-    Q_PROPERTY(QString filter READ filter WRITE setFilter NOTIFY filterChanged FINAL)
-    Q_PROPERTY(QString filterOn READ filterOn WRITE setFilterOn NOTIFY filterOnChanged FINAL)
-    Q_PROPERTY(bool empty READ empty NOTIFY emptyChanged);
+Q_OBJECT
+
+Q_PROPERTY(bool itemsGrouped READ itemsGrouped WRITE groupItems FINAL)
+Q_PROPERTY(QString filter READ filter WRITE setFilter NOTIFY filterChanged FINAL)
+Q_PROPERTY(QString filterOn READ filterOn WRITE setFilterOn NOTIFY filterOnChanged FINAL)
+Q_PROPERTY(bool empty READ empty NOTIFY emptyChanged)
 
 public:
     static const QString getUrl;
@@ -28,18 +30,16 @@ public:
 
     virtual QVariant data(const QVariantList& indexPath);
 
+    void groupItems(bool grouping);
     void setFilter(QString filter);
     void setFilterOn(QString filterOn);
+    bool itemsGrouped();
     QString filter();
     QString filterOn();
-    bool empty();
-    Q_INVOKABLE
-    void refresh(QString type);
-    Q_INVOKABLE
-    void addItem(QString type, QVariantMap data);
-    Q_INVOKABLE
-    void editItem(QString type, QVariantMap data);
-    Q_INVOKABLE
+    bool empty();Q_INVOKABLE
+    void refresh(QString type);Q_INVOKABLE
+    void addItem(QString type, QVariantMap data);Q_INVOKABLE
+    void editItem(QString type, QVariantMap data);Q_INVOKABLE
     void removeItem(QString type, QVariantMap data);
 
     void clearByType(QString type);

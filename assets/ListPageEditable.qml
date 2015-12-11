@@ -11,9 +11,13 @@ import DataModelUtil 1.0
 NavigationPane {
     id: listNavPane
     property string listTitle
-    
+
     function setFilter(newFilter) {
         listView.dataModel.filter = newFilter;
+    }
+
+    function setGrouping(group) {
+        listView.dataModel.itemsGrouped = group;
     }
 
     Page {
@@ -69,6 +73,12 @@ NavigationPane {
                 }
                 listItemComponents: [
                     ListItemComponent {
+                        type: "header"
+                        Header {
+                            title: ListItemData
+                        }
+                    },
+                    ListItemComponent {
                         type: "item"
                         Container {
                             id: itemContainer
@@ -87,13 +97,12 @@ NavigationPane {
                                         completed: checked ? Math.floor((new Date()).getTime() / 1000) : 0
                                     };
                                     itemContainer.ListItem.view.dataModel.editItem("tasks", data);
-                                    console.log("hey it happened");
                                 }
                             }
 
                             StandardListItem {
                                 title: ListItemData.title
-                                description: ListItemData.description
+                                description: itemContainer.ListItem.view.parseNote(ListItemData.note)
                                 textFormat: TextFormat.Auto
                                 contextActions: [
                                     ActionSet {
@@ -115,7 +124,9 @@ NavigationPane {
                                         cancelButton.enabled: true
                                         onFinished: {
                                             if (result == SystemUiResult.ConfirmButtonSelection) {
-                                                app.data.removeItem(itemContainer.ListItem.view.dataModel.filter, { id: ListItemData.id });
+                                                app.data.removeItem(itemContainer.ListItem.view.dataModel.filter, {
+                                                        id: ListItemData.id
+                                                    });
                                             }
                                         }
                                     }
@@ -124,6 +135,57 @@ NavigationPane {
                         }
                     }
                 ]
+
+                function parseNote(note) {
+                    if (note.indexOf("\n") > -1) {
+                        //Note is multi-line, take first line as description
+                        return note.substring(0, note.indexOf("\n"));
+                    } else {
+                        //Note is a single line
+                        return note;
+                    }
+                }
+
+                function parseDate(dueDate) {
+                    var d = app.unixTimeToDateTime(dueDate);
+                    var formattedDate = "";
+                    var day = d.getDate();
+                    var month = d.getMonth();
+                    month += 1;
+                    var year = d.getFullYear();
+
+                    if (propertyManager.dateFormat == 1) {
+                        // M/D/Y
+                        formattedDate = month + "/" + day + "/" + year;
+                    } else if (propertyManager.dateFormat == 2) {
+                        // D/M/Y
+                        formattedDate = day + "/" + month + "/" + year;
+                    } else if (propertyManager.dateFormat == 3) {
+                        // Y-M-D
+                        formattedDate = year + "-" + month + "-" + day;
+                    } else {
+                        formattedDate = d.toDateString();
+                    }
+
+                    if (dueDate == 0) {
+                        return "No due date";
+                    } else if (dueDate <= Math.floor((new Date()).getTime() / 1000)) {
+                        return "<html><body style=\"color:red\"><b>" + formattedDate + "</b></body></html>";
+                    } else {
+                        return formattedDate;
+                    }
+                }
+
+                function itemType(data, indexPath) {
+                    if (indexPath.length == 1) {
+                        data = {
+                            stuff: "things"
+                        };
+                        return "header";
+                    }
+                    return "item";
+                }
+
                 attachedObjects: [
                     ComponentDefinition {
                         id: editPageDefinition
