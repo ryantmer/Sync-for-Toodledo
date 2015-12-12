@@ -18,7 +18,7 @@ using namespace bb::system;
 SyncForToodledo::SyncForToodledo() :
         QObject(), _propertiesManager(PropertiesManager::getInstance()), _loginManager(
                 LoginManager::getInstance()), _data(new FilterDataModel(this)),
-                _networkRequestCounter(0)
+                _networkRequestCounter(0), _fullscreenFilter(QVariantMap()), _thumbnailFilter(QVariantMap())
 {
     qmlRegisterType < FilterDataModel > ("DataModelUtil", 1, 0, "FilterDataModel");
 
@@ -49,6 +49,7 @@ SyncForToodledo::SyncForToodledo() :
     _coverRoot = qmlCover->createRootObject<Container>();
     SceneCover *cover = SceneCover::create().content(_coverRoot);
     Application::instance()->setCover(cover);
+    _thumbnailFilter["type"] = "tasks";
 
     bool ok;
     ok = connect(_loginWebView, SIGNAL(urlChanged(QUrl)), this, SLOT(onWebViewUrlChanged(QUrl)));
@@ -157,6 +158,17 @@ void SyncForToodledo::logout()
 /*
  * Slots begin
  */
+void SyncForToodledo::onThumbnail()
+{
+    _fullscreenFilter = _data->filter();
+    _data->setFilter(_thumbnailFilter);
+}
+
+void SyncForToodledo::onFullscreen()
+{
+    _data->setFilter(_fullscreenFilter);
+}
+
 void SyncForToodledo::onPositionUpdated(const QGeoPositionInfo &pos)
 {
     double lat = pos.coordinate().latitude();

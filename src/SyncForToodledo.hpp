@@ -46,6 +46,8 @@ signals:
     void loggedOut();
 
 public slots:
+    void onThumbnail();
+    void onFullscreen();
     void onPositionUpdated(const QGeoPositionInfo &pos);
     void onNetworkStateChanged(bool connected);
     void onNetworkRequestStarted(QString message="Loading...");
@@ -66,6 +68,8 @@ private:
     WebView *_loginWebView;
     Dialog *_activityDialog;
     int _networkRequestCounter;
+    QVariantMap _fullscreenFilter;
+    QVariantMap _thumbnailFilter;
 };
 
 #endif /* SYNCFORTOODLEDO_HPP_ */
