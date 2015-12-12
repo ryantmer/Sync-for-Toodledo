@@ -55,9 +55,9 @@ NavigationPane {
                 horizontalAlignment: HorizontalAlignment.Fill
                 dataModel: app.data
                 onTriggered: {
-                    var item = dataModel.data(indexPath);
+                    var data = dataModel.data(indexPath);
                     var page = editPageDefinition.createObject();
-                    page.data = item;
+                    page.data = data;
                     page.setup();
                     listNavPane.push(page);
                 }
