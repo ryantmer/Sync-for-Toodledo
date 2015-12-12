@@ -126,6 +126,7 @@ void FilterDataModel::setFilter(QVariantMap filter)
 
             if (!value.contains(iter.value().toString(), Qt::CaseInsensitive)) {
                 matches = false;
+                break;
             }
         }
         if (matches) {

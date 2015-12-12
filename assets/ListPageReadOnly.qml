@@ -46,8 +46,8 @@ NavigationPane {
                 onTriggered: {
                     var data = dataModel.data(indexPath);
                     dataModel.filter = {
-                        type: "task",
-                        folder: data.folder
+                        type: "tasks",
+                        folder: data.id
                     };
                     
                     var page = pagething.createObject();
