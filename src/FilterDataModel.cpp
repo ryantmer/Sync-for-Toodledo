@@ -37,7 +37,7 @@ QVariant FilterDataModel::data(const QVariantList& indexPath)
     QVariant data = GroupDataModel::data(indexPath);
 
     // It's a header, so return custom header text ("Due in ...")
-    if (hasChildren(indexPath)) {
+    if (itemsGrouped() && hasChildren(indexPath)) {
         if (data.toInt() == (uint) 9999999999) {
             return "No Due Date";
         }

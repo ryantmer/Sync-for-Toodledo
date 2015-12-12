@@ -1,8 +1,6 @@
 import bb.cascades 1.4
 import bb.data 1.0
 import bb.system 1.2
-import DataModelUtil 1.0
-
 
 Page {
     id: listNavPane

@@ -6,7 +6,6 @@
 import bb.cascades 1.4
 import bb.data 1.0
 import bb.system 1.2
-import DataModelUtil 1.0
 
 NavigationPane {
     id: listNavPane
@@ -25,6 +24,7 @@ NavigationPane {
     onPopTransitionEnded: {
         app.data.filter = myFilter;
         app.data.itemsGrouped = myGrouping;
+        listView.dataModel = app.data;
     }
 
     Page {
@@ -45,7 +45,7 @@ NavigationPane {
         Container {
             Label {
                 text: "Hm, didn't find anything..."
-                visible: listView.dataModel.empty
+                visible: listView.dataModel != null && listView.dataModel.empty
                 horizontalAlignment: HorizontalAlignment.Center
             }
             ListView {
@@ -72,6 +72,12 @@ NavigationPane {
                     } else if (dataModel.filter.type == "goals") {
                         filter.goal = data.id;
                     }
+                    
+                    // This prevents some weird visuals - better for the page 
+                    // to go blank than to briefly show the tasks in the given 
+                    // FCGL before the new page opens fully.
+                    listView.dataModel = null;
+                    
                     app.data.filter = filter;
                     app.data.itemsGrouped = true;
 
