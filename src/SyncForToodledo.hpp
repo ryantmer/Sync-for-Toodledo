@@ -65,6 +65,7 @@ private:
     Sheet *_loginSheet;
     WebView *_loginWebView;
     Dialog *_activityDialog;
+    int _networkRequestCounter;
 };
 
 #endif /* SYNCFORTOODLEDO_HPP_ */

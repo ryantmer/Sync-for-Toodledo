@@ -17,7 +17,8 @@ using namespace bb::system;
 
 SyncForToodledo::SyncForToodledo() :
         QObject(), _propertiesManager(PropertiesManager::getInstance()), _loginManager(
-                LoginManager::getInstance()), _data(new FilterDataModel(this))
+                LoginManager::getInstance()), _data(new FilterDataModel(this)),
+                _networkRequestCounter(0)
 {
     qmlRegisterType < FilterDataModel > ("DataModelUtil", 1, 0, "FilterDataModel");
 
@@ -211,12 +212,22 @@ void SyncForToodledo::onNetworkRequestStarted(QString message)
 {
     Label *activityText = _activityDialog->findChild<Label*>("activityText");
     activityText->setText(message);
+    _networkRequestCounter++;
     _activityDialog->open();
 }
 
 void SyncForToodledo::onNetworkRequestFinished()
 {
-    _activityDialog->close();
+    _networkRequestCounter--;
+
+    if (_networkRequestCounter <= 0) {
+        _networkRequestCounter = 0;
+        _activityDialog->close();
+
+        // Little trick to trigger a refresh of the filter on active tab
+        _root->activeTab()->setNewContentAvailable(true);
+        _root->activeTab()->resetNewContentAvailable();
+    }
 }
 
 void SyncForToodledo::onToast(QString message)

@@ -4,7 +4,7 @@ import bb.system 1.2
 
 TabbedPane {
     id: mainTabbedPane
-    objectName: "mainNavPane"
+    objectName: "mainTabbedPane"
     Menu.definition: MenuDefinition {
         settingsAction: SettingsActionItem {
             onTriggered: {
@@ -47,6 +47,12 @@ TabbedPane {
             });
             taskListPage.setGrouping(true);
         }
+        onNewContentAvailableChanged: {
+            taskListPage.setFilter({
+                    type: "tasks"
+            });
+            taskListPage.setGrouping(true);
+        }
     }
 
     Tab {
@@ -61,6 +67,12 @@ TabbedPane {
                 type: "folders"
             });
             taskListPage.setGrouping(false);
+        }
+        onNewContentAvailableChanged: {
+            taskListPage.setFilter({
+                    type: "folders"
+            });
+            taskListPage.setGrouping(true);
         }
     }
 
@@ -77,6 +89,12 @@ TabbedPane {
             });
             taskListPage.setGrouping(false);
         }
+        onNewContentAvailableChanged: {
+            taskListPage.setFilter({
+                    type: "locations"
+            });
+            taskListPage.setGrouping(true);
+        }
     }
 
     Tab {
@@ -92,6 +110,12 @@ TabbedPane {
             });
             taskListPage.setGrouping(false);
         }
+        onNewContentAvailableChanged: {
+            taskListPage.setFilter({
+                    type: "contexts"
+            });
+            taskListPage.setGrouping(true);
+        }
     }
 
     Tab {
@@ -106,6 +130,12 @@ TabbedPane {
                 type: "goals"
             });
             taskListPage.setGrouping(false);
+        }
+        onNewContentAvailableChanged: {
+            taskListPage.setFilter({
+                    type: "goals"
+            });
+            taskListPage.setGrouping(true);
         }
     }
 }
