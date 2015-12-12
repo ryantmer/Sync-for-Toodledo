@@ -45,10 +45,28 @@ NavigationPane {
                 dataModel: app.data
                 onTriggered: {
                     var data = dataModel.data(indexPath);
-                    dataModel.filter = {
-                        type: "tasks",
-                        folder: data.id
-                    };
+                    
+                    if (dataModel.filter.type == "folders") {
+                        dataModel.filter = {
+                            type: "tasks",
+                            folder: data.id
+                        };
+                    } else if (dataModel.filter.type == "locations") {
+                        dataModel.filter = {
+                            type: "tasks",
+                            location: data.id
+                        };
+                    } else if (dataModel.filter.type == "contexts") {
+                        dataModel.filter = {
+                            type: "tasks",
+                            context: data.id
+                        };
+                    } else if (dataModel.filter.type == "goals") {
+                        dataModel.filter = {
+                            type: "tasks",
+                            goal: data.id
+                        };
+                    }
                     
                     var page = pagething.createObject();
                     listNavPane.push(page);
