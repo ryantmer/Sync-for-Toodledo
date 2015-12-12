@@ -42,16 +42,16 @@ TabbedPane {
             listTitle: "All Tasks"
         }
         onTriggered: {
-            taskListPage.setFilter({
+            app.data.filter = {
                 type: "tasks"
-            });
-            taskListPage.setGrouping(true);
+            }
+            app.data.itemsGrouped = true;
         }
         onNewContentAvailableChanged: {
-            taskListPage.setFilter({
-                    type: "tasks"
-            });
-            taskListPage.setGrouping(true);
+            app.data.filter = {
+                type: "tasks"
+            }
+            app.data.itemsGrouped = true;
         }
     }
 
@@ -63,16 +63,10 @@ TabbedPane {
             listTitle: "Folders"
         }
         onTriggered: {
-            folderListPage.setFilter({
-                type: "folders"
-            });
-            taskListPage.setGrouping(false);
+            folderListPage.setup({ type: "folders" }, false);
         }
         onNewContentAvailableChanged: {
-            taskListPage.setFilter({
-                    type: "folders"
-            });
-            taskListPage.setGrouping(true);
+            folderListPage.setup({ type: "folders" }, false);
         }
     }
 
@@ -84,16 +78,10 @@ TabbedPane {
             listTitle: "Locations"
         }
         onTriggered: {
-            locationListPage.setFilter({
-                type: "locations"
-            });
-            taskListPage.setGrouping(false);
+            locationListPage.setup({ type: "locations" }, false);
         }
         onNewContentAvailableChanged: {
-            taskListPage.setFilter({
-                    type: "locations"
-            });
-            taskListPage.setGrouping(true);
+            locationListPage.setup({ type: "locations" }, false);
         }
     }
 
@@ -105,16 +93,10 @@ TabbedPane {
             listTitle: "Contexts"
         }
         onTriggered: {
-            contextListPage.setFilter({
-                type: "contexts"
-            });
-            taskListPage.setGrouping(false);
+            contextListPage.setup({ type: "contexts" }, false);
         }
         onNewContentAvailableChanged: {
-            taskListPage.setFilter({
-                    type: "contexts"
-            });
-            taskListPage.setGrouping(true);
+            contextListPage.setup({ type: "contexts" }, false);
         }
     }
 
@@ -126,16 +108,10 @@ TabbedPane {
             listTitle: "Goals"
         }
         onTriggered: {
-            goalListPage.setFilter({
-                type: "goals"
-            });
-            taskListPage.setGrouping(false);
+            goalListPage.setup({ type: "goals" }, false);
         }
         onNewContentAvailableChanged: {
-            taskListPage.setFilter({
-                    type: "goals"
-            });
-            taskListPage.setGrouping(true);
+            goalListPage.setup({ type: "goals" }, false);
         }
     }
 }

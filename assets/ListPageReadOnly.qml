@@ -1,5 +1,5 @@
 /*
- * ListView page which does not allow for adding/deleting. When an item is 
+ * ListView page which does not allow for adding/deleting. When an item is
  * selected, it filters the underlying data model based on the selection.
  */
 
@@ -11,9 +11,20 @@ import DataModelUtil 1.0
 NavigationPane {
     id: listNavPane
     property string listTitle
-    
-    function setFilter(newFilter) {
-        listView.dataModel.filter = newFilter;
+    property variant myFilter
+    property bool myGrouping
+
+    function setup(filter, grouping) {
+        app.data.filter = filter;
+        app.data.itemsGrouped = grouping;
+
+        myFilter = filter;
+        myGrouping = grouping;
+    }
+
+    onPopTransitionEnded: {
+        app.data.filter = myFilter;
+        app.data.itemsGrouped = myGrouping;
     }
 
     Page {
@@ -26,7 +37,7 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    listView.dataModel.refresh(listView.dataModel.filter);
+                    listView.dataModel.refresh(listView.dataModel.filter.type);
                 }
             }
         ]
@@ -45,30 +56,25 @@ NavigationPane {
                 dataModel: app.data
                 onTriggered: {
                     var data = dataModel.data(indexPath);
-                    
+
+                    var page = pageDef.createObject();
+                    page.listTitle = data.name;
+
+                    var filter = {
+                        type: "tasks"
+                    };
                     if (dataModel.filter.type == "folders") {
-                        dataModel.filter = {
-                            type: "tasks",
-                            folder: data.id
-                        };
+                        filter.folder = data.id;
                     } else if (dataModel.filter.type == "locations") {
-                        dataModel.filter = {
-                            type: "tasks",
-                            location: data.id
-                        };
+                        filter.location = data.id;
                     } else if (dataModel.filter.type == "contexts") {
-                        dataModel.filter = {
-                            type: "tasks",
-                            context: data.id
-                        };
+                        filter.context = data.id;
                     } else if (dataModel.filter.type == "goals") {
-                        dataModel.filter = {
-                            type: "tasks",
-                            goal: data.id
-                        };
+                        filter.goal = data.id;
                     }
-                    
-                    var page = pagething.createObject();
+                    app.data.filter = filter;
+                    app.data.itemsGrouped = true;
+
                     listNavPane.push(page);
                 }
                 listItemComponents: [
@@ -80,7 +86,7 @@ NavigationPane {
                                 orientation: LayoutOrientation.LeftToRight
                             }
                             leftPadding: 10.0
-                            
+
                             StandardListItem {
                                 title: ListItemData.title
                                 description: ListItemData.description
@@ -91,7 +97,7 @@ NavigationPane {
                 ]
                 attachedObjects: [
                     ComponentDefinition {
-                        id: pagething
+                        id: pageDef
                         content: ListPageNoNav {
                         }
                     }

@@ -82,7 +82,9 @@ void FilterDataModel::clearByType(QString type)
             _fullDM->removeAt(i);
         }
     }
+
     emit emptyChanged(empty());
+    emit itemsChanged(DataModelChangeType::AddRemove);
 }
 
 /*
@@ -135,7 +137,7 @@ void FilterDataModel::setFilter(QVariantMap filter)
     }
 
     emit emptyChanged(empty());
-    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+    emit itemsChanged(DataModelChangeType::AddRemove);
 }
 
 bool FilterDataModel::empty()
@@ -424,6 +426,7 @@ void FilterDataModel::onFinished(QNetworkReply *reply)
     // Tells UI to hide activity indicator
     emit networkRequestFinished();
     emit emptyChanged(empty());
+    emit itemsChanged(DataModelChangeType::AddRemove);
 }
 
 void FilterDataModel::onLogOut()

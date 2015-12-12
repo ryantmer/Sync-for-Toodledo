@@ -12,14 +12,6 @@ NavigationPane {
     id: listNavPane
     property string listTitle
 
-    function setFilter(newFilter) {
-        listView.dataModel.filter = newFilter;
-    }
-
-    function setGrouping(group) {
-        listView.dataModel.itemsGrouped = group;
-    }
-
     Page {
         titleBar: TitleBar {
             title: "Sync for Toodledo - " + listTitle
@@ -30,7 +22,7 @@ NavigationPane {
                 ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "asset:///images/ic_reload.png"
                 onTriggered: {
-                    listView.dataModel.refresh(listView.dataModel.filter);
+                    listView.dataModel.refresh(listView.dataModel.filter.type);
                 }
             },
             ActionItem {

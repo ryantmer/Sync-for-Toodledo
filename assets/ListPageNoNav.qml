@@ -5,6 +5,7 @@ import DataModelUtil 1.0
 
 
 Page {
+    id: listNavPane
     property string listTitle
     
     titleBar: TitleBar {
@@ -16,7 +17,7 @@ Page {
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_reload.png"
             onTriggered: {
-                listView.dataModel.refresh(listView.dataModel.filter);
+                listView.dataModel.refresh(listView.dataModel.filter.type);
             }
         },
         ActionItem {
