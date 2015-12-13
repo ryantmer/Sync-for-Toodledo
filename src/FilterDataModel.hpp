@@ -64,7 +64,7 @@ private:
     QVariantMap _filter;
     LoginManager *_loginMan;
     PropertiesManager *_propMan;
-    QMapListDataModel *_fullDM;
+    QVariantList *_allData;
     int _count;
 };
 

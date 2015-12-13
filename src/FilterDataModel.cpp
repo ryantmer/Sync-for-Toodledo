@@ -11,7 +11,7 @@ using namespace bb::data;
 
 FilterDataModel::FilterDataModel(QObject *parent) :
         GroupDataModel(parent), _netAccMan(new QNetworkAccessManager(this)), _filter(), _loginMan(LoginManager::getInstance()), _propMan(
-                PropertiesManager::getInstance()), _fullDM(new QMapListDataModel())
+                PropertiesManager::getInstance()), _allData(new QVariantList())
 {
     setGrouping(ItemGrouping::ByFullValue);
     setSortingKeys(QStringList() << "sortingKey");
@@ -75,11 +75,11 @@ void FilterDataModel::clearByType(QString type)
 {
     QVariantMap item;
     // Remove all entries that have the type we're looking for
-    for (int i = _fullDM->size() - 1; i >= 0; --i) {
-        item = _fullDM->value(i);
+    for (int i = _allData->size() - 1; i >= 0; --i) {
+        item = _allData->value(i).toMap();
         QString itemType = item["type"].value<QString>();
         if (itemType == type) {
-            _fullDM->removeAt(i);
+            _allData->removeAt(i);
         }
     }
 
@@ -118,8 +118,8 @@ void FilterDataModel::setFilter(QVariantMap filter)
     QVariantMap item;
     bool matches = true;
     // Insert only the items from the full DM that match our criteria
-    for (int i = 0; i < _fullDM->size(); ++i) {
-        item = _fullDM->value(i);
+    for (int i = 0; i < _allData->size(); ++i) {
+        item = _allData->value(i).toMap();
         matches = true;
 
         for (QVariantMap::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
@@ -379,7 +379,7 @@ void FilterDataModel::onFinished(QNetworkReply *reply)
                 data["sortingKey"] = dueDate - (dueDate % 86400);
                 data["sortingKey"] = dueDate > 0 ? dueDate : 9999999999;
 
-                _fullDM->append(data);
+                _allData->append(data);
                 qDebug() << Q_FUNC_INFO << "Inserted a" << data["type"].toString() << "called"
                         << data["title"].toString();
             }
@@ -392,15 +392,15 @@ void FilterDataModel::onFinished(QNetworkReply *reply)
                 data = dataList.value(i).toMap();
                 data["type"] = replyDataType;
 
-                for (int j = 0; j < _fullDM->size(); ++j) {
-                    compareTo = _fullDM->value(j);
+                for (int j = 0; j < _allData->size(); ++j) {
+                    compareTo = _allData->value(j).toMap();
                     if (data["type"] == replyDataType && data["id"] == compareTo["id"]) {
                         if (replyUrl.contains("edit")) {
-                            _fullDM->replace(j, data);
+                            _allData->replace(j, data);
                             qDebug() << Q_FUNC_INFO << "Edited a" << data["type"].toString()
                                     << "called" << data["title"].toString();
                         } else {
-                            _fullDM->removeAt(j);
+                            _allData->removeAt(j);
                             qDebug() << Q_FUNC_INFO << "Removed a" << data["type"].toString()
                                     << "called" << data["title"].toString();
                         }
@@ -416,7 +416,7 @@ void FilterDataModel::onFinished(QNetworkReply *reply)
             data = dataList.value(i).toMap();
             data["type"] = replyDataType;
             data["title"] = data["name"].toString();
-            _fullDM->append(data);
+            _allData->append(data);
             qDebug() << Q_FUNC_INFO << "Inserted a" << data["type"].toString() << "called"
                     << data["title"].toString();
         }
