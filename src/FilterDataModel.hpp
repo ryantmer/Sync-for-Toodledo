@@ -17,6 +17,7 @@ Q_OBJECT
 Q_PROPERTY(bool itemsGrouped READ itemsGrouped WRITE groupItems FINAL)
 Q_PROPERTY(QVariantMap filter READ filter WRITE setFilter NOTIFY filterChanged FINAL)
 Q_PROPERTY(bool empty READ empty NOTIFY emptyChanged)
+Q_PROPERTY(QVariantList allData READ allData FINAL)
 
 public:
     static const QString getUrl;
@@ -29,11 +30,13 @@ public:
 
     virtual QVariant data(const QVariantList& indexPath);
 
-    void groupItems(bool grouping);
-    void setFilter(QVariantMap filter);
     bool itemsGrouped();
     QVariantMap filter();
     bool empty();
+    QVariantList allData();
+    void groupItems(bool grouping);
+    void setFilter(QVariantMap filter);
+
     Q_INVOKABLE
     void refresh(QString type);
     Q_INVOKABLE

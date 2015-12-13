@@ -10,8 +10,9 @@ using namespace bb::cascades;
 using namespace bb::data;
 
 FilterDataModel::FilterDataModel(QObject *parent) :
-        GroupDataModel(parent), _netAccMan(new QNetworkAccessManager(this)), _filter(), _loginMan(LoginManager::getInstance()), _propMan(
-                PropertiesManager::getInstance()), _allData(new QVariantList())
+        GroupDataModel(parent), _netAccMan(new QNetworkAccessManager(this)), _filter(), _loginMan(
+                LoginManager::getInstance()), _propMan(PropertiesManager::getInstance()), _allData(
+                new QVariantList())
 {
     setGrouping(ItemGrouping::ByFullValue);
     setSortingKeys(QStringList() << "sortingKey");
@@ -95,6 +96,21 @@ bool FilterDataModel::itemsGrouped()
     return grouping() == ItemGrouping::ByFullValue;
 }
 
+QVariantMap FilterDataModel::filter()
+{
+    return _filter;
+}
+
+bool FilterDataModel::empty()
+{
+    return size() == 0;
+}
+
+QVariantList FilterDataModel::allData()
+{
+    return *_allData;
+}
+
 void FilterDataModel::groupItems(bool group)
 {
     if (group) {
@@ -102,11 +118,6 @@ void FilterDataModel::groupItems(bool group)
     } else {
         setGrouping(ItemGrouping::None);
     }
-}
-
-QVariantMap FilterDataModel::filter()
-{
-    return _filter;
 }
 
 void FilterDataModel::setFilter(QVariantMap filter)
@@ -138,11 +149,6 @@ void FilterDataModel::setFilter(QVariantMap filter)
 
     emit emptyChanged(empty());
     emit itemsChanged(DataModelChangeType::AddRemove);
-}
-
-bool FilterDataModel::empty()
-{
-    return size() == 0;
 }
 
 /*

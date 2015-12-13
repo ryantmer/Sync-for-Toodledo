@@ -110,8 +110,67 @@ Page {
             }
         }
         
-        // TODO: Populate & select correct value on FCGL dropdowns
-        // TODO: Fix checkbox behaviour (fields not disabled when checkbox is set to unchecked on first load)
+        // Fill out FCGL dropdowns
+        for (var i = 0; i < app.data.allData.length; ++i) {
+            var item = app.data.allData[i];
+            if (item.type == "folders") {
+                if (item.archived != 0) {
+                    continue;
+                }
+                var opt = option.createObject();
+                opt.text = item.name;
+                opt.value = item.id;
+                folderDropdown.add(opt);
+            } else if (item.type == "goals") {
+                if (item.archived != 0) {
+                    continue;
+                }
+                var opt = option.createObject();
+                opt.text = item.name;
+                opt.value = item.id;
+                goalDropdown.add(opt);
+            } else if (item.type == "contexts") {
+                var opt = option.createObject();
+                opt.text = item.name;
+                opt.value = item.id;
+                contextDropdown.add(opt);
+            } else if (item.type == "locations") {
+                var opt = option.createObject();
+                opt.text = item.name;
+                opt.value = item.id;
+                locationDropdown.add(opt);
+            }
+        }
+        
+        // Set FCGL options to be whatever the task being edited has
+        if (data.folder != 0) {
+            for (index = 0; index < folderDropdown.options.length; ++index) {
+                if (data.folder == folderDropdown.options[index].value) {
+                    folderDropdown.setSelectedIndex(index);
+                }
+            }
+        }
+        if (data.goal != 0) {
+            for (index = 0; index < goalDropdown.options.length; ++index) {
+                if (data.goal == goalDropdown.options[index].value) {
+                    goalDropdown.setSelectedIndex(index);
+                }
+            }
+        }
+        if (data.context != 0) {
+            for (index = 0; index < contextDropdown.options.length; ++index) {
+                if (data.context == contextDropdown.options[index].value) {
+                    contextDropdown.setSelectedIndex(index);
+                }
+            }
+        }
+        if (data.location != 0) {
+            for (index = 0; index < locationDropdown.options.length; ++index) {
+                if (data.location == locationDropdown.options[index].value) {
+                    locationDropdown.setSelectedIndex(index);
+                }
+            }
+        }
     }
 
     ScrollView {

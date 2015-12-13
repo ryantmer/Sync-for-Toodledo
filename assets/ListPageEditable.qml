@@ -127,11 +127,11 @@ NavigationPane {
                 ]
 
                 function parseNote(note) {
-                    if (note.indexOf("\n") > -1) {
+                    if ('string' == typeof note && note.indexOf("\n") > -1) {
                         //Note is multi-line, take first line as description
                         return note.substring(0, note.indexOf("\n"));
                     } else {
-                        //Note is a single line
+                        //Note is a single line, or undefined
                         return note;
                     }
                 }
