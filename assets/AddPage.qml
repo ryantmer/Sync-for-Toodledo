@@ -2,15 +2,7 @@ import bb.cascades 1.4
 
 Page {
     id: addTaskPage
-
-    paneProperties: NavigationPaneProperties {
-        backButton: ActionItem {
-            title: "Cancel"
-            onTriggered: {
-                listNavPane.pop();
-            }
-        }
-    }
+    
     actions: [
         ActionItem {
             id: addButton

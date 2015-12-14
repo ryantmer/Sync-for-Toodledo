@@ -8,7 +8,7 @@ import bb.data 1.0
 import bb.system 1.2
 
 NavigationPane {
-    id: listNavPane
+    id: listNavPaneReadOnly
     property string listTitle
     property variant myFilter
     property bool myGrouping
@@ -25,6 +25,7 @@ NavigationPane {
         app.data.filter = myFilter;
         app.data.itemsGrouped = myGrouping;
         listView.dataModel = app.data;
+        page.destroy();
     }
 
     Page {
@@ -81,7 +82,7 @@ NavigationPane {
                     app.data.filter = filter;
                     app.data.itemsGrouped = true;
 
-                    listNavPane.push(page);
+                    listNavPaneReadOnly.push(page);
                 }
                 listItemComponents: [
                     ListItemComponent {

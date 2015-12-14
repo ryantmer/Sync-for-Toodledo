@@ -8,8 +8,12 @@ import bb.data 1.0
 import bb.system 1.2
 
 NavigationPane {
-    id: listNavPane
+    id: listNavPaneEditable
     property string listTitle
+    
+    onPopTransitionEnded: {
+        page.destroy();
+    }
 
     Page {
         titleBar: TitleBar {
@@ -30,7 +34,7 @@ NavigationPane {
                 imageSource: "asset:///images/ic_add.png"
                 onTriggered: {
                     var page = addPageDefinition.createObject();
-                    listNavPane.push(page);
+                    listNavPaneEditable.push(page);
                 }
             }
         ]
@@ -59,7 +63,7 @@ NavigationPane {
                     var page = editPageDefinition.createObject();
                     page.data = data;
                     page.setup();
-                    listNavPane.push(page);
+                    listNavPaneEditable.push(page);
                 }
                 listItemComponents: [
                     ListItemComponent {

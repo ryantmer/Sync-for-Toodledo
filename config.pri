@@ -41,11 +41,13 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/AddPage.qml) \
         $$quote($$BASEDIR/assets/Cover.qml) \
         $$quote($$BASEDIR/assets/EditPage.qml) \
+        $$quote($$BASEDIR/assets/ListPage.qml) \
         $$quote($$BASEDIR/assets/ListPageEditable.qml) \
         $$quote($$BASEDIR/assets/ListPageNoNav.qml) \
         $$quote($$BASEDIR/assets/ListPageReadOnly.qml) \
         $$quote($$BASEDIR/assets/Login.qml) \
         $$quote($$BASEDIR/assets/MainTabbedPane.qml) \
+        $$quote($$BASEDIR/assets/Navigation.qml) \
         $$quote($$BASEDIR/assets/Settings.qml) \
         $$quote($$BASEDIR/assets/images/all_tasks.png) \
         $$quote($$BASEDIR/assets/images/checkmark.png) \

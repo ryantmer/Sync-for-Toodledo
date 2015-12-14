@@ -1,5 +1,5 @@
 1
-22
+24
 About.qml
 ActivityDialog.qml
 AddPage.qml
@@ -16,9 +16,11 @@ images/ic_locations.png
 images/ic_reload.png
 images/ic_save.png
 images/ic_settings.png
+ListPage.qml
 ListPageEditable.qml
 ListPageNoNav.qml
 ListPageReadOnly.qml
 Login.qml
 MainTabbedPane.qml
+Navigation.qml
 Settings.qml

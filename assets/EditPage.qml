@@ -3,15 +3,7 @@ import bb.cascades 1.4
 Page {
     id: editTaskPage
     property variant data
-
-    paneProperties: NavigationPaneProperties {
-        backButton: ActionItem {
-            title: "Cancel"
-            onTriggered: {
-                listNavPane.pop();
-            }
-        }
-    }
+    
     attachedObjects: [
         ComponentDefinition {
             id: option
@@ -31,12 +23,72 @@ Page {
                     return;
                 }
 
-                var newData = data;
+                var newData = {
+                    id: data.id
+                };
 
-                newData.title = titleField.text;
-                newData.note = noteArea.text;
+                // Only insert values that have changed
+                // All dem text values
+                if (titleField.text != data.title) {
+                    newData.title = titleField.text;
+                }
+                if (noteArea.text != data.note) {
+                    newData.note = noteArea.text;
+                }
+                if (tagField.text != data.tag) {
+                    newData.tag = tagField.text;
+                }
+                // All dem pickers
+                if (duedateCheckbox.checked && app.dateTimeToUnixTime(duedatePicker.value) != data.duedate) {
+                    newData.duedate = app.dateTimeToUnixTime(duedatePicker.value);
+                }
+                if (duetimeCheckbox.checked && app.dateTimeToUnixTime(duetimePicker.value) != data.duetime) {
+                    newData.duetime = app.dateTimeToUnixTime(duetimePicker.value);
+                }
+                if (startdateCheckbox.checked && app.dateTimeToUnixTime(startdatePicker.value) != data.startdate) {
+                    newData.startdate = app.dateTimeToUnixTime(startdatePicker.value);
+                }
+                if (starttimeCheckbox.checked && app.dateTimeToUnixTime(starttimePicker.value) != data.starttime) {
+                    newData.starttime = app.dateTimeToUnixTime(starttimePicker.value);
+                }
+                if (lengthCheckbox.checked && app.dateTimeToUnixTime(lengthPicker.value) != data.length) {
+                    newData.length = app.dateTimeToUnixTime(lengthPicker.value);
+                }
+                // All dem dropdowns
+                if (folderDropdown.selectedValue != data.folder) {
+                    newData.folder = folderDropdown.selectedValue;
+                }
+                console.log(contextDropdown.selectedValue, data.context);
+                if (contextDropdown.selectedValue != undefined && contextDropdown.selectedValue != data.context) {
+                    newData.context = contextDropdown.selectedValue;
+                }
+                if (goalDropdown.selectedValue != undefined && goalDropdown.selectedValue != data.goal) {
+                    newData.goal = goalDropdown.selectedValue;
+                }
+                if (locationDropdown.selectedValue != undefined && locationDropdown.selectedValue != data.location) {
+                    newData.location = locationDropdown.selectedValue;
+                }
+                if (duedatemodDropdown.selectedValue != data.duedatemod) {
+                    newData.duedatemod = duedatemodDropdown.selectedValue;
+                }
+                if (remindDropdown.selectedValue != data.remind) {
+                    newData.remind = remindDropdown.selectedValue;
+                }
+                if (repeatDropdown.selectedValue != data.repeat) {
+                    newData.repeat = repeatDropdown.selectedValue;
+                }
+                if (statusDropdown.selectedValue != data.status) {
+                    newData.status = statusDropdown.selectedValue;
+                }
+                if (priorityDropdown.selectedValue != data.priority) {
+                    newData.priority = priorityDropdown.selectedValue;
+                }
+                // And the lonely star.
+                if (starToggle.checked + 0 != data.star) {
+                    newData.star = starToggle.checked + 0;
+                }
 
-                app.tasks.edit(data, newData);
+                app.data.editItem("tasks", newData);
 
                 listNavPane.pop();
             }

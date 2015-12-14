@@ -35,7 +35,7 @@ Page {
             }
         }
     ]
-
+    
     Container {
         Label {
             text: "Hm, didn't find anything... Add one below!"
@@ -49,11 +49,13 @@ Page {
             horizontalAlignment: HorizontalAlignment.Fill
             dataModel: app.data
             onTriggered: {
-                var item = dataModel.data(indexPath);
-                var page = editPageDefinition.createObject();
-                page.data = item;
-                page.setup();
-                listNavPaneReadOnly.push(page);
+                if (dataModel.filter.type == "tasks") {
+                    var item = dataModel.data(indexPath);
+                    var page = editPageDefinition.createObject();
+                    page.data = item;
+                    page.setup();
+                    navigationPane.push(page);
+                }
             }
             listItemComponents: [
                 ListItemComponent {
@@ -70,7 +72,7 @@ Page {
                             orientation: LayoutOrientation.LeftToRight
                         }
                         leftPadding: 10.0
-
+                        
                         CheckBox {
                             checked: ListItemData.completed
                             verticalAlignment: VerticalAlignment.Center
@@ -83,7 +85,7 @@ Page {
                                 itemContainer.ListItem.view.dataModel.editItem("tasks", data);
                             }
                         }
-
+                        
                         StandardListItem {
                             title: ListItemData.title
                             description: itemContainer.ListItem.view.parseNote(ListItemData.note)
@@ -110,7 +112,7 @@ Page {
                                         if (result == SystemUiResult.ConfirmButtonSelection) {
                                             app.data.removeItem(itemContainer.ListItem.view.dataModel.filter, {
                                                     id: ListItemData.id
-                                                });
+                                            });
                                         }
                                     }
                                 }
@@ -119,7 +121,7 @@ Page {
                     }
                 }
             ]
-
+            
             function parseNote(note) {
                 if (note.indexOf("\n") > -1) {
                     //Note is multi-line, take first line as description
@@ -129,7 +131,7 @@ Page {
                     return note;
                 }
             }
-
+            
             function parseDate(dueDate) {
                 var d = app.unixTimeToDateTime(dueDate);
                 var formattedDate = "";
@@ -137,7 +139,7 @@ Page {
                 var month = d.getMonth();
                 month += 1;
                 var year = d.getFullYear();
-
+                
                 if (propertyManager.dateFormat == 1) {
                     // M/D/Y
                     formattedDate = month + "/" + day + "/" + year;
@@ -150,7 +152,7 @@ Page {
                 } else {
                     formattedDate = d.toDateString();
                 }
-
+                
                 if (dueDate == 0) {
                     return "No due date";
                 } else if (dueDate <= Math.floor((new Date()).getTime() / 1000)) {
@@ -159,7 +161,7 @@ Page {
                     return formattedDate;
                 }
             }
-
+            
             function itemType(data, indexPath) {
                 if (indexPath.length == 1) {
                     data = {
@@ -169,7 +171,7 @@ Page {
                 }
                 return "item";
             }
-
+            
             attachedObjects: [
                 ComponentDefinition {
                     id: editPageDefinition

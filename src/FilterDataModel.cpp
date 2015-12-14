@@ -242,6 +242,13 @@ void FilterDataModel::editItem(QString type, QVariantMap data)
 {
     // Called by UI; creates network request to edit an item in the data model of the specified type
     // Doesn't actually get updated in the data model until the reply comes back
+
+    // In the event that save was hit, but no values actually changed
+    // (the 1 present key will be the id, which is always set anyway)
+    if (data.keys().length() <= 1) {
+        return;
+    }
+
     QUrl url;
     QUrl urlData;
     QVariantMap::iterator iter;

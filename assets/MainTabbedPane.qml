@@ -33,85 +33,84 @@ TabbedPane {
             }
         ]
     }
+    
+    function setFilterAndGrouping(filter, grouping) {
+        app.data.filter = filter;
+        app.data.itemsGrouped = grouping;
+    }
 
     Tab {
         title: "All Tasks"
         imageSource: "asset:///images/checkmark.png"
-        ListPageEditable {
-            id: taskListPage
+        Navigation {
+            id: taskNav
             listTitle: "All Tasks"
         }
         onTriggered: {
-            app.data.filter = {
-                type: "tasks"
-            }
-            app.data.itemsGrouped = true;
+            setFilterAndGrouping({ type: "tasks" }, true);
         }
         onNewContentAvailableChanged: {
-            app.data.filter = {
-                type: "tasks"
-            }
-            app.data.itemsGrouped = true;
+            setFilterAndGrouping({ type: "tasks" }, true);
         }
     }
 
     Tab {
         title: "Folders"
         imageSource: "asset:///images/ic_folders.png"
-        ListPageReadOnly {
-            id: folderListPage
+        Navigation {
+            id: folderNav
             listTitle: "Folders"
         }
         onTriggered: {
-            folderListPage.setup({ type: "folders" }, false);
+            setFilterAndGrouping({ type: "folders" }, false);
         }
         onNewContentAvailableChanged: {
-            folderListPage.setup({ type: "folders" }, false);
+            setFilterAndGrouping({ type: "folders" }, false);
         }
     }
 
     Tab {
         title: "Locations"
         imageSource: "asset:///images/ic_locations.png"
-        ListPageReadOnly {
-            id: locationListPage
+        Navigation {
+            id: locationNav
             listTitle: "Locations"
         }
         onTriggered: {
-            locationListPage.setup({ type: "locations" }, false);
+            setFilterAndGrouping({ type: "locations" }, false);
         }
         onNewContentAvailableChanged: {
-            locationListPage.setup({ type: "locations" }, false);
+            setFilterAndGrouping({ type: "locations" }, false);
         }
     }
 
     Tab {
         title: "Contexts"
         imageSource: "asset:///images/ic_contexts.png"
-        ListPageReadOnly {
-            id: contextListPage
+        Navigation {
+            id: contextNav
             listTitle: "Contexts"
         }
         onTriggered: {
-            contextListPage.setup({ type: "contexts" }, false);
+            setFilterAndGrouping({ type: "contexts" }, false);
         }
         onNewContentAvailableChanged: {
-            contextListPage.setup({ type: "contexts" }, false);
+            setFilterAndGrouping({ type: "contexts" }, false);
         }
     }
 
     Tab {
         title: "Goals"
         imageSource: "asset:///images/ic_goals.png"
-        ListPageReadOnly {
-            id: goalListPage
+        Navigation {
+            id: goalNav
             listTitle: "Goals"
         }
         onTriggered: {
-            goalListPage.setup({ type: "goals" }, false);
+            setFilterAndGrouping({ type: "goals" }, false);
         }
         onNewContentAvailableChanged: {
-            goalListPage.setup({ type: "goals" }, false);
+            setFilterAndGrouping({ type: "goals" }, false);
         }
     }
 }
