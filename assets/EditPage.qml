@@ -90,7 +90,7 @@ Page {
 
                 app.data.editItem("tasks", newData);
 
-                listNavPane.pop();
+                navigationPane.pop();
             }
         }
     ]

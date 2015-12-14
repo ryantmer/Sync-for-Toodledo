@@ -23,7 +23,7 @@ Page {
 
                 app.data.addItem("task", data);
 
-                listNavPane.pop();
+                navigationPane.pop();
             }
         }
     ]
