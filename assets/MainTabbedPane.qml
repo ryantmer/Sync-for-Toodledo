@@ -62,10 +62,10 @@ TabbedPane {
             listTitle: "Folders"
         }
         onTriggered: {
-            setFilterAndGrouping({ type: "folders" }, false);
+            setFilterAndGrouping({ type: "folders" }, true);
         }
         onNewContentAvailableChanged: {
-            setFilterAndGrouping({ type: "folders" }, false);
+            setFilterAndGrouping({ type: "folders" }, true);
         }
     }
 
@@ -77,10 +77,10 @@ TabbedPane {
             listTitle: "Locations"
         }
         onTriggered: {
-            setFilterAndGrouping({ type: "locations" }, false);
+            setFilterAndGrouping({ type: "locations" }, true);
         }
         onNewContentAvailableChanged: {
-            setFilterAndGrouping({ type: "locations" }, false);
+            setFilterAndGrouping({ type: "locations" }, true);
         }
     }
 
@@ -92,10 +92,10 @@ TabbedPane {
             listTitle: "Contexts"
         }
         onTriggered: {
-            setFilterAndGrouping({ type: "contexts" }, false);
+            setFilterAndGrouping({ type: "contexts" }, true);
         }
         onNewContentAvailableChanged: {
-            setFilterAndGrouping({ type: "contexts" }, false);
+            setFilterAndGrouping({ type: "contexts" }, true);
         }
     }
 
@@ -107,10 +107,10 @@ TabbedPane {
             listTitle: "Goals"
         }
         onTriggered: {
-            setFilterAndGrouping({ type: "goals" }, false);
+            setFilterAndGrouping({ type: "goals" }, true);
         }
         onNewContentAvailableChanged: {
-            setFilterAndGrouping({ type: "goals" }, false);
+            setFilterAndGrouping({ type: "goals" }, true);
         }
     }
 }

@@ -4,6 +4,17 @@ import bb.system 1.2
 
 Page {
     property string listTitle
+    property variant previousFilter
+    
+    paneProperties: NavigationPaneProperties {
+        backButton: ActionItem {
+            onTriggered: {
+                // Restore the parent's filter when this is closed
+                app.data.filter = previousFilter;
+                navigationPane.pop();
+            }
+        }
+    }
     
     titleBar: TitleBar {
         title: "Sync for Toodledo - " + listTitle
@@ -19,12 +30,12 @@ Page {
         },
         ActionItem {
             title: "Add"
+            enabled: app.data.filter.type == "tasks"
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_add.png"
             onTriggered: {
                 var page = addPageDefinition.createObject();
-                page.type = listView.dataModel.filter
-                listNavPaneReadOnly.push(page);
+                navigationPane.push(page);
             }
         }
     ]
@@ -35,7 +46,7 @@ Page {
             }
         }
     ]
-
+    
     Container {
         Label {
             text: "Hm, didn't find anything... Add one below!"
@@ -50,10 +61,33 @@ Page {
             dataModel: app.data
             onTriggered: {
                 var item = dataModel.data(indexPath);
-                var page = editPageDefinition.createObject();
-                page.data = item;
-                page.setup();
-                listNavPaneReadOnly.push(page);
+                if (dataModel.filter.type == "tasks") {
+                    var page = editPageDefinition.createObject();
+                    page.data = item;
+                    page.setup();
+                    navigationPane.push(page);
+                    return;
+                } else if (dataModel.filter.type == "folders") {
+                    dataModel.filter = {
+                        type: "tasks",
+                        folder: item.id
+                    };
+                } else if (dataModel.filter.type == "locations") {
+                    dataModel.filter = {
+                        type: "tasks",
+                        location: item.id
+                    };
+                } else if (dataModel.filter.type == "contexts") {
+                    dataModel.filter = {
+                        type: "tasks",
+                        context: item.id
+                    };
+                } else if (dataModel.filter.type == "goals") {
+                    dataModel.filter = {
+                        type: "tasks",
+                        goal: item.id
+                    };
+                }
             }
             listItemComponents: [
                 ListItemComponent {
@@ -70,7 +104,7 @@ Page {
                             orientation: LayoutOrientation.LeftToRight
                         }
                         leftPadding: 10.0
-
+                        
                         CheckBox {
                             checked: ListItemData.completed
                             verticalAlignment: VerticalAlignment.Center
@@ -83,7 +117,7 @@ Page {
                                 itemContainer.ListItem.view.dataModel.editItem("tasks", data);
                             }
                         }
-
+                        
                         StandardListItem {
                             title: ListItemData.title
                             description: itemContainer.ListItem.view.parseNote(ListItemData.note)
@@ -91,6 +125,7 @@ Page {
                             contextActions: [
                                 ActionSet {
                                     DeleteActionItem {
+                                        enabled: app.data.filter.type == "tasks"
                                         onTriggered: {
                                             deleteConfirmDialog.show();
                                         }
@@ -110,7 +145,7 @@ Page {
                                         if (result == SystemUiResult.ConfirmButtonSelection) {
                                             app.data.removeItem(itemContainer.ListItem.view.dataModel.filter, {
                                                     id: ListItemData.id
-                                                });
+                                            });
                                         }
                                     }
                                 }
@@ -119,9 +154,9 @@ Page {
                     }
                 }
             ]
-
+            
             function parseNote(note) {
-                if (note.indexOf("\n") > -1) {
+                if (note && note.indexOf("\n") > -1) {
                     //Note is multi-line, take first line as description
                     return note.substring(0, note.indexOf("\n"));
                 } else {
@@ -129,7 +164,7 @@ Page {
                     return note;
                 }
             }
-
+            
             function parseDate(dueDate) {
                 var d = app.unixTimeToDateTime(dueDate);
                 var formattedDate = "";
@@ -137,7 +172,7 @@ Page {
                 var month = d.getMonth();
                 month += 1;
                 var year = d.getFullYear();
-
+                
                 if (propertyManager.dateFormat == 1) {
                     // M/D/Y
                     formattedDate = month + "/" + day + "/" + year;
@@ -150,7 +185,7 @@ Page {
                 } else {
                     formattedDate = d.toDateString();
                 }
-
+                
                 if (dueDate == 0) {
                     return "No due date";
                 } else if (dueDate <= Math.floor((new Date()).getTime() / 1000)) {
@@ -159,17 +194,7 @@ Page {
                     return formattedDate;
                 }
             }
-
-            function itemType(data, indexPath) {
-                if (indexPath.length == 1) {
-                    data = {
-                        stuff: "things"
-                    };
-                    return "header";
-                }
-                return "item";
-            }
-
+            
             attachedObjects: [
                 ComponentDefinition {
                     id: editPageDefinition

@@ -19,12 +19,12 @@ Page {
         },
         ActionItem {
             title: "Add"
+            enabled: app.data.filter.type == "tasks"
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_add.png"
             onTriggered: {
                 var page = addPageDefinition.createObject();
-                page.type = listView.dataModel.filter
-                listNavPaneReadOnly.push(page);
+                navigationPane.push(page);
             }
         }
     ]
@@ -32,6 +32,11 @@ Page {
         ComponentDefinition {
             id: addPageDefinition
             content: AddPage {
+            }
+        },
+        ComponentDefinition {
+            id: listPageChildDefinition
+            content: ListPageChild {
             }
         }
     ]
@@ -49,11 +54,44 @@ Page {
             horizontalAlignment: HorizontalAlignment.Fill
             dataModel: app.data
             onTriggered: {
+                var item = dataModel.data(indexPath);
                 if (dataModel.filter.type == "tasks") {
-                    var item = dataModel.data(indexPath);
                     var page = editPageDefinition.createObject();
                     page.data = item;
                     page.setup();
+                    navigationPane.push(page);
+                    return;
+                } else if (dataModel.filter.type == "folders") {
+                    dataModel.filter = {
+                        type: "tasks",
+                        folder: item.id
+                    };
+                    var page = listPageChildDefinition.createObject();
+                    page.previousFilter = { type: "folders" };
+                    navigationPane.push(page);
+                } else if (dataModel.filter.type == "locations") {
+                    dataModel.filter = {
+                        type: "tasks",
+                        location: item.id
+                    };
+                    var page = listPageChildDefinition.createObject();
+                    page.previousFilter = { type: "locations" };
+                    navigationPane.push(page);
+                } else if (dataModel.filter.type == "contexts") {
+                    dataModel.filter = {
+                        type: "tasks",
+                        context: item.id
+                    };
+                    var page = listPageChildDefinition.createObject();
+                    page.previousFilter = { type: "contexts" };
+                    navigationPane.push(page);
+                } else if (dataModel.filter.type == "goals") {
+                    dataModel.filter = {
+                        type: "tasks",
+                        goal: item.id
+                    };
+                    var page = listPageChildDefinition.createObject();
+                    page.previousFilter = { type: "goals" };
                     navigationPane.push(page);
                 }
             }
@@ -93,6 +131,7 @@ Page {
                             contextActions: [
                                 ActionSet {
                                     DeleteActionItem {
+                                        enabled: app.data.filter.type == "tasks"
                                         onTriggered: {
                                             deleteConfirmDialog.show();
                                         }
@@ -123,7 +162,7 @@ Page {
             ]
             
             function parseNote(note) {
-                if (note.indexOf("\n") > -1) {
+                if (note && note.indexOf("\n") > -1) {
                     //Note is multi-line, take first line as description
                     return note.substring(0, note.indexOf("\n"));
                 } else {
@@ -160,16 +199,6 @@ Page {
                 } else {
                     return formattedDate;
                 }
-            }
-            
-            function itemType(data, indexPath) {
-                if (indexPath.length == 1) {
-                    data = {
-                        stuff: "things"
-                    };
-                    return "header";
-                }
-                return "item";
             }
             
             attachedObjects: [
