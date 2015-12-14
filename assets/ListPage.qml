@@ -61,39 +61,29 @@ Page {
                     page.setup();
                     navigationPane.push(page);
                     return;
-                } else if (dataModel.filter.type == "folders") {
-                    dataModel.filter = {
-                        type: "tasks",
-                        folder: item.id
-                    };
-                    var page = listPageChildDefinition.createObject();
-                    page.previousFilter = { type: "folders" };
-                    navigationPane.push(page);
-                } else if (dataModel.filter.type == "locations") {
-                    dataModel.filter = {
-                        type: "tasks",
-                        location: item.id
-                    };
-                    var page = listPageChildDefinition.createObject();
-                    page.previousFilter = { type: "locations" };
-                    navigationPane.push(page);
-                } else if (dataModel.filter.type == "contexts") {
-                    dataModel.filter = {
-                        type: "tasks",
-                        context: item.id
-                    };
-                    var page = listPageChildDefinition.createObject();
-                    page.previousFilter = { type: "contexts" };
-                    navigationPane.push(page);
-                } else if (dataModel.filter.type == "goals") {
-                    dataModel.filter = {
-                        type: "tasks",
-                        goal: item.id
-                    };
-                    var page = listPageChildDefinition.createObject();
-                    page.previousFilter = { type: "goals" };
-                    navigationPane.push(page);
                 }
+                
+                var page = listPageChildDefinition.createObject();
+                page.listTitle = item.name;
+                page.previousFilter = {
+                    type: dataModel.filter.type
+                };
+                var filter = {
+                    type: "tasks"
+                };
+                
+                if (dataModel.filter.type == "folders") {
+                    filter.folder = item.id;
+                } else if (dataModel.filter.type == "locations") {
+                    filter.location = item.id;
+                } else if (dataModel.filter.type == "contexts") {
+                    filter.context = item.id;
+                } else if (dataModel.filter.type == "goals") {
+                    filter.goal = item.id;
+                }
+                
+                app.data.filter = filter;
+                navigationPane.push(page);
             }
             listItemComponents: [
                 ListItemComponent {
