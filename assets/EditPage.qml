@@ -57,7 +57,7 @@ Page {
                 }
                 if (lengthCheckbox.checked && app.dateTimeToUnixTime(lengthPicker.value) != data.length
                         || !lengthCheckbox.checked && data.length != 0) { 
-                    newData.length = app.dateTimeToUnixTime(lengthPicker.value);
+                    newData.length = app.getLengthValue(lengthPicker.value);
                 }
                 // All dem dropdowns
                 if (folderDropdown.selectedValue != data.folder) {
@@ -564,36 +564,40 @@ Page {
                             value: 1
                         },
                         Option {
-                            text: "Planning"
+                            text: "Active"
                             value: 2
                         },
                         Option {
-                            text: "Delegated"
+                            text: "Planning"
                             value: 3
                         },
                         Option {
-                            text: "Waiting"
+                            text: "Delegated"
                             value: 4
                         },
                         Option {
-                            text: "Hold"
+                            text: "Waiting"
                             value: 5
                         },
                         Option {
-                            text: "Postponed"
+                            text: "Hold"
                             value: 6
                         },
                         Option {
-                            text: "Someday"
+                            text: "Postponed"
                             value: 7
                         },
                         Option {
-                            text: "Canceled"
+                            text: "Someday"
                             value: 8
                         },
                         Option {
-                            text: "Reference"
+                            text: "Canceled"
                             value: 9
+                        },
+                        Option {
+                            text: "Reference"
+                            value: 10
                         }
                     ]
                 }
