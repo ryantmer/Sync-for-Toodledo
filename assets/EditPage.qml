@@ -39,19 +39,24 @@ Page {
                     newData.tag = tagField.text;
                 }
                 // All dem pickers
-                if (duedateCheckbox.checked && app.dateTimeToUnixTime(duedatePicker.value) != data.duedate) {
+                if (duedateCheckbox.checked && app.dateTimeToUnixTime(duedatePicker.value) != data.duedate
+                        || !duedateCheckbox.checked && data.duedate != 0) {
                     newData.duedate = app.dateTimeToUnixTime(duedatePicker.value);
                 }
-                if (duetimeCheckbox.checked && app.dateTimeToUnixTime(duetimePicker.value) != data.duetime) {
+                if (duetimeCheckbox.checked && app.dateTimeToUnixTime(duetimePicker.value) != data.duetime
+                        || !duetimeCheckbox.checked && data.duetime != 0) { 
                     newData.duetime = app.dateTimeToUnixTime(duetimePicker.value);
                 }
-                if (startdateCheckbox.checked && app.dateTimeToUnixTime(startdatePicker.value) != data.startdate) {
+                if (startdateCheckbox.checked && app.dateTimeToUnixTime(startdatePicker.value) != data.startdate
+                        || !startdateCheckbox.checked && data.startdate != 0) {
                     newData.startdate = app.dateTimeToUnixTime(startdatePicker.value);
                 }
-                if (starttimeCheckbox.checked && app.dateTimeToUnixTime(starttimePicker.value) != data.starttime) {
+                if (starttimeCheckbox.checked && app.dateTimeToUnixTime(starttimePicker.value) != data.starttime
+                        || !starttimeCheckbox.checked && data.starttime != 0) { 
                     newData.starttime = app.dateTimeToUnixTime(starttimePicker.value);
                 }
-                if (lengthCheckbox.checked && app.dateTimeToUnixTime(lengthPicker.value) != data.length) {
+                if (lengthCheckbox.checked && app.dateTimeToUnixTime(lengthPicker.value) != data.length
+                        || !lengthCheckbox.checked && data.length != 0) { 
                     newData.length = app.dateTimeToUnixTime(lengthPicker.value);
                 }
                 // All dem dropdowns
