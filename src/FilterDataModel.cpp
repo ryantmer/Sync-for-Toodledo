@@ -446,7 +446,7 @@ void FilterDataModel::onLogOut()
 {
     clear();
     emit emptyChanged(empty());
-    emit itemsChanged(bb::cascades::DataModelChangeType::AddRemove);
+    emit itemsChanged(DataModelChangeType::AddRemove);
 }
 
 void FilterDataModel::onNetworkStateChanged(bool online)

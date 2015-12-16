@@ -29,6 +29,9 @@ public:
     virtual ~FilterDataModel();
 
     virtual QVariant data(const QVariantList& indexPath);
+    void clearByType(QString type);
+    void sort();
+    void get(QString type);
 
     bool itemsGrouped();
     QVariantMap filter();
@@ -45,9 +48,6 @@ public:
     void editItem(QString type, QVariantMap data);
     Q_INVOKABLE
     void removeItem(QString type, QVariantMap data);
-
-    void clearByType(QString type);
-    void get(QString type);
 
 signals:
     void networkRequestStarted();
