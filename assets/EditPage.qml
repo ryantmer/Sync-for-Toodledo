@@ -55,7 +55,7 @@ Page {
                         || !starttimeCheckbox.checked && data.starttime != 0) { 
                     newData.starttime = app.dateTimeToUnixTime(starttimePicker.value);
                 }
-                if (lengthCheckbox.checked && app.dateTimeToUnixTime(lengthPicker.value) != data.length
+                if (lengthCheckbox.checked && app.getLengthValue(lengthPicker.value) != data.length
                         || !lengthCheckbox.checked && data.length != 0) { 
                     newData.length = app.getLengthValue(lengthPicker.value);
                 }
@@ -117,7 +117,7 @@ Page {
         }
 
         if (data.duetime != 0) {
-            duetimePicker.value = app.unixTimeToDateTimeNoOffset(data.duetime);
+            duetimePicker.value = app.unixTimeToDateTime(data.duetime);
             duetimeCheckbox.checked = true;
             duetimeCheckbox.checkedChanged(true);
         }
@@ -129,7 +129,7 @@ Page {
         }
 
         if (data.starttime != 0) {
-            starttimePicker.value = app.unixTimeToDateTimeNoOffset(data.starttime);
+            starttimePicker.value = app.unixTimeToDateTime(data.starttime);
             starttimeCheckbox.checked = true;
             starttimeCheckbox.checkedChanged(true);
         }
