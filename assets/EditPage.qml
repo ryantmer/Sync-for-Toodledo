@@ -39,31 +39,35 @@ Page {
                     newData.tag = tagField.text;
                 }
                 // All dem pickers
-                if (duedateCheckbox.checked && app.dateTimeToUnixTime(duedatePicker.value) != data.duedate
-                        || !duedateCheckbox.checked && data.duedate != 0) {
+                if (duedateSegmented.selectedValue == "yes" && app.dateTimeToUnixTime(duedatePicker.value) != data.duedate) { 
                     newData.duedate = app.dateTimeToUnixTime(duedatePicker.value);
+                } else if (duedateSegmented.selectedValue == "no" && data.duedate != 0) {
+                    newData.duedate = 0;
                 }
-                if (duetimeCheckbox.checked && app.dateTimeToUnixTime(duetimePicker.value) != data.duetime
-                        || !duetimeCheckbox.checked && data.duetime != 0) { 
+                if (duetimeSegmented.selectedValue == "yes" && app.dateTimeToUnixTime(duetimePicker.value) != data.duetime) {
                     newData.duetime = app.dateTimeToUnixTime(duetimePicker.value);
+                } else if (duetimeSegmented.selectedValue == "no" && data.duetime != 0) {
+                     newData.duetime = 0;
                 }
-                if (startdateCheckbox.checked && app.dateTimeToUnixTime(startdatePicker.value) != data.startdate
-                        || !startdateCheckbox.checked && data.startdate != 0) {
+                if (startdateSegmented.selectedValue == "yes" && app.dateTimeToUnixTime(startdatePicker.value) != data.startdate) {
                     newData.startdate = app.dateTimeToUnixTime(startdatePicker.value);
+                } else if (startdateSegmented.selectedValue == "no" && data.startdate != 0) {
+                    newData.startdate = 0;
                 }
-                if (starttimeCheckbox.checked && app.dateTimeToUnixTime(starttimePicker.value) != data.starttime
-                        || !starttimeCheckbox.checked && data.starttime != 0) { 
+                if (starttimeSegmented.selectedValue == "yes" && app.dateTimeToUnixTime(starttimePicker.value) != data.starttime) {
                     newData.starttime = app.dateTimeToUnixTime(starttimePicker.value);
+                } else if (starttimeSegmented.selectedValue == "no" && data.starttime != 0) {
+                    newData.starttime = 0; 
                 }
-                if (lengthCheckbox.checked && app.getLengthValue(lengthPicker.value) != data.length
-                        || !lengthCheckbox.checked && data.length != 0) { 
+                if (lengthSegmented.selectedValue == "yes" && app.dateTimeToUnixTime(lengthPicker.value) != data.length) {
                     newData.length = app.getLengthValue(lengthPicker.value);
+                } else if (lengthSegmented.selectedValue == "no" && data.length != 0) {
+                    newData.length = 0; 
                 }
                 // All dem dropdowns
                 if (folderDropdown.selectedValue != data.folder) {
                     newData.folder = folderDropdown.selectedValue;
                 }
-                console.log(contextDropdown.selectedValue, data.context);
                 if (contextDropdown.selectedValue != undefined && contextDropdown.selectedValue != data.context) {
                     newData.context = contextDropdown.selectedValue;
                 }
@@ -112,32 +116,27 @@ Page {
 
         if (data.duedate != 0) {
             duedatePicker.value = app.unixTimeToDateTime(data.duedate);
-            duedateCheckbox.checked = true;
-            duedateCheckbox.checkedChanged(true);
+            duedateSegmented.setSelectedIndex(1);
         }
 
         if (data.duetime != 0) {
             duetimePicker.value = app.unixTimeToDateTime(data.duetime);
-            duetimeCheckbox.checked = true;
-            duetimeCheckbox.checkedChanged(true);
+            duetimeSegmented.setSelectedIndex(1);
         }
 
         if (data.startdate != 0) {
             startdatePicker.value = app.unixTimeToDateTime(data.startdate);
-            startdateCheckbox.checked = true;
-            startdateCheckbox.checkedChanged(true);
+            startdateSegmented.setSelectedIndex(1);
         }
 
         if (data.starttime != 0) {
             starttimePicker.value = app.unixTimeToDateTime(data.starttime);
-            starttimeCheckbox.checked = true;
-            starttimeCheckbox.checkedChanged(true);
+            starttimeSegmented.setSelectedIndex(1);
         }
 
         if (data.length != 0) {
             lengthPicker.value = new Date(0, 0, 0, 0, data.length);
-            lengthCheckbox.checked = true;
-            lengthCheckbox.checkedChanged(true);
+            lengthSegmented.setSelectedIndex(1);
         }
 
         if (data.remind != 0) {
@@ -273,21 +272,32 @@ Page {
             // duedate
             Container {
                 layout: StackLayout {
-                    orientation: LayoutOrientation.LeftToRight
+                    orientation: LayoutOrientation.TopToBottom
                 }
                 bottomMargin: 30
 
-                CheckBox {
-                    id: duedateCheckbox
-                    verticalAlignment: VerticalAlignment.Center
-                    onCheckedChanged: {
-                        duedatePicker.enabled = checked;
+                SegmentedControl {
+                    id: duedateSegmented
+                    Option {
+                        text: "No Due Date"
+                        value: "no"
+                    }
+                    Option {
+                        text: "Set Due Date"
+                        value: "yes"
+                    }
+                    onSelectedIndexChanged: {
+                        if (duedateSegmented.selectedValue == "yes") {
+                            duedatePicker.setVisible(true);
+                        } else {
+                            duedatePicker.setVisible(false);
+                        }
                     }
                 }
                 DateTimePicker {
                     id: duedatePicker
                     title: "Due Date"
-                    enabled: false
+                    visible: false
                 }
             }
             // folder
@@ -410,79 +420,123 @@ Page {
                 Container {
                     bottomMargin: 30
                     layout: StackLayout {
-                        orientation: LayoutOrientation.LeftToRight
+                        orientation: LayoutOrientation.TopToBottom
                     }
-                    CheckBox {
-                        id: duetimeCheckbox
-                        verticalAlignment: VerticalAlignment.Center
-                        onCheckedChanged: {
-                            duetimePicker.enabled = checked;
+                    SegmentedControl {
+                        Option {
+                            text: "No Due Time"
+                            value: "no"
+                        }
+                        id: duetimeSegmented
+                        Option {
+                            text: "Set Due Time"
+                            value: "yes"
+                        }
+                        onSelectedIndexChanged: {
+                            if (duetimeSegmented.selectedValue == "yes") {
+                                duetimePicker.setVisible(true);
+                            } else {
+                                duetimePicker.setVisible(false);
+                            }
                         }
                     }
                     DateTimePicker {
                         id: duetimePicker
                         title: "Due Time"
                         mode: DateTimePickerMode.Time
-                        enabled: false
+                        visible: false
                     }
                 }
                 // startdate
                 Container {
                     bottomMargin: 30
                     layout: StackLayout {
-                        orientation: LayoutOrientation.LeftToRight
+                        orientation: LayoutOrientation.TopToBottom
                     }
-                    CheckBox {
-                        id: startdateCheckbox
-                        verticalAlignment: VerticalAlignment.Center
-                        onCheckedChanged: {
-                            startdatePicker.enabled = checked;
+                    SegmentedControl {
+                        Option {
+                            text: "No Start Date"
+                            value: "no"
+                        }
+                        id: startdateSegmented
+                        Option {
+                            text: "Set Start Date"
+                            value: "yes"
+                        }
+                        onSelectedIndexChanged: {
+                            if (startdateSegmented.selectedValue == "yes") {
+                                startdatePicker.setVisible(true);
+                            } else {
+                                startdatePicker.setVisible(false);
+                            }
                         }
                     }
                     DateTimePicker {
                         id: startdatePicker
                         title: "Start Date"
-                        enabled: false
+                        visible: false
                     }
                 }
                 // starttime
                 Container {
                     bottomMargin: 30
                     layout: StackLayout {
-                        orientation: LayoutOrientation.LeftToRight
+                        orientation: LayoutOrientation.TopToBottom
                     }
-                    CheckBox {
-                        id: starttimeCheckbox
-                        verticalAlignment: VerticalAlignment.Center
-                        onCheckedChanged: {
-                            starttimePicker.enabled = checked;
+                    SegmentedControl {
+                        id: starttimeSegmented
+                        Option {
+                            text: "No Start Time"
+                            value: "no"
+                        }
+                        Option {
+                            text: "Set Start Time"
+                            value: "yes"
+                        }
+                        onSelectedIndexChanged: {
+                            if (starttimeSegmented.selectedValue == "yes") {
+                                starttimePicker.setVisible(true);
+                            } else {
+                                starttimePicker.setVisible(false);
+                            }
                         }
                     }
                     DateTimePicker {
                         id: starttimePicker
                         title: "Start Time"
                         mode: DateTimePickerMode.Time
-                        enabled: false
+                        visible: false
                     }
                 }
                 // length
                 Container {
                     bottomMargin: 30
                     layout: StackLayout {
-                        orientation: LayoutOrientation.LeftToRight
+                        orientation: LayoutOrientation.TopToBottom
                     }
-                    CheckBox {
-                        id: lengthCheckbox
-                        verticalAlignment: VerticalAlignment.Center
-                        onCheckedChanged: {
-                            lengthPicker.enabled = checked;
+                    SegmentedControl {
+                        id: lengthSegmented
+                        Option {
+                            text: "No Length"
+                            value: "no"
+                        }
+                        Option {
+                            text: "Set Length"
+                            value: "yes"
+                        }
+                        onSelectedIndexChanged: {
+                            if (lengthSegmented.selectedValue == "yes") {
+                                lengthPicker.setVisible(true);
+                            } else {
+                                lengthPicker.setVisible(false);
+                            }
                         }
                     }
                     DateTimePicker {
                         id: lengthPicker
                         title: "Task Length"
                         mode: DateTimePickerMode.Timer
-                        enabled: false
+                        visible: false
                     }
                 }
                 // remind
