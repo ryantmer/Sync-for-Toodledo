@@ -48,9 +48,11 @@ TabbedPane {
         }
         onTriggered: {
             setFilterAndGrouping({ type: "tasks" }, true);
+            taskNav.editableContent = true;
         }
         onNewContentAvailableChanged: {
             setFilterAndGrouping({ type: "tasks" }, true);
+            taskNav.editableContent = true;
         }
     }
 
@@ -62,10 +64,12 @@ TabbedPane {
             listTitle: "Folders"
         }
         onTriggered: {
-            setFilterAndGrouping({ type: "folders" }, true);
+            setFilterAndGrouping({ type: "folders" }, false);
+            folderNav.editableContent = false;
         }
         onNewContentAvailableChanged: {
-            setFilterAndGrouping({ type: "folders" }, true);
+            setFilterAndGrouping({ type: "folders" }, false);
+            folderNav.editableContent = false;
         }
     }
 
@@ -77,10 +81,12 @@ TabbedPane {
             listTitle: "Locations"
         }
         onTriggered: {
-            setFilterAndGrouping({ type: "locations" }, true);
+            setFilterAndGrouping({ type: "locations" }, false);
+            locationNav.editableContent = false;
         }
         onNewContentAvailableChanged: {
-            setFilterAndGrouping({ type: "locations" }, true);
+            setFilterAndGrouping({ type: "locations" }, false);
+            locationNav.editableContent = false;
         }
     }
 
@@ -92,10 +98,12 @@ TabbedPane {
             listTitle: "Contexts"
         }
         onTriggered: {
-            setFilterAndGrouping({ type: "contexts" }, true);
+            setFilterAndGrouping({ type: "contexts" }, false);
+            contextNav.editableContent = false;
         }
         onNewContentAvailableChanged: {
-            setFilterAndGrouping({ type: "contexts" }, true);
+            setFilterAndGrouping({ type: "contexts" }, false);
+            contextNav.editableContent = false;
         }
     }
 
@@ -107,10 +115,12 @@ TabbedPane {
             listTitle: "Goals"
         }
         onTriggered: {
-            setFilterAndGrouping({ type: "goals" }, true);
+            setFilterAndGrouping({ type: "goals" }, false);
+            goalNav.editableContent = false;
         }
         onNewContentAvailableChanged: {
-            setFilterAndGrouping({ type: "goals" }, true);
+            setFilterAndGrouping({ type: "goals" }, false);
+            goalNav.editableContent = false;
         }
     }
 }

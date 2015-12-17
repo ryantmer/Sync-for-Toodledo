@@ -4,6 +4,7 @@ import bb.system 1.2
 
 Page {
     property string listTitle
+    property bool editableContent
     
     titleBar: TitleBar {
         title: "Sync for Toodledo - " + listTitle
@@ -18,8 +19,9 @@ Page {
             }
         },
         ActionItem {
+            id: addButton
             title: "Add"
-            enabled: app.data.filter.type == "tasks"
+            enabled: editableContent
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_add.png"
             onTriggered: {
@@ -104,7 +106,7 @@ Page {
                         CheckBox {
                             checked: ListItemData.completed
                             verticalAlignment: VerticalAlignment.Center
-                            visible: itemContainer.ListItem.view.dataModel.filter == "tasks"
+                            visible: ListItemData.name == null // super hax - this will only be enabled for tasks now
                             onCheckedChanged: {
                                 var data = {
                                     id: parseInt(ListItemData.id),

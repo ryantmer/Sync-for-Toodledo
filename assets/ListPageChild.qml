@@ -5,6 +5,7 @@ import bb.system 1.2
 Page {
     property string listTitle
     property variant previousFilter
+    property bool editableContent
     
     paneProperties: NavigationPaneProperties {
         backButton: ActionItem {
@@ -29,8 +30,9 @@ Page {
             }
         },
         ActionItem {
+            id: addButton
             title: "Add"
-            enabled: app.data.filter.type == "tasks"
+            enabled: editableContent
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "asset:///images/ic_add.png"
             onTriggered: {
@@ -108,7 +110,7 @@ Page {
                         CheckBox {
                             checked: ListItemData.completed
                             verticalAlignment: VerticalAlignment.Center
-                            visible: itemContainer.ListItem.view.dataModel.filter == "tasks"
+                            visible: ListItemData.name == null
                             onCheckedChanged: {
                                 var data = {
                                     id: parseInt(ListItemData.id),
