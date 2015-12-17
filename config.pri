@@ -38,23 +38,18 @@ config_pri_assets {
     OTHER_FILES += \
         $$quote($$BASEDIR/assets/About.qml) \
         $$quote($$BASEDIR/assets/ActivityDialog.qml) \
-        $$quote($$BASEDIR/assets/AddEditContext.qml) \
-        $$quote($$BASEDIR/assets/AddEditFolder.qml) \
-        $$quote($$BASEDIR/assets/AddEditGoal.qml) \
-        $$quote($$BASEDIR/assets/AddEditLocation.qml) \
-        $$quote($$BASEDIR/assets/AddEditTask.qml) \
+        $$quote($$BASEDIR/assets/AddPage.qml) \
         $$quote($$BASEDIR/assets/Cover.qml) \
-        $$quote($$BASEDIR/assets/ListCompletedTasks.qml) \
-        $$quote($$BASEDIR/assets/ListContexts.qml) \
-        $$quote($$BASEDIR/assets/ListFolders.qml) \
-        $$quote($$BASEDIR/assets/ListGoals.qml) \
-        $$quote($$BASEDIR/assets/ListLocations.qml) \
-        $$quote($$BASEDIR/assets/ListTasks.qml) \
+        $$quote($$BASEDIR/assets/EditPage.qml) \
+        $$quote($$BASEDIR/assets/ListPage.qml) \
+        $$quote($$BASEDIR/assets/ListPageChild.qml) \
         $$quote($$BASEDIR/assets/Login.qml) \
+        $$quote($$BASEDIR/assets/MainTabbedPane.qml) \
+        $$quote($$BASEDIR/assets/Navigation.qml) \
         $$quote($$BASEDIR/assets/Settings.qml) \
         $$quote($$BASEDIR/assets/images/all_tasks.png) \
+        $$quote($$BASEDIR/assets/images/checkmark.png) \
         $$quote($$BASEDIR/assets/images/ic_add.png) \
-        $$quote($$BASEDIR/assets/images/ic_completed.png) \
         $$quote($$BASEDIR/assets/images/ic_contexts.png) \
         $$quote($$BASEDIR/assets/images/ic_folders.png) \
         $$quote($$BASEDIR/assets/images/ic_goals.png) \
@@ -67,17 +62,15 @@ config_pri_assets {
 
 config_pri_source_group1 {
     SOURCES += \
-        $$quote($$BASEDIR/src/CustomDataModel.cpp) \
+        $$quote($$BASEDIR/src/FilterDataModel.cpp) \
         $$quote($$BASEDIR/src/LoginManager.cpp) \
-        $$quote($$BASEDIR/src/NetworkManager.cpp) \
         $$quote($$BASEDIR/src/PropertiesManager.cpp) \
         $$quote($$BASEDIR/src/SyncForToodledo.cpp) \
         $$quote($$BASEDIR/src/main.cpp)
 
     HEADERS += \
-        $$quote($$BASEDIR/src/CustomDataModel.hpp) \
+        $$quote($$BASEDIR/src/FilterDataModel.hpp) \
         $$quote($$BASEDIR/src/LoginManager.hpp) \
-        $$quote($$BASEDIR/src/NetworkManager.hpp) \
         $$quote($$BASEDIR/src/PropertiesManager.hpp) \
         $$quote($$BASEDIR/src/SyncForToodledo.hpp)
 }

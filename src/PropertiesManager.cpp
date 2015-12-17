@@ -18,18 +18,8 @@ PropertiesManager *PropertiesManager::getInstance() {
 }
 
 PropertiesManager::PropertiesManager(QObject *parent)
-:   QObject (parent),
-    _netMan(NetworkManager::getInstance())
+:   QObject (parent)
 {
-    bool ok;
-    ok = connect(_netMan, SIGNAL(accessTokenRefreshed(QString, qlonglong)),
-            this, SLOT(onAccessTokenRefreshed(QString, qlonglong)));
-    Q_ASSERT(ok);
-    ok = connect(_netMan, SIGNAL(refreshTokenRefreshed(QString)),
-            this, SLOT(onRefreshTokenRefreshed(QString)));
-    Q_ASSERT(ok);
-    Q_UNUSED(ok);
-
     QSettings settings("ryantmer", "SyncForToodledo");
     accessToken = settings.value("accessToken", "").toString();
     accessTokenExpiry = settings.value("accessTokenExpiry", 0).toUInt(NULL);
@@ -40,7 +30,7 @@ PropertiesManager::PropertiesManager(QObject *parent)
 }
 PropertiesManager::~PropertiesManager() {}
 
-void PropertiesManager::onAccessTokenRefreshed(QString newToken, qlonglong expiresIn) {
+void PropertiesManager::setAccessToken(QString newToken, qlonglong expiresIn) {
     qDebug() << Q_FUNC_INFO << "New access token stored:" << newToken;
     accessToken = newToken;
     accessTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + expiresIn;
@@ -49,7 +39,7 @@ void PropertiesManager::onAccessTokenRefreshed(QString newToken, qlonglong expir
     settings.setValue("accessTokenExpiry", accessTokenExpiry);
 }
 
-void PropertiesManager::onRefreshTokenRefreshed(QString newToken) {
+void PropertiesManager::setRefreshToken(QString newToken) {
     qDebug() << Q_FUNC_INFO << "New refresh token stored:" << newToken;
     refreshToken = newToken;
     refreshTokenExpiry = QDateTime::currentDateTimeUtc().toTime_t() + 2592000; //30 days from now

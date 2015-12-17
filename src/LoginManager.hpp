@@ -5,7 +5,6 @@
 #include <QTimer>
 #include <QUuid>
 #include "PropertiesManager.hpp"
-#include "NetworkManager.hpp"
 
 class LoginManager : public QObject {
     Q_OBJECT
@@ -15,6 +14,9 @@ public:
     LoginManager(QObject *parent = NULL);
     virtual ~LoginManager();
 
+    static const QString authorizeUrl;
+    static const QString tokenUrl;
+
     bool isLoggedIn();
     QUrl getAuthorizeUrl();
     QString getState();
@@ -22,21 +24,28 @@ public:
     void refreshAccessToken();
 
 public slots:
-    void onAccessTokenExpired();
-    void onAccessTokenRefreshed(QString newToken, qlonglong expiresIn);
+    void onOnlineStateChanged(bool online);
+    void onFinished(QNetworkReply *reply);
+    void onTimeout();
     void onLogOut();
 
 signals:
     void refreshTokenExpired();
-    void accessTokenExpired();
+    void accessTokenRefreshed();
+    void networkRequestStarted();
+    void networkRequestFinished();
+    void networkStateChanged(bool online);
     void toast(QString message);
 
 private:
+    QNetworkConfigurationManager *_netConfMan;
+    QNetworkAccessManager *_netAccMan;
     bool _loggedIn;
-    NetworkManager *_netMan;
+    bool _connected;
     PropertiesManager *_propMan;
     QTimer *_accessTokenTimer;
     QString _appState;
+
     static const QString _credentials;
 };
 

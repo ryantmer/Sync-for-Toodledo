@@ -30,5 +30,7 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     qInstallMsgHandler(messageOutput);
     Application app(argc, argv);
     SyncForToodledo syncForToodledo;
+    QObject::connect(&app, SIGNAL(thumbnail()), &syncForToodledo, SLOT(onThumbnail()));
+    QObject::connect(&app, SIGNAL(fullscreen()), &syncForToodledo, SLOT(onFullscreen()));
     return Application::exec();
 }
