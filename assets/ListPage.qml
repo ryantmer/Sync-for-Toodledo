@@ -142,7 +142,7 @@ Page {
                                     cancelButton.enabled: true
                                     onFinished: {
                                         if (result == SystemUiResult.ConfirmButtonSelection) {
-                                            app.data.removeItem(itemContainer.ListItem.view.dataModel.filter, {
+                                            app.data.removeItem(itemContainer.ListItem.view.dataModel.filter.type, {
                                                     id: ListItemData.id
                                             });
                                         }

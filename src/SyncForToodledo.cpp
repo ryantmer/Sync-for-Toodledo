@@ -93,10 +93,7 @@ void SyncForToodledo::showToast(QString message)
  */
 QDateTime SyncForToodledo::unixTimeToDateTime(uint unixTime)
 {
-    // Takes a UTC timestamp and returns a DateTime in local time
-    QDateTime dt1 = QDateTime::fromTime_t(unixTime);
-    QDateTime dt2 = dt1.toLocalTime();
-    return dt2;
+    return QDateTime::fromTime_t(unixTime);
 }
 
 uint SyncForToodledo::dateTimeToUnixTime(QDateTime dateTime)
