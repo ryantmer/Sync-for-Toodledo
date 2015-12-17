@@ -3,7 +3,7 @@ import bb.cascades 1.4
 Page {
     id: editTaskPage
     property variant data
-    
+
     attachedObjects: [
         ComponentDefinition {
             id: option
@@ -39,7 +39,7 @@ Page {
                     newData.tag = tagField.text;
                 }
                 // All dem pickers
-                if (duedateSegmented.selectedValue == "yes" && app.dateTimeToUnixTime(duedatePicker.value) != data.duedate) { 
+                if (duedateSegmented.selectedValue == "yes" && app.dateTimeToUnixTime(duedatePicker.value) != data.duedate) {
                     newData.duedate = app.dateTimeToUnixTime(duedatePicker.value);
                 } else if (duedateSegmented.selectedValue == "no" && data.duedate != 0) {
                     newData.duedate = 0;
@@ -47,7 +47,7 @@ Page {
                 if (duetimeSegmented.selectedValue == "yes" && app.dateTimeToUnixTime(duetimePicker.value) != data.duetime) {
                     newData.duetime = app.dateTimeToUnixTime(duetimePicker.value);
                 } else if (duetimeSegmented.selectedValue == "no" && data.duetime != 0) {
-                     newData.duetime = 0;
+                    newData.duetime = 0;
                 }
                 if (startdateSegmented.selectedValue == "yes" && app.dateTimeToUnixTime(startdatePicker.value) != data.startdate) {
                     newData.startdate = app.dateTimeToUnixTime(startdatePicker.value);
@@ -57,12 +57,12 @@ Page {
                 if (starttimeSegmented.selectedValue == "yes" && app.dateTimeToUnixTime(starttimePicker.value) != data.starttime) {
                     newData.starttime = app.dateTimeToUnixTime(starttimePicker.value);
                 } else if (starttimeSegmented.selectedValue == "no" && data.starttime != 0) {
-                    newData.starttime = 0; 
+                    newData.starttime = 0;
                 }
                 if (lengthSegmented.selectedValue == "yes" && app.dateTimeToUnixTime(lengthPicker.value) != data.length) {
                     newData.length = app.getLengthValue(lengthPicker.value);
                 } else if (lengthSegmented.selectedValue == "no" && data.length != 0) {
-                    newData.length = 0; 
+                    newData.length = 0;
                 }
                 // All dem dropdowns
                 if (folderDropdown.selectedValue != data.folder) {
@@ -165,9 +165,9 @@ Page {
                 }
             }
         }
-        
+
         // Fill out FCGL dropdowns
-        for (var i = 0; i < app.data.allData.length; ++i) {
+        for (var i = 0; i < app.data.allData.length; ++ i) {
             var item = app.data.allData[i];
             if (item.type == "folders") {
                 if (item.archived != 0) {
@@ -197,31 +197,31 @@ Page {
                 locationDropdown.add(opt);
             }
         }
-        
+
         // Set FCGL options to be whatever the task being edited has
         if (data.folder != 0) {
-            for (index = 0; index < folderDropdown.options.length; ++index) {
+            for (index = 0; index < folderDropdown.options.length; ++ index) {
                 if (data.folder == folderDropdown.options[index].value) {
                     folderDropdown.setSelectedIndex(index);
                 }
             }
         }
         if (data.goal != 0) {
-            for (index = 0; index < goalDropdown.options.length; ++index) {
+            for (index = 0; index < goalDropdown.options.length; ++ index) {
                 if (data.goal == goalDropdown.options[index].value) {
                     goalDropdown.setSelectedIndex(index);
                 }
             }
         }
         if (data.context != 0) {
-            for (index = 0; index < contextDropdown.options.length; ++index) {
+            for (index = 0; index < contextDropdown.options.length; ++ index) {
                 if (data.context == contextDropdown.options[index].value) {
                     contextDropdown.setSelectedIndex(index);
                 }
             }
         }
         if (data.location != 0) {
-            for (index = 0; index < locationDropdown.options.length; ++index) {
+            for (index = 0; index < locationDropdown.options.length; ++ index) {
                 if (data.location == locationDropdown.options[index].value) {
                     locationDropdown.setSelectedIndex(index);
                 }
