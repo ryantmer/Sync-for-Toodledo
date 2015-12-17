@@ -26,6 +26,7 @@ Page {
             imageSource: "asset:///images/ic_add.png"
             onTriggered: {
                 var page = addPageDefinition.createObject();
+                page.setup();
                 navigationPane.push(page);
             }
         }
@@ -123,7 +124,7 @@ Page {
                             contextActions: [
                                 ActionSet {
                                     DeleteActionItem {
-                                        enabled: app.data.filter.type == "tasks"
+                                        enabled: ListItemData.name == null
                                         onTriggered: {
                                             deleteConfirmDialog.show();
                                         }

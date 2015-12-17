@@ -2,6 +2,14 @@ import bb.cascades 1.4
 
 Page {
     id: addTaskPage
+    
+    attachedObjects: [
+        ComponentDefinition {
+            id: option
+            Option {
+            }
+        }
+    ]
 
     actions: [
         ActionItem {
@@ -82,6 +90,40 @@ Page {
             }
         }
     ]
+
+    function setup() {
+        // Fill out FCGL dropdowns
+        for (var i = 0; i < app.data.allData.length; ++ i) {
+            var item = app.data.allData[i];
+            if (item.type == "folders") {
+                if (item.archived != 0) {
+                    continue;
+                }
+                var opt = option.createObject();
+                opt.text = item.name;
+                opt.value = item.id;
+                folderDropdown.add(opt);
+            } else if (item.type == "goals") {
+                if (item.archived != 0) {
+                    continue;
+                }
+                var opt = option.createObject();
+                opt.text = item.name;
+                opt.value = item.id;
+                goalDropdown.add(opt);
+            } else if (item.type == "contexts") {
+                var opt = option.createObject();
+                opt.text = item.name;
+                opt.value = item.id;
+                contextDropdown.add(opt);
+            } else if (item.type == "locations") {
+                var opt = option.createObject();
+                opt.text = item.name;
+                opt.value = item.id;
+                locationDropdown.add(opt);
+            }
+        }
+    }
 
     ScrollView {
         scrollViewProperties.scrollMode: ScrollMode.Vertical
