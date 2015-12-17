@@ -412,6 +412,7 @@ void FilterDataModel::onFinished(QNetworkReply *reply)
                             _allData->replace(j, data);
                             qDebug() << Q_FUNC_INFO << "Edited a" << data["type"].toString()
                                     << "called" << data["title"].toString();
+                            refresh(data["type"].toString());
                         } else {
                             _allData->removeAt(j);
                             qDebug() << Q_FUNC_INFO << "Removed a" << data["type"].toString()
