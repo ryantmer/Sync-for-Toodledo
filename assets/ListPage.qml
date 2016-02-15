@@ -71,6 +71,7 @@ Page {
                 page.previousFilter = {
                     type: dataModel.filter.type
                 };
+                page.editableContent = true;
                 var filter = {
                     type: "tasks"
                 };
