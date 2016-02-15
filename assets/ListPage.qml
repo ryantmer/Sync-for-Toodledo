@@ -46,7 +46,7 @@ Page {
     
     Container {
         Label {
-            text: "Hm, didn't find anything... Add one below!"
+            text: "Hm, didn't find anything..."
             visible: listView.dataModel.empty
             horizontalAlignment: HorizontalAlignment.Center
         }
