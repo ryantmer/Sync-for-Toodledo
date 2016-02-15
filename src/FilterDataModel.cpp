@@ -169,7 +169,7 @@ void FilterDataModel::refresh(QString type)
 
 void FilterDataModel::get(QString type)
 {
-    // Retrieves all enties of the specified type from Toodledo
+    // Retrieves all entities of the specified type from Toodledo
     QUrl url;
     QUrl data;
 
@@ -428,6 +428,10 @@ void FilterDataModel::onFinished(QNetworkReply *reply)
         QVariantMap data;
         for (int i = 0; i < dataList.size(); ++i) {
             data = dataList.value(i).toMap();
+            // Skip archived items (folders and goals)
+            if (data["archived"].toInt() == 1) {
+                continue;
+            }
             data["type"] = replyDataType;
             data["title"] = data["name"].toString();
             _allData->append(data);
